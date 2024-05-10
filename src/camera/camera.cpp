@@ -39,7 +39,7 @@ bool Camera::IsMouseLocked()
 void Camera::Update(float width, float height)
 {
     _velocity *= VELOCITY_DECAY;
-    _position += _velocity * Scene::DeltaTime;
+    _position += _velocity * Scene::GetDeltaTime();
 
     _viewMatrix = glm::lookAt(_position, _position + _orientation, UP);
     _projectionMatrix = glm::perspective(glm::radians(90.0f), width / height, 0.1f, 100.0f);

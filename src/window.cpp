@@ -23,8 +23,8 @@ Window::Window(int width, int height, const std::string &windowTitle) : _width(w
 
     _glContext = std::make_unique<OpenGLContext>(this);
     _uiContext = std::make_unique<UIContext>(this);
+    _scene = std::make_unique<Scene>();
 
-    _scenePanel = std::make_unique<ScenePanel>();
     _consolePanel = std::make_unique<ConsolePanel>();
     _objectsPanel = std::make_unique<ObjectsPanel>();
     _inspectorPanel = std::make_unique<InspectorPanel>();
@@ -40,13 +40,10 @@ void Window::Run()
 {
     while (!glfwWindowShouldClose(_glfwWindow))
     {
-        Scene::CalculateDeltaTime();
-
         _glContext->PreRender();
         _uiContext->PreRender();
 
-        _scenePanel->Render(GetNativeWindow());
-        _scenePanel->Input(GetNativeWindow());
+        _scene->Render(GetNativeWindow());
 
         _consolePanel->Render();
         _objectsPanel->Render();
@@ -74,6 +71,6 @@ int Window::GetHeight()
 
 void Window::OnMouseClick(int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        _scenePanel->OnMouseClick();
+    // if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    // _scenePanel->OnMouseClick();
 }

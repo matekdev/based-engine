@@ -47,9 +47,9 @@ void ScenePanel::Render(GLFWwindow *window)
     _viewPortBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
     _viewPortBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
 
-    if (Scene::SelectedGameObject)
-    {
-    }
+    // if (Scene::SelectedGameObject)
+    // {
+    // }
 
     ImGui::End();
 }
@@ -61,17 +61,17 @@ void ScenePanel::RenderPass()
     glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (auto &gameObject : Scene::GameObjects)
-    {
-    }
+    // for (auto &gameObject : Scene::GameObjects)
+    // {
+    // }
 
     _frameBuffer.Unbind();
 }
 
 void ScenePanel::Input(GLFWwindow *window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        Scene::SelectedGameObject = nullptr;
+    // if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    //     Scene::SelectedGameObject = nullptr;
 
     auto isUsingMouse = ImGuizmo::IsUsing() || _camera.IsMouseLocked();
 
@@ -95,21 +95,23 @@ void ScenePanel::Resize(float width, float height)
 
 void ScenePanel::OnMouseClick()
 {
-    if (Scene::SelectedGameObject && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
-        return;
+    return;
+
+    // if (Scene::SelectedGameObject && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
+    //     return;
 
     _pickingBuffer.Bind();
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 0; i < Scene::GameObjects.size(); ++i)
-    {
-        // auto &gameObject = Game::GameObjects[i];
-        // _pickingShader.Bind();
-        // _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(i));
-        // gameObject.Render(_pickingShader);
-    }
+    // for (int i = 0; i < Scene::GameObjects.size(); ++i)
+    // {
+    //     auto &gameObject = Game::GameObjects[i];
+    //     _pickingShader.Bind();
+    //     _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(i));
+    //     gameObject.Render(_pickingShader);
+    // }
 
     auto [mouseX, mouseY] = ImGui::GetMousePos();
     mouseX -= _viewPortBounds[0].x;
@@ -117,11 +119,11 @@ void ScenePanel::OnMouseClick()
     glm::vec2 viewportSize = _viewPortBounds[1] - _viewPortBounds[0];
     mouseY = viewportSize.y - mouseY;
 
-    if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
-    {
-        auto index = _pickingBuffer.DecodePixel(mouseX, mouseY);
-        Scene::SelectedGameObject = index != -1 ? &Scene::GameObjects[index] : nullptr;
-    }
+    // if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+    // {
+    //     auto index = _pickingBuffer.DecodePixel(mouseX, mouseY);
+    //     Scene::SelectedGameObject = index != -1 ? &Scene::GameObjects[index] : nullptr;
+    // }
 
     _pickingBuffer.Unbind();
 }

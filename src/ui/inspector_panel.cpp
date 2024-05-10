@@ -19,9 +19,9 @@ void InspectorPanel::Render()
 {
     ImGui::Begin("Inspector");
 
-    if (Scene::SelectedGameObject)
-    {
-    }
+    // if (Scene::SelectedGameObject)
+    // {
+    // }
 
     ImGui::End();
 }
