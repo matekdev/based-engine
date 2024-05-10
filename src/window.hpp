@@ -1,7 +1,7 @@
 #pragma once
 
 #include "render/opengl_context.hpp"
-#include "render/ui_context.hpp"
+#include "ui/ui_context.hpp"
 
 #include "ui/scene_panel.hpp"
 #include "ui/console_panel.hpp"
