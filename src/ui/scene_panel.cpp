@@ -49,37 +49,6 @@ void ScenePanel::Render(GLFWwindow *window)
 
     if (Game::SelectedGameObject)
     {
-        ImGuizmo::SetOrthographic(false);
-        ImGuizmo::SetDrawlist();
-        ImGuizmo::SetRect(_viewPortBounds[0].x, _viewPortBounds[0].y, _viewPortBounds[1].x - _viewPortBounds[0].x, _viewPortBounds[1].y - _viewPortBounds[0].y);
-
-        auto shouldSnap = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
-        float snapValue = 0.5f; // Snap to 0.5m for translation/scale
-        if (_activeGizmo == ImGuizmo::OPERATION::ROTATE)
-            snapValue = 45.0f;
-
-        float snapValues[3] = {snapValue, snapValue, snapValue};
-
-        glm::mat4 transform = Game::SelectedGameObject->GetTransform();
-        ImGuizmo::Manipulate(glm::value_ptr(_camera.GetViewMatrix()),
-                             glm::value_ptr(_camera.GetProjectionMatrix()),
-                             _activeGizmo, ImGuizmo::WORLD,
-                             glm::value_ptr(transform),
-                             nullptr,
-                             shouldSnap ? snapValues : nullptr,
-                             nullptr,
-                             nullptr);
-
-        if (ImGuizmo::IsUsing())
-        {
-            glm::vec3 position, rotation, scale;
-            DecomposeTransform(transform, position, rotation, scale);
-
-            glm::vec3 deltaRotation = rotation - Game::SelectedGameObject->Rotation;
-            Game::SelectedGameObject->Position = position;
-            Game::SelectedGameObject->Rotation += deltaRotation;
-            Game::SelectedGameObject->Scale = scale;
-        }
     }
 
     ImGui::End();
@@ -94,11 +63,6 @@ void ScenePanel::RenderPass()
 
     for (auto &gameObject : Game::GameObjects)
     {
-        if (Game::SelectedGameObject == &gameObject)
-            gameObject.RenderOutline(_outlineShader);
-
-        auto &shader = gameObject.GetType() == GameObject::Type::Model ? _modelShader : _lightShader;
-        gameObject.Render(shader);
     }
 
     _frameBuffer.Unbind();
@@ -119,21 +83,6 @@ void ScenePanel::Input(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && !isUsingMouse)
         _activeGizmo = ImGuizmo::OPERATION::SCALE;
-
-    if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS && Game::SelectedGameObject)
-    {
-        Game::SelectedGameObject->Dispose();
-        Game::GameObjects.erase(
-            std::remove_if(
-                Game::GameObjects.begin(),
-                Game::GameObjects.end(),
-                [](GameObject &obj)
-                {
-                    return &obj == Game::SelectedGameObject;
-                }),
-            Game::GameObjects.end());
-        Game::SelectedGameObject = nullptr;
-    }
 }
 
 void ScenePanel::Resize(float width, float height)
@@ -156,10 +105,10 @@ void ScenePanel::OnMouseClick()
 
     for (int i = 0; i < Game::GameObjects.size(); ++i)
     {
-        auto &gameObject = Game::GameObjects[i];
-        _pickingShader.Bind();
-        _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(i));
-        gameObject.Render(_pickingShader);
+        // auto &gameObject = Game::GameObjects[i];
+        // _pickingShader.Bind();
+        // _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(i));
+        // gameObject.Render(_pickingShader);
     }
 
     auto [mouseX, mouseY] = ImGui::GetMousePos();

@@ -26,36 +26,5 @@ void ObjectsPanel::Render()
 {
     ImGui::Begin("Objects");
 
-    if (ImGui::Button("Create GameObject", ImVec2(ImGui::GetContentRegionMax().x, 30.0f)))
-        ImGui::OpenPopup("create_menu");
-    if (ImGui::BeginPopup("create_menu"))
-    {
-        for (auto &path : _modelPaths)
-        {
-            auto fileName = path.substr(path.find_last_of("\\") + 1);
-            if (ImGui::Button(fileName.c_str(), ImVec2(ImGui::GetContentRegionAvail().x, 20.0f)))
-            {
-                // Unique case for light, this could be written better!
-                auto isLight = path.contains("light");
-                Game::GameObjects.push_back(GameObject(path, isLight ? GameObject::Type::Light : GameObject::Type::Model));
-                Game::SelectedGameObject = &Game::GameObjects.back();
-                ImGui::CloseCurrentPopup();
-            }
-        }
-        ImGui::EndPopup();
-    }
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    for (auto &gameObject : Game::GameObjects)
-    {
-        if (ImGui::Selectable(gameObject.Name.c_str(), Game::SelectedGameObject == &gameObject))
-        {
-            Game::SelectedGameObject = &gameObject;
-        }
-    }
-
     ImGui::End();
 }
