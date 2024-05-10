@@ -1,6 +1,6 @@
 #include "objects_panel.hpp"
 
-#include "game.hpp"
+#include "scene.hpp"
 
 #include "imgui.h"
 #include "imgui_stdlib.h"

@@ -1,6 +1,6 @@
 #include "window.hpp"
 
-#include "game.hpp"
+#include "scene.hpp"
 #include "glfw_input.hpp"
 
 Window::Window(int width, int height, const std::string &windowTitle) : _width(width), _height(height)
@@ -40,7 +40,7 @@ void Window::Run()
 {
     while (!glfwWindowShouldClose(_glfwWindow))
     {
-        Game::CalculateDeltaTime();
+        Scene::CalculateDeltaTime();
 
         _glContext->PreRender();
         _uiContext->PreRender();

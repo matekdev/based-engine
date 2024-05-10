@@ -2,8 +2,8 @@
 
 #include "render/frame_buffer.hpp"
 #include "render/shader.hpp"
-#include "render/camera.hpp"
-#include "render/game_object/game_object.hpp"
+#include "camera/camera.hpp"
+#include "game_object/game_object.hpp"
 #include "ui/components/gizmo.hpp"
 
 #include <vector>

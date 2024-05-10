@@ -1,6 +1,6 @@
 #include "inspector_panel.hpp"
 
-#include "game.hpp"
+#include "scene.hpp"
 #include "components/vec3_control.hpp"
 
 #include "imgui.h"
@@ -19,7 +19,7 @@ void InspectorPanel::Render()
 {
     ImGui::Begin("Inspector");
 
-    if (Game::SelectedGameObject)
+    if (Scene::SelectedGameObject)
     {
     }
 

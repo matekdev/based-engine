@@ -1,6 +1,6 @@
-#include "game.hpp"
+#include "scene.hpp"
 
-void Game::CalculateDeltaTime()
+void Scene::CalculateDeltaTime()
 {
     auto currentFrame = glfwGetTime();
     DeltaTime = currentFrame - _previousFrameTime;

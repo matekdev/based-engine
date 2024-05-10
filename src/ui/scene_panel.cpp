@@ -1,7 +1,7 @@
 #include "scene_panel.hpp"
 
 #include "log.hpp"
-#include "game.hpp"
+#include "scene.hpp"
 #include "math/math.hpp"
 
 #include "imgui.h"
@@ -47,7 +47,7 @@ void ScenePanel::Render(GLFWwindow *window)
     _viewPortBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
     _viewPortBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
 
-    if (Game::SelectedGameObject)
+    if (Scene::SelectedGameObject)
     {
     }
 
@@ -61,7 +61,7 @@ void ScenePanel::RenderPass()
     glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (auto &gameObject : Game::GameObjects)
+    for (auto &gameObject : Scene::GameObjects)
     {
     }
 
@@ -71,7 +71,7 @@ void ScenePanel::RenderPass()
 void ScenePanel::Input(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        Game::SelectedGameObject = nullptr;
+        Scene::SelectedGameObject = nullptr;
 
     auto isUsingMouse = ImGuizmo::IsUsing() || _camera.IsMouseLocked();
 
@@ -95,7 +95,7 @@ void ScenePanel::Resize(float width, float height)
 
 void ScenePanel::OnMouseClick()
 {
-    if (Game::SelectedGameObject && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
+    if (Scene::SelectedGameObject && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
         return;
 
     _pickingBuffer.Bind();
@@ -103,7 +103,7 @@ void ScenePanel::OnMouseClick()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 0; i < Game::GameObjects.size(); ++i)
+    for (int i = 0; i < Scene::GameObjects.size(); ++i)
     {
         // auto &gameObject = Game::GameObjects[i];
         // _pickingShader.Bind();
@@ -120,7 +120,7 @@ void ScenePanel::OnMouseClick()
     if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
     {
         auto index = _pickingBuffer.DecodePixel(mouseX, mouseY);
-        Game::SelectedGameObject = index != -1 ? &Game::GameObjects[index] : nullptr;
+        Scene::SelectedGameObject = index != -1 ? &Scene::GameObjects[index] : nullptr;
     }
 
     _pickingBuffer.Unbind();
