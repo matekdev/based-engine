@@ -1,7 +1,15 @@
 #include "scene.hpp"
 
-Scene::Scene() : _scenePanel()
+#include "game_object/game_object.hpp"
+
+Scene::Scene() : _scenePanel{}
 {
+    ActiveScene = this;
+}
+
+void Scene::CreateGameObject()
+{
+    GameObject gameObject = GameObject(_registry.create(), this);
 }
 
 void Scene::Render(GLFWwindow *window)
