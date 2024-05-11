@@ -4,6 +4,8 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
+#include "ui/icon.hpp"
+#include "ui/icon_brands.hpp"
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
@@ -28,7 +30,7 @@ void InspectorPanel::Render()
     if (selectedEntity.has_value())
     {
         auto info = Scene::ActiveScene->Registry.try_get<InfoComponent>(selectedEntity.value());
-        if (info && ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_DefaultOpen))
+        if (info && ImGui::CollapsingHeader(ICON_FA_CIRCLE_INFO " Info", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::PushItemWidth(-1);
             ImGui::InputText("##label", &info->Name);
@@ -36,7 +38,7 @@ void InspectorPanel::Render()
         }
 
         auto transform = Scene::ActiveScene->Registry.try_get<TransformComponent>(selectedEntity.value());
-        if (transform && ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+        if (transform && ImGui::CollapsingHeader(ICON_FA_UNITY " Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             auto floatMin = std::numeric_limits<float>::min();
             auto floatMax = -std::numeric_limits<float>::max();

@@ -1,4 +1,4 @@
-#include "objects_panel.hpp"
+#include "entities_panel.hpp"
 
 #include "scene.hpp"
 #include "component/info_component.hpp"
@@ -9,15 +9,16 @@
 #include "imgui_impl_opengl3.h"
 
 #include "log.hpp"
+#include "ui/icon.hpp"
 
 #include <string>
 #include <filesystem>
 
-ObjectsPanel::ObjectsPanel()
+EntitiesPanel::EntitiesPanel()
 {
 }
 
-void ObjectsPanel::Render()
+void EntitiesPanel::Render()
 {
     ImGui::Begin("Entities");
 
@@ -27,7 +28,8 @@ void ObjectsPanel::Render()
         auto info = group.get<InfoComponent>(entity);
         ImGui::PushID(info.Id);
 
-        if (ImGui::Selectable(info.Name.c_str(), Scene::ActiveScene->SelectedEntity.has_value() && Scene::ActiveScene->SelectedEntity.value() == entity))
+        auto name = std::string(ICON_FA_CUBE) + " " + info.Name;
+        if (ImGui::Selectable(name.c_str(), Scene::ActiveScene->SelectedEntity.has_value() && Scene::ActiveScene->SelectedEntity.value() == entity))
         {
             Scene::ActiveScene->SelectedEntity = entity;
         }

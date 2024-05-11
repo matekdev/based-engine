@@ -31,6 +31,7 @@ UIContext::UIContext(Window *window)
     config.GlyphMinAdvanceX = 13.0f;
     static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
     io.Fonts->AddFontFromFileTTF("font/fa-regular-400.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("font/fa-brands-400.ttf", 13.0f, &config, icon_ranges);
     io.Fonts->AddFontFromFileTTF("font/fa-solid-900.ttf", 13.0f, &config, icon_ranges);
 
     auto &colors = ImGui::GetStyle().Colors;

@@ -6,7 +6,7 @@
 
 #include "ui/scene_panel.hpp"
 #include "ui/console_panel.hpp"
-#include "ui/objects_panel.hpp"
+#include "ui/entities_panel.hpp"
 #include "ui/inspector_panel.hpp"
 
 #include <glad/glad.h>
@@ -34,7 +34,7 @@ private:
     std::unique_ptr<Scene> _scene;
 
     std::unique_ptr<ConsolePanel> _consolePanel;
-    std::unique_ptr<ObjectsPanel> _objectsPanel;
+    std::unique_ptr<EntitiesPanel> _entitiesPanel;
     std::unique_ptr<InspectorPanel> _inspectorPanel;
 
     int _width;

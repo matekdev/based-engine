@@ -3,10 +3,10 @@
 #include <vector>
 #include <string>
 
-class ObjectsPanel
+class EntitiesPanel
 {
 public:
-    ObjectsPanel();
+    EntitiesPanel();
 
     void Render();
 };

@@ -26,7 +26,7 @@ Window::Window(int width, int height, const std::string &windowTitle) : _width(w
     _scene = std::make_unique<Scene>();
 
     _consolePanel = std::make_unique<ConsolePanel>();
-    _objectsPanel = std::make_unique<ObjectsPanel>();
+    _entitiesPanel = std::make_unique<EntitiesPanel>();
     _inspectorPanel = std::make_unique<InspectorPanel>();
 }
 
@@ -46,7 +46,7 @@ void Window::Run()
         _scene->Render(GetNativeWindow());
 
         _consolePanel->Render();
-        _objectsPanel->Render();
+        _entitiesPanel->Render();
         _inspectorPanel->Render();
 
         _uiContext->PostRender();
