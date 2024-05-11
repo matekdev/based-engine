@@ -7,13 +7,14 @@ Scene::Scene() : _scenePanel{}
 {
     ActiveScene = this;
 
+    CreateNewEntity();
+}
+
+void Scene::CreateNewEntity()
+{
     auto ent = Registry.create();
     Registry.emplace<InfoComponent>(ent);
     Registry.emplace<TransformComponent>(ent);
-
-    auto n2 = Registry.create();
-    Registry.emplace<InfoComponent>(n2);
-    Registry.emplace<TransformComponent>(n2);
 }
 
 void Scene::Render(GLFWwindow *window)

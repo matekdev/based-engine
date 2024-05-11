@@ -10,6 +10,7 @@
 
 #include "log.hpp"
 #include "ui/icon.hpp"
+#include "ui/icon_brands.hpp"
 
 #include <string>
 #include <filesystem>

@@ -19,6 +19,7 @@ public:
     std::optional<entt::entity> SelectedEntity;
     entt::registry Registry;
 
+    void CreateNewEntity();
     void Render(GLFWwindow *window);
     float GetDeltaTime();
 
