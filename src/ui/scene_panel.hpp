@@ -36,4 +36,6 @@ private:
 
     void PickingPass();
     void RenderPass();
+
+    void HandleGizmo(GLFWwindow *window);
 };
