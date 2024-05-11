@@ -1,6 +1,7 @@
 #include "ui_context.hpp"
 
 #include "window.hpp"
+#include "ui/icon.hpp"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -24,6 +25,13 @@ UIContext::UIContext(Window *window)
     float fontSize = 18.0f; // *2.0f;
     io.Fonts->AddFontFromFileTTF("font/Poppins-Bold.ttf", fontSize);
     io.FontDefault = io.Fonts->AddFontFromFileTTF("font/Poppins-Regular.ttf", fontSize);
+
+    ImFontConfig config;
+    config.MergeMode = true;
+    config.GlyphMinAdvanceX = 13.0f;
+    static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+    io.Fonts->AddFontFromFileTTF("font/fa-regular-400.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("font/fa-solid-900.ttf", 13.0f, &config, icon_ranges);
 
     auto &colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
