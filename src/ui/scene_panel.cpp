@@ -31,7 +31,11 @@ void ScenePanel::Render(GLFWwindow *window)
 
     RenderPass();
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Scene");
+    ImGui::PopStyleVar(3);
 
     auto panelSize = ImGui::GetContentRegionAvail();
     if (panelSize.x != _width || panelSize.y != _height)
