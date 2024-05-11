@@ -47,7 +47,34 @@ void InspectorPanel::Render()
             ImGui::DragFloat3("Rotation", glm::value_ptr(transform->Rotation), 0.05f, floatMin, floatMax);
             ImGui::DragFloat3("Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
         }
+
+        ImGui::Spacing();
+        ImGui::Spacing();
+        ImGui::Spacing();
+
+        if (ImGui::Button(ICON_FA_CIRCLE_PLUS " Add Component", ImVec2(-1, 0)))
+            ImGui::OpenPopup("AddComponent");
+
+        if (ImGui::BeginPopup("AddComponent"))
+        {
+            DisplayAddComponentEntry<TransformComponent>("Transform Component");
+            ImGui::EndPopup();
+        }
     }
 
     ImGui::End();
+}
+
+template <typename T>
+void InspectorPanel::DisplayAddComponentEntry(const std::string &name)
+{
+    auto selectedEntity = Scene::ActiveScene->SelectedEntity;
+    if (!Scene::ActiveScene->Registry.any_of<T>(selectedEntity.value()))
+    {
+        if (ImGui::MenuItem(name.c_str()))
+        {
+            Scene::ActiveScene->Registry.emplace<T>(selectedEntity.value());
+            ImGui::CloseCurrentPopup();
+        }
+    }
 }
