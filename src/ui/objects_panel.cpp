@@ -19,16 +19,20 @@ ObjectsPanel::ObjectsPanel()
 
 void ObjectsPanel::Render()
 {
-    ImGui::Begin("Objects");
+    ImGui::Begin("Entities");
 
     auto group = Scene::ActiveScene->Registry.view<InfoComponent>();
     for (auto entity : group)
     {
         auto info = group.get<InfoComponent>(entity);
+        ImGui::PushID(info.Id);
+
         if (ImGui::Selectable(info.Name.c_str(), Scene::ActiveScene->SelectedEntity.has_value() && Scene::ActiveScene->SelectedEntity.value() == entity))
         {
             Scene::ActiveScene->SelectedEntity = entity;
         }
+
+        ImGui::PopID();
     }
 
     ImGui::End();
