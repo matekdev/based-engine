@@ -63,6 +63,14 @@ UIContext::UIContext(Window *window)
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
+    style.WindowPadding = ImVec2(12.00f, 8.00f);
+    style.ItemSpacing = ImVec2(7.00f, 3.00f);
+    style.GrabMinSize = 20.00f;
+    style.WindowRounding = 8.00f;
+    style.FrameBorderSize = 0.00f;
+    style.FrameRounding = 4.00f;
+    style.GrabRounding = 12.00f;
+
     ImGui_ImplGlfw_InitForOpenGL(window->GetNativeWindow(), true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
