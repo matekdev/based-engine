@@ -1,7 +1,6 @@
 #include "inspector_panel.hpp"
 
 #include "scene.hpp"
-#include "ui/components/vec3_control.hpp"
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
@@ -29,9 +28,12 @@ void InspectorPanel::Render()
     if (selectedEntity.has_value())
     {
         auto info = Scene::ActiveScene->Registry.try_get<InfoComponent>(selectedEntity.value());
-        ImGui::PushItemWidth(-1);
-        ImGui::InputText("##label", &info->Name);
-        ImGui::PopItemWidth();
+        if (info && ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::PushItemWidth(-1);
+            ImGui::InputText("##label", &info->Name);
+            ImGui::PopItemWidth();
+        }
 
         auto transform = Scene::ActiveScene->Registry.try_get<TransformComponent>(selectedEntity.value());
         if (transform && ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
@@ -39,9 +41,9 @@ void InspectorPanel::Render()
             auto floatMin = std::numeric_limits<float>::min();
             auto floatMax = -std::numeric_limits<float>::max();
 
-            DrawVec3Control("Position", transform->Position, 0.0f, 100.0f);
-            DrawVec3Control("Rotation", transform->Rotation, 0.0f, 100.0f);
-            DrawVec3Control("Scale", transform->Scale, 1.0f, 100.0f);
+            ImGui::DragFloat3("Position", glm::value_ptr(transform->Position), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3("Rotation", glm::value_ptr(transform->Rotation), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3("Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
         }
     }
 
