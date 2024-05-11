@@ -64,6 +64,9 @@ UIContext::UIContext(Window *window)
     colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
     colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
+    // Popup
+    colors[ImGuiCol_PopupBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+
     ImGuiStyle &style = ImGui::GetStyle();
     style.WindowMinSize = ImVec2(100, 100);
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -79,6 +82,7 @@ UIContext::UIContext(Window *window)
     style.FrameBorderSize = 0.00f;
     style.FrameRounding = 4.00f;
     style.GrabRounding = 12.00f;
+    style.PopupRounding = 4.00f;
 
     ImGui_ImplGlfw_InitForOpenGL(window->GetNativeWindow(), true);
     ImGui_ImplOpenGL3_Init(glsl_version);
