@@ -4,6 +4,8 @@
 #include "scene.hpp"
 #include "math/math.hpp"
 
+#include "component/transform_component.hpp"
+
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "imgui_impl_glfw.h"
@@ -47,9 +49,41 @@ void ScenePanel::Render(GLFWwindow *window)
     _viewPortBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
     _viewPortBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
 
-    // if (Scene::SelectedGameObject)
-    // {
-    // }
+    if (Scene::ActiveScene->SelectedEntity.has_value())
+    {
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(_viewPortBounds[0].x, _viewPortBounds[0].y, _viewPortBounds[1].x - _viewPortBounds[0].x, _viewPortBounds[1].y - _viewPortBounds[0].y);
+
+        auto shouldSnap = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
+        float snapValue = 0.5f; // Snap to 0.5m for translation/scale
+        if (_activeGizmo == ImGuizmo::OPERATION::ROTATE)
+            snapValue = 45.0f;
+
+        float snapValues[3] = {snapValue, snapValue, snapValue};
+
+        auto transformComponent = Scene::ActiveScene->Registry.try_get<TransformComponent>(Scene::ActiveScene->SelectedEntity.value());
+        auto transform = transformComponent->GetTransform();
+        ImGuizmo::Manipulate(glm::value_ptr(_camera.GetViewMatrix()),
+                             glm::value_ptr(_camera.GetProjectionMatrix()),
+                             _activeGizmo, ImGuizmo::WORLD,
+                             glm::value_ptr(transform),
+                             nullptr,
+                             shouldSnap ? snapValues : nullptr,
+                             nullptr,
+                             nullptr);
+
+        if (ImGuizmo::IsUsing())
+        {
+            glm::vec3 position, rotation, scale;
+            DecomposeTransform(transform, position, rotation, scale);
+
+            glm::vec3 deltaRotation = rotation - transformComponent->Rotation;
+            transformComponent->Position = position;
+            transformComponent->Rotation += deltaRotation;
+            transformComponent->Scale = scale;
+        }
+    }
 
     ImGui::End();
 }
@@ -70,8 +104,8 @@ void ScenePanel::RenderPass()
 
 void ScenePanel::Input(GLFWwindow *window)
 {
-    // if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    //     Scene::SelectedGameObject = nullptr;
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        Scene::ActiveScene->SelectedEntity.reset();
 
     auto isUsingMouse = ImGuizmo::IsUsing() || _camera.IsMouseLocked();
 

@@ -1,6 +1,7 @@
 #include "objects_panel.hpp"
 
 #include "scene.hpp"
+#include "component/info_component.hpp"
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
@@ -14,17 +15,21 @@
 
 ObjectsPanel::ObjectsPanel()
 {
-    for (const auto &entry : std::filesystem::recursive_directory_iterator("models"))
-    {
-        // objs seem to import the best, but assimp supports everything so feel free to modify this.
-        if (entry.is_regular_file() && entry.path().extension() == ".obj")
-            _modelPaths.push_back(entry.path().string());
-    }
 }
 
 void ObjectsPanel::Render()
 {
     ImGui::Begin("Objects");
+
+    auto group = Scene::ActiveScene->Registry.view<InfoComponent>();
+    for (auto entity : group)
+    {
+        auto info = group.get<InfoComponent>(entity);
+        if (ImGui::Selectable(info.Name.c_str(), Scene::ActiveScene->SelectedEntity.has_value() && Scene::ActiveScene->SelectedEntity.value() == entity))
+        {
+            Scene::ActiveScene->SelectedEntity = entity;
+        }
+    }
 
     ImGui::End();
 }

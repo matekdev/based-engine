@@ -7,26 +7,23 @@
 
 #include <unordered_map>
 #include <vector>
-
-class GameObject;
+#include <optional>
 
 class Scene
 {
 public:
     Scene();
 
+    // Ideally this shouldn't be static and public... but I'm here to do graphics shit.
     static inline Scene *ActiveScene;
-
-    void CreateGameObject();
+    std::optional<entt::entity> SelectedEntity;
+    entt::registry Registry;
 
     void Render(GLFWwindow *window);
     float GetDeltaTime();
 
 private:
-    friend class GameObject;
-
     ScenePanel _scenePanel;
-    entt::registry _registry;
 
     float _previousFrameTime;
     static inline float _deltaTime;

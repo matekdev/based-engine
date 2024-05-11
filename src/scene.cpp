@@ -1,15 +1,15 @@
 #include "scene.hpp"
 
-#include "game_object/game_object.hpp"
+#include "component/info_component.hpp"
+#include "component/transform_component.hpp"
 
 Scene::Scene() : _scenePanel{}
 {
     ActiveScene = this;
-}
 
-void Scene::CreateGameObject()
-{
-    GameObject gameObject = GameObject(_registry.create(), this);
+    auto ent = Registry.create();
+    Registry.emplace<InfoComponent>(ent);
+    Registry.emplace<TransformComponent>(ent);
 }
 
 void Scene::Render(GLFWwindow *window)

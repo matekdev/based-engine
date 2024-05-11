@@ -9,7 +9,4 @@ public:
     ObjectsPanel();
 
     void Render();
-
-private:
-    std::vector<std::string> _modelPaths;
 };
