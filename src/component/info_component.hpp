@@ -1,16 +1,18 @@
 #pragma once
 
 #include <string>
+#include <random>
 
 class InfoComponent
 {
 public:
     std::string Name;
-    int Id;
+    uint64_t Id;
 
     InfoComponent();
 
 private:
-    // Someone else can implement a more sophisticated id system...
-    static inline int _id = 0;
+    static std::random_device _randomDevice;
+    static std::mt19937_64 _engine;
+    static std::uniform_int_distribution<uint64_t> uniformDistribution;
 };
