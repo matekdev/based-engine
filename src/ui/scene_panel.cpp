@@ -85,6 +85,12 @@ void ScenePanel::Input(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && !isUsingMouse)
         _activeGizmo = ImGuizmo::OPERATION::SCALE;
+
+    if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS && Scene::ActiveScene->SelectedEntity)
+    {
+        Scene::ActiveScene->Registry.destroy(Scene::ActiveScene->SelectedEntity.value());
+        Scene::ActiveScene->SelectedEntity.reset();
+    }
 }
 
 void ScenePanel::Resize(float width, float height)
