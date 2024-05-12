@@ -2,6 +2,7 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
+#include "component/model/model_component.hpp"
 
 Scene::Scene() : _scenePanel{}
 {
@@ -15,6 +16,7 @@ void Scene::CreateNewEntity()
     auto ent = Registry.create();
     Registry.emplace<InfoComponent>(ent);
     Registry.emplace<TransformComponent>(ent);
+    Registry.emplace<ModelComponent>(ent, ent);
 }
 
 void Scene::Render(GLFWwindow *window)

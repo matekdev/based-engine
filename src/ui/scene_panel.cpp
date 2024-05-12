@@ -5,6 +5,7 @@
 #include "math/math.hpp"
 
 #include "component/transform_component.hpp"
+#include "component/model/model_component.hpp"
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
@@ -59,9 +60,12 @@ void ScenePanel::RenderPass()
     glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // for (auto &gameObject : Scene::GameObjects)
-    // {
-    // }
+    auto group = Scene::ActiveScene->Registry.view<ModelComponent>();
+    for (auto entity : group)
+    {
+        auto &model = group.get<ModelComponent>(entity);
+        model.Render(_modelShader);
+    }
 
     _frameBuffer.Unbind();
 }

@@ -4,7 +4,7 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
-#include "component/model_component.hpp"
+#include "component/model/model_component.hpp"
 #include "ui/icon.hpp"
 #include "ui/icon_brands.hpp"
 
@@ -77,7 +77,7 @@ void InspectorPanel::DisplayAddComponentEntry(const std::string &name)
     {
         if (ImGui::MenuItem(name.c_str()))
         {
-            Scene::ActiveScene->Registry.emplace<T>(selectedEntity.value());
+            Scene::ActiveScene->Registry.emplace<T>(selectedEntity.value(), selectedEntity.value());
             ImGui::CloseCurrentPopup();
         }
     }
