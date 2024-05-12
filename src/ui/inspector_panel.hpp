@@ -11,5 +11,8 @@ public:
 
 private:
     template <typename T>
-    void DisplayAddComponentEntry(const std::string &name);
+    void RemoveComponentButton();
+
+    template <typename T>
+    void AddComponentEntry(const std::string &name);
 };

@@ -30,7 +30,7 @@ void InspectorPanel::Render()
 
     if (selectedEntity.has_value())
     {
-        if (ImGui::CollapsingHeader(ICON_FA_UNITY " Entity", ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::CollapsingHeader(ICON_FA_UNITY " Entity", ImGuiTreeNodeFlags_AllowOverlap))
         {
             auto info = Scene::ActiveScene->Registry.try_get<InfoComponent>(selectedEntity.value());
             ImGui::PushItemWidth(-1);
@@ -46,10 +46,14 @@ void InspectorPanel::Render()
         }
 
         auto model = Scene::ActiveScene->Registry.try_get<ModelComponent>(selectedEntity.value());
-        if (model && ImGui::CollapsingHeader(ICON_FA_PERSON " Model", ImGuiTreeNodeFlags_DefaultOpen))
+        if (model)
         {
-            if (ImGui::Button(ICON_FA_TRASH " Remove", ImVec2(-1, 0)))
-                Scene::ActiveScene->Registry.remove<ModelComponent>(selectedEntity.value());
+            auto isOpen = ImGui::CollapsingHeader(ICON_FA_PERSON " Model", ImGuiTreeNodeFlags_AllowOverlap);
+            RemoveComponentButton<ModelComponent>();
+
+            if (isOpen)
+            {
+            }
         }
 
         ImGui::Spacing();
@@ -61,7 +65,7 @@ void InspectorPanel::Render()
 
         if (ImGui::BeginPopup("AddComponent"))
         {
-            DisplayAddComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
+            AddComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
             ImGui::EndPopup();
         }
     }
@@ -70,7 +74,18 @@ void InspectorPanel::Render()
 }
 
 template <typename T>
-void InspectorPanel::DisplayAddComponentEntry(const std::string &name)
+void InspectorPanel::RemoveComponentButton()
+{
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::GetStyle().ItemSpacing.x - ImGui::GetFrameHeight());
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 18.0f);
+    if (ImGui::Button(ICON_FA_XMARK))
+        Scene::ActiveScene->Registry.remove<T>(Scene::ActiveScene->SelectedEntity.value());
+    ImGui::PopStyleVar();
+}
+
+template <typename T>
+void InspectorPanel::AddComponentEntry(const std::string &name)
 {
     auto selectedEntity = Scene::ActiveScene->SelectedEntity;
     if (!Scene::ActiveScene->Registry.any_of<T>(selectedEntity.value()))
