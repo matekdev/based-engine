@@ -31,6 +31,16 @@ ModelComponent::ModelComponent(const entt::entity &entity) : _entity(entity)
     ProcessNode(scene->mRootNode, scene);
 }
 
+ModelComponent::~ModelComponent()
+{
+    LOG(INFO) << "Deleting model";
+
+    for (auto &mesh : _meshes)
+    {
+        mesh.Delete();
+    }
+}
+
 void ModelComponent::Render(Shader &shader)
 {
     shader.Bind();

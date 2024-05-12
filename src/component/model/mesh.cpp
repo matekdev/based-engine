@@ -36,6 +36,15 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
     VertexCount = indices.size();
 }
 
+void Mesh::Delete()
+{
+    LOG(INFO) << "Deleting mesh";
+
+    glDeleteBuffers(1, &_vbo);
+    glDeleteBuffers(1, &_ebo);
+    glDeleteVertexArrays(1, &_vao);
+}
+
 void Mesh::Render(Shader &shader)
 {
     unsigned int diffuseNr = 1;

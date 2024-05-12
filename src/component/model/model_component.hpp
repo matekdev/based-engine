@@ -12,6 +12,8 @@ class ModelComponent
 {
 public:
     ModelComponent(const entt::entity &entity);
+    ~ModelComponent();
+    ModelComponent(const ModelComponent &) = delete;
 
     void Render(Shader &shader);
 
