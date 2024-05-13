@@ -32,8 +32,7 @@ private:
     glm::mat4 _viewProjectionMatrix;
     ImGuizmo::OPERATION _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
 
-    void PickingPass();
     void RenderPass();
-
     void HandleGizmo(GLFWwindow *window);
+    void PickingPass();
 };
