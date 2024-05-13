@@ -32,6 +32,11 @@ float Scene::GetDeltaTime()
     return _deltaTime;
 }
 
+void Scene::OnMouseClick()
+{
+    _scenePanel.OnMouseClick();
+}
+
 void Scene::CalculateDeltaTime()
 {
     auto currentFrame = glfwGetTime();

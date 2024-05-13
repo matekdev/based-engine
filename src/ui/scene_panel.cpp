@@ -5,8 +5,8 @@
 #include "math/math.hpp"
 
 #include "component/transform_component.hpp"
+#include "component/info_component.hpp"
 #include "component/model/model_component.hpp"
-
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "imgui_impl_glfw.h"
@@ -20,8 +20,6 @@
 ScenePanel::ScenePanel() : _frameBuffer(FrameBuffer()),
                            _pickingBuffer(FrameBuffer()), _camera(Camera()),
                            _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
-                           _lightShader(Shader("shaders/light.vert", "shaders/light.frag")),
-                           _outlineShader(Shader("shaders/model.vert", "shaders/outline.frag")),
                            _pickingShader(Shader("shaders/picking.vert", "shaders/picking.frag"))
 {
 }
@@ -103,23 +101,29 @@ void ScenePanel::Resize(float width, float height)
 
 void ScenePanel::OnMouseClick()
 {
-    return;
-
-    // if (Scene::SelectedGameObject && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
-    //     return;
+    if (Scene::ActiveScene->SelectedEntity && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
+        return;
 
     _pickingBuffer.Bind();
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // for (int i = 0; i < Scene::GameObjects.size(); ++i)
-    // {
-    //     auto &gameObject = Game::GameObjects[i];
-    //     _pickingShader.Bind();
-    //     _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(i));
-    //     gameObject.Render(_pickingShader);
-    // }
+    Scene::ActiveScene->Registry.sort<InfoComponent>([](const auto &lhs, const auto &rhs)
+                                                     { return lhs.Id < rhs.Id; });
+
+    auto entityIndex = 0;
+    auto group = Scene::ActiveScene->Registry.view<ModelComponent>();
+    for (auto entity : group)
+    {
+        _pickingShader.Bind();
+        _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(entityIndex));
+
+        auto &model = group.get<ModelComponent>(entity);
+        model.Render(_pickingShader);
+
+        entityIndex += 1;
+    }
 
     auto [mouseX, mouseY] = ImGui::GetMousePos();
     mouseX -= _viewPortBounds[0].x;
@@ -127,11 +131,24 @@ void ScenePanel::OnMouseClick()
     glm::vec2 viewportSize = _viewPortBounds[1] - _viewPortBounds[0];
     mouseY = viewportSize.y - mouseY;
 
-    // if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
-    // {
-    //     auto index = _pickingBuffer.DecodePixel(mouseX, mouseY);
-    //     Scene::SelectedGameObject = index != -1 ? &Scene::GameObjects[index] : nullptr;
-    // }
+    entityIndex = 0;
+    if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+    {
+        auto indexSelected = _pickingBuffer.DecodePixel(mouseX, mouseY);
+        if (indexSelected == -1 && Scene::ActiveScene->SelectedEntity)
+            Scene::ActiveScene->SelectedEntity.reset();
+
+        for (auto entity : group)
+        {
+            if (indexSelected == entityIndex)
+            {
+                Scene::ActiveScene->SelectedEntity = entity;
+                break;
+            }
+
+            entityIndex += 1;
+        }
+    }
 
     _pickingBuffer.Unbind();
 }

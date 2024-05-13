@@ -22,6 +22,7 @@ public:
     void CreateNewEntity();
     void Render(GLFWwindow *window);
     float GetDeltaTime();
+    void OnMouseClick();
 
 private:
     ScenePanel _scenePanel;

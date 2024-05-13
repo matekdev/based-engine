@@ -15,7 +15,7 @@ public:
     void Unbind();
     GLuint GetTextureId();
     glm::vec3 EncodeId(int id);
-    int DecodePixel(float x, float y);
+    uint64_t DecodePixel(float x, float y);
 
 private:
     GLuint _fbo;

@@ -30,7 +30,8 @@ void InspectorPanel::Render()
 
     if (selectedEntity.has_value())
     {
-        if (ImGui::CollapsingHeader(ICON_FA_UNITY " Entity", ImGuiTreeNodeFlags_AllowOverlap))
+        auto flags = ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_DefaultOpen;
+        if (ImGui::CollapsingHeader(ICON_FA_UNITY " Entity", flags))
         {
             auto info = Scene::ActiveScene->Registry.try_get<InfoComponent>(selectedEntity.value());
             ImGui::PushItemWidth(-1);
@@ -48,7 +49,7 @@ void InspectorPanel::Render()
         auto model = Scene::ActiveScene->Registry.try_get<ModelComponent>(selectedEntity.value());
         if (model)
         {
-            auto isOpen = ImGui::CollapsingHeader(ICON_FA_PERSON " Model", ImGuiTreeNodeFlags_AllowOverlap);
+            auto isOpen = ImGui::CollapsingHeader(ICON_FA_PERSON " Model", flags);
             RemoveComponentButton<ModelComponent>();
 
             if (isOpen)
