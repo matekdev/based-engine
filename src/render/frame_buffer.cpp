@@ -74,7 +74,7 @@ glm::vec3 FrameBuffer::EncodeId(int id)
         static_cast<float>((id & 0x00FF0000) >> 16) / 255.0f);
 }
 
-uint64_t FrameBuffer::DecodePixel(float x, float y)
+int FrameBuffer::DecodePixel(float x, float y)
 {
     std::array<unsigned char, 4> byte;
     glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, byte.data());
