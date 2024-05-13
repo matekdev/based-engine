@@ -9,6 +9,9 @@ Scene::Scene() : _scenePanel{}
     ActiveScene = this;
 
     CreateNewEntity();
+    CreateNewEntity();
+    CreateNewEntity();
+    CreateNewEntity();
 }
 
 void Scene::CreateNewEntity()

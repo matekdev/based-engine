@@ -162,20 +162,16 @@ void ScenePanel::PickingPass()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Scene::ActiveScene->Registry.sort<InfoComponent>([](const auto &lhs, const auto &rhs)
-                                                     { return lhs.Id < rhs.Id; });
-
-    auto entityIndex = 0;
-    auto group = Scene::ActiveScene->Registry.view<ModelComponent>();
+    auto group = Scene::ActiveScene->Registry.view<ModelComponent, InfoComponent>();
     for (auto entity : group)
     {
+        auto &info = group.get<InfoComponent>(entity);
+
         _pickingShader.Bind();
-        _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(entityIndex));
+        _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(info.Id));
 
         auto &model = group.get<ModelComponent>(entity);
         model.Render(_pickingShader);
-
-        entityIndex += 1;
     }
 
     auto [mouseX, mouseY] = ImGui::GetMousePos();
@@ -184,23 +180,17 @@ void ScenePanel::PickingPass()
     glm::vec2 viewportSize = _viewPortBounds[1] - _viewPortBounds[0];
     mouseY = viewportSize.y - mouseY;
 
-    entityIndex = 0;
     if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
     {
-        auto indexSelected = _pickingBuffer.DecodePixel(mouseX, mouseY);
-        if (indexSelected == -1 && Scene::ActiveScene->SelectedEntity)
+        auto id = _pickingBuffer.DecodePixel(mouseX, mouseY);
+        auto it = std::find_if(std::begin(group), std::end(group), [&](const auto &entity)
+                               {
+                                auto &info = group.get<InfoComponent>(entity);
+                                return info.Id == id; });
+        if (it == std::end(group))
             Scene::ActiveScene->SelectedEntity.reset();
-
-        for (auto entity : group)
-        {
-            if (indexSelected == entityIndex)
-            {
-                Scene::ActiveScene->SelectedEntity = entity;
-                break;
-            }
-
-            entityIndex += 1;
-        }
+        else
+            Scene::ActiveScene->SelectedEntity = *it;
     }
 
     _pickingBuffer.Unbind();
