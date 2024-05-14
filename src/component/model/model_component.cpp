@@ -23,10 +23,14 @@ ModelComponent::~ModelComponent()
     DeleteModel();
 }
 
+std::string ModelComponent::GetLoadedModel()
+{
+    return _loadedModel;
+}
+
 void ModelComponent::LoadModel(const std::string &modelPath)
 {
     Assimp::Importer import;
-
     const aiScene *scene = import.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -35,7 +39,9 @@ void ModelComponent::LoadModel(const std::string &modelPath)
         return;
     }
 
-    _directory = modelPath.substr(0, modelPath.find_last_of('/'));
+    _loadedModel = modelPath;
+    _directory = modelPath.substr(0, modelPath.find_last_of('\\'));
+
     ProcessNode(scene->mRootNode, scene);
 }
 
@@ -45,6 +51,9 @@ void ModelComponent::DeleteModel()
     {
         mesh.Delete();
     }
+
+    _meshes.clear();
+    _loadedModel = "";
 }
 
 void ModelComponent::Render(Shader &shader)

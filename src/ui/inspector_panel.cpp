@@ -15,11 +15,18 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
+#include <filesystem>
 
 #include "log.hpp"
 
 InspectorPanel::InspectorPanel()
 {
+    for (const auto &entry : std::filesystem::recursive_directory_iterator("models"))
+    {
+        // objs seem to import the best, but assimp supports everything so feel free to modify this.
+        if (entry.is_regular_file() && entry.path().extension() == ".obj")
+            _modelPaths.push_back(entry.path().string());
+    }
 }
 
 void InspectorPanel::Render()
@@ -45,8 +52,29 @@ void InspectorPanel::Render()
             ImGui::DragFloat3("Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
         }
 
-        ComponentHeader<ModelComponent>(ICON_FA_PERSON " Model",
-                                        []() {});
+        ComponentHeader<ModelComponent>(
+            ICON_FA_PERSON " Model",
+            [this](ModelComponent *model)
+            {
+                auto loadedPath = model->GetLoadedModel();
+                auto selectedModelName = !loadedPath.empty() ? loadedPath.substr(loadedPath.find_last_of('\\') + 1, loadedPath.size()) : "";
+                if (ImGui::BeginCombo(ICON_FA_FOLDER_OPEN " Filepath", selectedModelName.c_str()))
+                {
+                    for (const auto &path : _modelPaths)
+                    {
+                        auto modelName = path.substr(path.find_last_of('\\') + 1, path.size());
+                        if (ImGui::Selectable(modelName.c_str(), loadedPath == path))
+                        {
+                            if (!loadedPath.empty())
+                                model->DeleteModel();
+
+                            model->LoadModel(path);
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
+            });
 
         ImGui::Spacing();
         ImGui::Spacing();
@@ -66,7 +94,7 @@ void InspectorPanel::Render()
 }
 
 template <typename T>
-void InspectorPanel::ComponentHeader(const std::string &name, const std::function<void()> &options)
+void InspectorPanel::ComponentHeader(const std::string &name, const std::function<void(T *)> &options)
 {
     auto flags = ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_DefaultOpen;
     auto selectedEntity = Scene::ActiveScene->SelectedEntity;
@@ -83,7 +111,7 @@ void InspectorPanel::ComponentHeader(const std::string &name, const std::functio
         ImGui::PopStyleVar();
 
         if (isOpen)
-            options();
+            options(component);
     }
 }
 
