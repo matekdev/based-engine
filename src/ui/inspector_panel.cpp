@@ -88,17 +88,6 @@ void InspectorPanel::ComponentHeader(const std::string &name, const std::functio
 }
 
 template <typename T>
-void InspectorPanel::RemoveComponentButton()
-{
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::GetStyle().ItemSpacing.x - ImGui::GetFrameHeight());
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 18.0f);
-    if (ImGui::Button(ICON_FA_XMARK))
-        Scene::ActiveScene->Registry.remove<T>(Scene::ActiveScene->SelectedEntity.value());
-    ImGui::PopStyleVar();
-}
-
-template <typename T>
 void InspectorPanel::AddComponentEntry(const std::string &name)
 {
     auto selectedEntity = Scene::ActiveScene->SelectedEntity;
