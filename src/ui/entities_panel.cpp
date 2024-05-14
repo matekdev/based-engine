@@ -23,6 +23,12 @@ void EntitiesPanel::Render()
 {
     ImGui::Begin("Entities");
 
+    if (ImGui::Button(ICON_FA_CIRCLE_PLUS " Add Entity", ImVec2(-1, 0)))
+        Scene::ActiveScene->CreateNewEntity();
+
+    ImGui::Separator();
+    ImGui::Spacing();
+
     auto group = Scene::ActiveScene->Registry.view<InfoComponent>();
     for (auto entity : group)
     {
