@@ -38,7 +38,8 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 
 void Mesh::Delete()
 {
-    LOG(INFO) << "Deleting mesh";
+    if (!_vbo)
+        return;
 
     glDeleteBuffers(1, &_vbo);
     glDeleteBuffers(1, &_ebo);

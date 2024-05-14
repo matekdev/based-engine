@@ -15,6 +15,8 @@ public:
     ~ModelComponent();
     ModelComponent(const ModelComponent &) = delete;
 
+    void LoadModel(const std::string &modelPath);
+    void DeleteModel();
     void Render(Shader &shader);
 
 private:

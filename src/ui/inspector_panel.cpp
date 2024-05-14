@@ -30,8 +30,7 @@ void InspectorPanel::Render()
 
     if (selectedEntity.has_value())
     {
-        auto flags = ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_DefaultOpen;
-        if (ImGui::CollapsingHeader(ICON_FA_UNITY " Entity", flags))
+        if (ImGui::CollapsingHeader(ICON_FA_UNITY " Entity", ImGuiTreeNodeFlags_DefaultOpen))
         {
             auto info = Scene::ActiveScene->Registry.try_get<InfoComponent>(selectedEntity.value());
             ImGui::PushItemWidth(-1);
@@ -46,16 +45,8 @@ void InspectorPanel::Render()
             ImGui::DragFloat3("Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
         }
 
-        auto model = Scene::ActiveScene->Registry.try_get<ModelComponent>(selectedEntity.value());
-        if (model)
-        {
-            auto isOpen = ImGui::CollapsingHeader(ICON_FA_PERSON " Model", flags);
-            RemoveComponentButton<ModelComponent>();
-
-            if (isOpen)
-            {
-            }
-        }
+        ComponentHeader<ModelComponent>(ICON_FA_PERSON " Model",
+                                        []() {});
 
         ImGui::Spacing();
         ImGui::Spacing();
@@ -72,6 +63,28 @@ void InspectorPanel::Render()
     }
 
     ImGui::End();
+}
+
+template <typename T>
+void InspectorPanel::ComponentHeader(const std::string &name, const std::function<void()> &options)
+{
+    auto flags = ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_DefaultOpen;
+    auto selectedEntity = Scene::ActiveScene->SelectedEntity;
+
+    auto component = Scene::ActiveScene->Registry.try_get<T>(selectedEntity.value());
+    if (component)
+    {
+        auto isOpen = ImGui::CollapsingHeader(name.c_str(), flags);
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::GetStyle().ItemSpacing.x - ImGui::GetFrameHeight());
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 18.0f);
+        if (ImGui::Button(ICON_FA_XMARK))
+            Scene::ActiveScene->Registry.remove<T>(Scene::ActiveScene->SelectedEntity.value());
+        ImGui::PopStyleVar();
+
+        if (isOpen)
+            options();
+    }
 }
 
 template <typename T>

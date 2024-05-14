@@ -16,10 +16,18 @@
 
 ModelComponent::ModelComponent(const entt::entity &entity) : _entity(entity)
 {
+}
+
+ModelComponent::~ModelComponent()
+{
+    DeleteModel();
+}
+
+void ModelComponent::LoadModel(const std::string &modelPath)
+{
     Assimp::Importer import;
 
-    std::string filePath = "models/hamster/hamster.obj";
-    const aiScene *scene = import.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene *scene = import.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -27,14 +35,12 @@ ModelComponent::ModelComponent(const entt::entity &entity) : _entity(entity)
         return;
     }
 
-    _directory = filePath.substr(0, filePath.find_last_of('/'));
+    _directory = modelPath.substr(0, modelPath.find_last_of('/'));
     ProcessNode(scene->mRootNode, scene);
 }
 
-ModelComponent::~ModelComponent()
+void ModelComponent::DeleteModel()
 {
-    LOG(INFO) << "Deleting model";
-
     for (auto &mesh : _meshes)
     {
         mesh.Delete();

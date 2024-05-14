@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 
 class InspectorPanel
@@ -10,6 +11,9 @@ public:
     void Render();
 
 private:
+    template <typename T>
+    void ComponentHeader(const std::string &name, const std::function<void()> &options);
+
     template <typename T>
     void RemoveComponentButton();
 
