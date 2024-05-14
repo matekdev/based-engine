@@ -48,20 +48,9 @@ void Mesh::Delete()
 
 void Mesh::Render(Shader &shader)
 {
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-
     for (int i = 0; i < _textures.size(); ++i)
     {
         glActiveTexture(GL_TEXTURE0 + i);
-        std::string number;
-        std::string name = _textures[i].Type;
-        if (name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
-            number = std::to_string(specularNr++);
-
-        shader.SetInt("material." + name + number, i); // TODO: double check.
         glBindTexture(GL_TEXTURE_2D, _textures[i].Id);
     }
 

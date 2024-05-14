@@ -9,7 +9,7 @@
 class Shader
 {
 public:
-    inline static const std::string HAS_TEXTURE = "HasTexture";
+    inline static const std::string HAS_TEXTURES = "HasTextures";
     inline static const std::string CAMERA_POSITION = "CameraPosition";
 
     inline static const std::string MATERIAL_AMBIENT = "MaterialSettings.Ambient";

@@ -61,7 +61,7 @@ void ModelComponent::Render(Shader &shader)
     shader.Bind();
     shader.SetVec3(Shader::CAMERA_POSITION, Camera::Instance->GetPosition());
     shader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
-    shader.SetBool(Shader::HAS_TEXTURE, _hasTextures);
+    shader.SetBool(Shader::HAS_TEXTURES, _hasTextures);
     shader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(_entity).GetTransform());
 
     for (auto &mesh : _meshes)
@@ -134,12 +134,6 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
     }
 
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-    // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-    // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER.
-    // Same applies to other texture as the following list summarizes:
-    // diffuse: texture_diffuseN
-    // specular: texture_specularN
-    // normal: texture_normalN
 
     // 1. diffuse maps
     std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -154,7 +148,8 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
     std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-    // return a mesh object created from the extracted mesh data
+    _hasTextures = !textures.empty();
+
     return Mesh(vertices, indices, textures);
 }
 
