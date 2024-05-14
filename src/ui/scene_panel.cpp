@@ -101,7 +101,8 @@ void ScenePanel::Resize(float width, float height)
 
 void ScenePanel::OnMouseClick()
 {
-    PickingPass();
+    if (!Scene::ActiveScene->SelectedEntity || (!ImGuizmo::IsUsing() && !ImGuizmo::IsOver()))
+        PickingPass();
 }
 
 void ScenePanel::HandleGizmo(GLFWwindow *window)
@@ -154,9 +155,6 @@ void ScenePanel::HandleGizmo(GLFWwindow *window)
 
 void ScenePanel::PickingPass()
 {
-    if (Scene::ActiveScene->SelectedEntity && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
-        return;
-
     _pickingBuffer.Bind();
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
