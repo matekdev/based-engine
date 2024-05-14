@@ -47,9 +47,9 @@ void InspectorPanel::Render()
             auto transform = Scene::ActiveScene->Registry.try_get<TransformComponent>(selectedEntity.value());
             auto floatMin = std::numeric_limits<float>::min();
             auto floatMax = -std::numeric_limits<float>::max();
-            ImGui::DragFloat3("Position", glm::value_ptr(transform->Position), 0.05f, floatMin, floatMax);
-            ImGui::DragFloat3("Rotation", glm::value_ptr(transform->Rotation), 0.05f, floatMin, floatMax);
-            ImGui::DragFloat3("Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3(ICON_FA_ARROW_UP_RIGHT_FROM_SQUARE " Position", glm::value_ptr(transform->Position), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3(ICON_FA_ARROWS_ROTATE " Rotation", glm::value_ptr(transform->Rotation), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3(ICON_FA_MAGNIFYING_GLASS_PLUS " Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
         }
 
         ComponentHeader<ModelComponent>(
@@ -58,7 +58,7 @@ void InspectorPanel::Render()
             {
                 auto loadedPath = model->GetLoadedModel();
                 auto selectedModelName = !loadedPath.empty() ? loadedPath.substr(loadedPath.find_last_of('\\') + 1, loadedPath.size()) : "";
-                if (ImGui::BeginCombo(ICON_FA_FOLDER_OPEN " Filepath", selectedModelName.c_str()))
+                if (ImGui::BeginCombo(ICON_FA_FOLDER_OPEN " Path", selectedModelName.c_str()))
                 {
                     for (const auto &path : _modelPaths)
                     {
