@@ -25,6 +25,7 @@ Window::Window(int width, int height, const std::string &windowTitle) : _width(w
     _uiContext = std::make_unique<UIContext>(this);
     _scene = std::make_unique<Scene>();
 
+    _scenePanel = std::make_unique<ScenePanel>();
     _consolePanel = std::make_unique<ConsolePanel>();
     _entitiesPanel = std::make_unique<EntitiesPanel>();
     _inspectorPanel = std::make_unique<InspectorPanel>();
@@ -44,6 +45,9 @@ void Window::Run()
         _uiContext->PreRender();
 
         _scene->Render(GetNativeWindow());
+
+        _scenePanel->Render(_glfwWindow);
+        _scenePanel->Input(_glfwWindow);
 
         _consolePanel->Render();
         _entitiesPanel->Render();
@@ -72,5 +76,5 @@ int Window::GetHeight()
 void Window::OnMouseClick(int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        _scene->OnMouseClick();
+        _scenePanel->OnMouseClick();
 }

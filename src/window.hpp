@@ -33,6 +33,7 @@ private:
     std::unique_ptr<UIContext> _uiContext;
     std::unique_ptr<Scene> _scene;
 
+    std::unique_ptr<ScenePanel> _scenePanel;
     std::unique_ptr<ConsolePanel> _consolePanel;
     std::unique_ptr<EntitiesPanel> _entitiesPanel;
     std::unique_ptr<InspectorPanel> _inspectorPanel;

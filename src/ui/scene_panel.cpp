@@ -17,9 +17,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 
-ScenePanel::ScenePanel() : _frameBuffer(FrameBuffer()),
-                           _pickingBuffer(FrameBuffer()), _camera(Camera()),
-                           _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
+ScenePanel::ScenePanel() : _pickingBuffer(FrameBuffer()),
                            _pickingShader(Shader("shaders/picking.vert", "shaders/picking.frag"))
 {
 }
@@ -28,44 +26,29 @@ void ScenePanel::Render(GLFWwindow *window)
 {
     ImGui::ShowDemoWindow();
 
-    RenderPass();
-
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Scene");
     ImGui::PopStyleVar(3);
 
+    auto scene = Scene::ActiveScene;
     auto panelSize = ImGui::GetContentRegionAvail();
     if (panelSize.x != _width || panelSize.y != _height)
+    {
+        scene->Resize(panelSize.x, panelSize.y);
         Resize(panelSize.x, panelSize.y);
+    }
 
-    uint64_t textureId = _frameBuffer.GetTextureId();
+    uint64_t textureId = scene->GetRenderTextureId();
     ImGui::Image(reinterpret_cast<void *>(textureId), ImVec2{_width, _height}, ImVec2{0, 1}, ImVec2{1, 0});
 
-    _camera.Input(panelSize.x, panelSize.y, window, ImGui::IsWindowHovered());
-    _camera.Update(panelSize.x, panelSize.y);
+    scene->GetCamera().Input(panelSize.x, panelSize.y, window, ImGui::IsWindowHovered());
+    scene->GetCamera().Update(panelSize.x, panelSize.y);
 
     HandleGizmo(window);
 
     ImGui::End();
-}
-
-void ScenePanel::RenderPass()
-{
-    _frameBuffer.Bind();
-
-    glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    auto group = Scene::ActiveScene->Registry.view<ModelComponent>();
-    for (auto entity : group)
-    {
-        auto &model = group.get<ModelComponent>(entity);
-        model.Render(_modelShader);
-    }
-
-    _frameBuffer.Unbind();
 }
 
 void ScenePanel::Input(GLFWwindow *window)
@@ -73,7 +56,7 @@ void ScenePanel::Input(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         Scene::ActiveScene->SelectedEntity.reset();
 
-    auto isUsingMouse = ImGuizmo::IsUsing() || _camera.IsMouseLocked();
+    auto isUsingMouse = ImGuizmo::IsUsing() || Scene::ActiveScene->GetCamera().IsMouseLocked();
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !isUsingMouse)
         _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
@@ -95,7 +78,6 @@ void ScenePanel::Resize(float width, float height)
 {
     _width = width;
     _height = height;
-    _frameBuffer.CreateBuffer(width, height);
     _pickingBuffer.CreateBuffer(width, height);
 }
 
@@ -132,8 +114,8 @@ void ScenePanel::HandleGizmo(GLFWwindow *window)
         return;
 
     auto transform = transformComponent->GetTransform();
-    ImGuizmo::Manipulate(glm::value_ptr(_camera.GetViewMatrix()),
-                         glm::value_ptr(_camera.GetProjectionMatrix()),
+    ImGuizmo::Manipulate(glm::value_ptr(Scene::ActiveScene->GetCamera().GetViewMatrix()),
+                         glm::value_ptr(Scene::ActiveScene->GetCamera().GetProjectionMatrix()),
                          _activeGizmo, ImGuizmo::WORLD,
                          glm::value_ptr(transform),
                          nullptr,

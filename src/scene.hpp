@@ -1,6 +1,8 @@
 #pragma once
 
-#include "ui/scene_panel.hpp"
+#include "render/frame_buffer.hpp"
+#include "render/shader.hpp"
+#include "camera/camera.hpp"
 
 #include <entt/entt.hpp>
 #include <GLFW/glfw3.h>
@@ -20,15 +22,24 @@ public:
     entt::registry Registry;
 
     void CreateNewEntity();
+    void Resize(float width, float height);
     void Render(GLFWwindow *window);
     float GetDeltaTime();
-    void OnMouseClick();
+
+    Camera &GetCamera();
+    GLuint GetRenderTextureId();
 
 private:
-    ScenePanel _scenePanel;
-
     float _previousFrameTime;
     static inline float _deltaTime;
+
+    FrameBuffer _frameBuffer;
+    FrameBuffer _pickingBuffer;
+
+    Shader _modelShader;
+
+    Camera _camera;
+    glm::mat4 _viewProjectionMatrix;
 
     void CalculateDeltaTime();
 };

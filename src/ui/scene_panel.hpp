@@ -22,17 +22,11 @@ private:
     float _width;
     float _height;
 
-    FrameBuffer _frameBuffer;
     FrameBuffer _pickingBuffer;
-
-    Shader _modelShader;
     Shader _pickingShader;
 
-    Camera _camera;
-    glm::mat4 _viewProjectionMatrix;
     ImGuizmo::OPERATION _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
 
-    void RenderPass();
     void HandleGizmo(GLFWwindow *window);
     void PickingPass();
 };
