@@ -37,6 +37,7 @@ private:
     FrameBuffer _pickingBuffer;
 
     Shader _modelShader;
+    Shader _lightShader;
 
     Camera _camera;
     glm::mat4 _viewProjectionMatrix;

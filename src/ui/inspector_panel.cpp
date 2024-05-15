@@ -4,6 +4,7 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
+#include "component/light_component.hpp"
 #include "component/model/model_component.hpp"
 #include "ui/icon.hpp"
 #include "ui/icon_brands.hpp"
@@ -16,6 +17,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
 #include <filesystem>
+#include <numeric>
 
 #include "log.hpp"
 
@@ -76,6 +78,12 @@ void InspectorPanel::Render()
                 }
             });
 
+        ComponentHeader<LightComponent>(
+            ICON_FA_LIGHTBULB " Light",
+            [this](LightComponent *light) {
+
+            });
+
         ImGui::Spacing();
         ImGui::Spacing();
         ImGui::Spacing();
@@ -86,6 +94,7 @@ void InspectorPanel::Render()
         if (ImGui::BeginPopup("AddComponent"))
         {
             AddComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
+            AddComponentEntry<LightComponent>(ICON_FA_LIGHTBULB " Light");
             ImGui::EndPopup();
         }
     }
@@ -102,13 +111,16 @@ void InspectorPanel::ComponentHeader(const std::string &name, const std::functio
     auto component = Scene::ActiveScene->Registry.try_get<T>(selectedEntity.value());
     if (component)
     {
+        auto id = std::accumulate(name.begin(), name.end(), 0);
         auto isOpen = ImGui::CollapsingHeader(name.c_str(), flags);
+        ImGui::PushID(id);
         ImGui::SameLine();
         ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::GetStyle().ItemSpacing.x - ImGui::GetFrameHeight());
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 18.0f);
         if (ImGui::Button(ICON_FA_XMARK))
             Scene::ActiveScene->Registry.remove<T>(Scene::ActiveScene->SelectedEntity.value());
         ImGui::PopStyleVar();
+        ImGui::PopID();
 
         if (isOpen)
             options(component);

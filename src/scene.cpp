@@ -2,11 +2,13 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
+#include "component/light_component.hpp"
 #include "component/model/model_component.hpp"
 
 Scene::Scene() : _camera(Camera()),
                  _frameBuffer(FrameBuffer()),
-                 _modelShader(Shader("shaders/model.vert", "shaders/model.frag"))
+                 _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
+                 _lightShader(Shader("shaders/model.vert", "shaders/light.frag"))
 {
     ActiveScene = this;
     CreateNewEntity();
@@ -34,11 +36,18 @@ void Scene::Render(GLFWwindow *window)
     glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    auto group = Scene::ActiveScene->Registry.view<ModelComponent>();
-    for (auto entity : group)
+    auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent>();
+    for (auto entity : modelGroup)
     {
-        auto &model = group.get<ModelComponent>(entity);
+        auto &model = modelGroup.get<ModelComponent>(entity);
         model.Render(_modelShader);
+    }
+
+    auto lightGroup = Scene::ActiveScene->Registry.view<LightComponent>();
+    for (auto entity : lightGroup)
+    {
+        auto &light = lightGroup.get<LightComponent>(entity);
+        light.Render(_lightShader);
     }
 
     _frameBuffer.Unbind();
