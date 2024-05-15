@@ -43,8 +43,9 @@ void ScenePanel::Render(GLFWwindow *window)
     uint64_t textureId = scene->GetRenderTextureId();
     ImGui::Image(reinterpret_cast<void *>(textureId), ImVec2{_width, _height}, ImVec2{0, 1}, ImVec2{1, 0});
 
-    scene->GetCamera().Input(panelSize.x, panelSize.y, window, ImGui::IsWindowHovered());
-    scene->GetCamera().Update(panelSize.x, panelSize.y);
+    auto &camera = scene->GetCamera();
+    camera.Input(panelSize.x, panelSize.y, window, ImGui::IsWindowHovered());
+    camera.Update(panelSize.x, panelSize.y);
 
     HandleGizmo(window);
 
@@ -95,7 +96,8 @@ void ScenePanel::HandleGizmo(GLFWwindow *window)
     _viewPortBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
     _viewPortBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
 
-    if (!Scene::ActiveScene->SelectedEntity.has_value())
+    auto scene = Scene::ActiveScene;
+    if (!scene->SelectedEntity.has_value())
         return;
 
     ImGuizmo::SetOrthographic(false);
@@ -109,13 +111,14 @@ void ScenePanel::HandleGizmo(GLFWwindow *window)
 
     float snapValues[3] = {snapValue, snapValue, snapValue};
 
-    auto transformComponent = Scene::ActiveScene->Registry.try_get<TransformComponent>(Scene::ActiveScene->SelectedEntity.value());
+    auto transformComponent = scene->Registry.try_get<TransformComponent>(scene->SelectedEntity.value());
     if (!transformComponent)
         return;
 
+    auto &camera = scene->GetCamera();
     auto transform = transformComponent->GetTransform();
-    ImGuizmo::Manipulate(glm::value_ptr(Scene::ActiveScene->GetCamera().GetViewMatrix()),
-                         glm::value_ptr(Scene::ActiveScene->GetCamera().GetProjectionMatrix()),
+    ImGuizmo::Manipulate(glm::value_ptr(camera.GetViewMatrix()),
+                         glm::value_ptr(camera.GetProjectionMatrix()),
                          _activeGizmo, ImGuizmo::WORLD,
                          glm::value_ptr(transform),
                          nullptr,
