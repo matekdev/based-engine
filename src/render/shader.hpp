@@ -9,18 +9,16 @@
 class Shader
 {
 public:
-    inline static const std::string HAS_TEXTURES = "HasTextures";
-    inline static const std::string CAMERA_POSITION = "CameraPosition";
+    static inline const std::string HAS_TEXTURES = "HasTextures";
+    static inline const std::string CAMERA_POSITION = "CameraPosition";
 
-    inline static const std::string MATERIAL_AMBIENT = "MaterialSettings.Ambient";
-    inline static const std::string MATERIAL_DIFFUSE = "MaterialSettings.Diffuse";
-    inline static const std::string MATERIAL_SPECULAR = "MaterialSettings.Specular";
-    inline static const std::string MATERIAL_SHININESS = "MaterialSettings.Shininess";
+    static inline const std::string LIGHT_COLOR = "LightColor";
+    static inline const std::string LIGHT_POSITION = "LightPosition";
 
-    inline static const std::string PICKING_COLOR = "PickingColor";
+    static inline const std::string PICKING_COLOR = "PickingColor";
 
-    inline static const std::string MODEL_MATRIX = "ModelMatrix";
-    inline static const std::string CAMERA_MATRIX = "CameraMatrix";
+    static inline const std::string MODEL_MATRIX = "ModelMatrix";
+    static inline const std::string CAMERA_MATRIX = "CameraMatrix";
 
     Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
 

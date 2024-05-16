@@ -11,7 +11,6 @@ Scene::Scene() : _camera(Camera()),
                  _lightShader(Shader("shaders/model.vert", "shaders/light.frag"))
 {
     ActiveScene = this;
-    CreateNewEntity();
 }
 
 void Scene::CreateNewEntity()
@@ -19,7 +18,7 @@ void Scene::CreateNewEntity()
     auto ent = Registry.create();
     Registry.emplace<InfoComponent>(ent);
     Registry.emplace<TransformComponent>(ent);
-    Registry.emplace<ModelComponent>(ent, ent);
+    SelectedEntity = ent;
 }
 
 void Scene::Resize(float width, float height)
@@ -43,11 +42,16 @@ void Scene::Render(GLFWwindow *window)
         model.Render(_modelShader);
     }
 
-    auto lightGroup = Scene::ActiveScene->Registry.view<LightComponent>();
+    auto lightGroup = Scene::ActiveScene->Registry.view<LightComponent, TransformComponent>();
     for (auto entity : lightGroup)
     {
         auto &light = lightGroup.get<LightComponent>(entity);
         light.Render(_lightShader);
+
+        auto &transform = lightGroup.get<TransformComponent>(entity);
+        _modelShader.SetVec3(Shader::LIGHT_POSITION, transform.Position);
+        _modelShader.SetVec3(Shader::LIGHT_COLOR, light.Color);
+        _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
     }
 
     _frameBuffer.Unbind();

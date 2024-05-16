@@ -8,6 +8,7 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <GLFW/glfw3.h>
 
+// Shouldn't this exist as a component? Probably, but this works for now.
 class Camera
 {
 public:
