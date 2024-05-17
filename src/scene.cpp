@@ -39,18 +39,32 @@ void Scene::Render(GLFWwindow *window)
     for (auto entity : modelGroup)
     {
         auto &model = modelGroup.get<ModelComponent>(entity);
-        model.Render(_modelShader);
+
+        _modelShader.Bind();
+        _modelShader.SetVec3(Shader::MATERIAL_AMBIENT, model.Ambient);
+        _modelShader.SetVec3(Shader::MATERIAL_DIFFUSE, model.Diffuse);
+        _modelShader.SetVec3(Shader::MATERIAL_SPECULAR, model.Specular);
+        _modelShader.SetFloat(Shader::MATERIAL_SHININESS, model.Shininess);
+
+        _modelShader.SetVec3(Shader::CAMERA_POSITION, Camera::Instance->GetPosition());
+        _modelShader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
+        _modelShader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(entity).GetTransform());
+        _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
+
+        model.RenderMesh();
     }
 
     auto lightGroup = Scene::ActiveScene->Registry.view<LightComponent, TransformComponent>();
     for (auto entity : lightGroup)
     {
         auto &light = lightGroup.get<LightComponent>(entity);
-        light.Render(_lightShader);
 
         auto &transform = lightGroup.get<TransformComponent>(entity);
+        _modelShader.Bind();
         _modelShader.SetVec3(Shader::LIGHT_POSITION, transform.Position);
-        _modelShader.SetVec3(Shader::LIGHT_COLOR, light.Color);
+        _modelShader.SetVec3(Shader::LIGHT_AMBIENT, light.Ambient);
+        _modelShader.SetVec3(Shader::LIGHT_DIFFUSE, light.Diffuse);
+        _modelShader.SetVec3(Shader::LIGHT_SPECULAR, light.Specular);
         _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
     }
 

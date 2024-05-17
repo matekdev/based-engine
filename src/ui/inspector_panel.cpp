@@ -76,12 +76,20 @@ void InspectorPanel::Render()
 
                     ImGui::EndCombo();
                 }
+
+                ImGui::DragFloat3(ICON_FA_SLIDERS " Ambient", glm::value_ptr(model->Ambient), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SLIDERS " Diffuse", glm::value_ptr(model->Diffuse), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SLIDERS " Specular", glm::value_ptr(model->Specular), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat(ICON_FA_SLIDERS " Shininess", &model->Shininess, 0.05f, 10.0f, 100.0f);
             });
 
         ComponentHeader<LightComponent>(
             ICON_FA_LIGHTBULB " Light",
-            [this](LightComponent *light) {
-
+            [this](LightComponent *light)
+            {
+                ImGui::DragFloat3(ICON_FA_SLIDERS " Ambient", glm::value_ptr(light->Ambient), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SLIDERS " Diffuse", glm::value_ptr(light->Diffuse), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SLIDERS " Specular", glm::value_ptr(light->Specular), 0.05f, 0.0, 1.0f);
             });
 
         ImGui::Spacing();

@@ -12,13 +12,21 @@ public:
     static inline const std::string HAS_TEXTURES = "HasTextures";
     static inline const std::string CAMERA_POSITION = "CameraPosition";
 
-    static inline const std::string LIGHT_COLOR = "LightColor";
-    static inline const std::string LIGHT_POSITION = "LightPosition";
-
     static inline const std::string PICKING_COLOR = "PickingColor";
 
     static inline const std::string MODEL_MATRIX = "ModelMatrix";
     static inline const std::string CAMERA_MATRIX = "CameraMatrix";
+
+    static inline const std::string MATERIAL_AMBIENT = "MaterialData.Ambient";
+    static inline const std::string MATERIAL_DIFFUSE = "MaterialData.Diffuse";
+    static inline const std::string MATERIAL_SPECULAR = "MaterialData.Specular";
+    static inline const std::string MATERIAL_SHININESS = "MaterialData.Shininess";
+
+    static inline const std::string LIGHT_POSITION = "LightData.Position";
+    static inline const std::string LIGHT_AMBIENT = "LightData.Ambient";
+    static inline const std::string LIGHT_DIFFUSE = "LightData.Diffuse";
+    static inline const std::string LIGHT_SPECULAR = "LightData.Specular";
+    static inline const std::string LIGHT_SHININESS = "LightData.Shininess";
 
     Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
 

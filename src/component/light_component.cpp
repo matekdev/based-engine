@@ -6,7 +6,3 @@
 LightComponent::LightComponent(const entt::entity &entity) : _entity(entity)
 {
 }
-
-void LightComponent::Render(Shader &shader)
-{
-}

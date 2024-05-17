@@ -46,7 +46,7 @@ void Mesh::Delete()
     glDeleteVertexArrays(1, &_vao);
 }
 
-void Mesh::Render(Shader &shader)
+void Mesh::Render()
 {
     for (int i = 0; i < _textures.size(); ++i)
     {

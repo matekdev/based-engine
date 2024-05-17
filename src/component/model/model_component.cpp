@@ -56,18 +56,17 @@ void ModelComponent::DeleteModel()
     _loadedModel = "";
 }
 
-void ModelComponent::Render(Shader &shader)
+void ModelComponent::RenderMesh()
 {
-    shader.Bind();
-    shader.SetVec3(Shader::CAMERA_POSITION, Camera::Instance->GetPosition());
-    shader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
-    shader.SetBool(Shader::HAS_TEXTURES, _hasTextures);
-    shader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(_entity).GetTransform());
-
     for (auto &mesh : _meshes)
     {
-        mesh.Render(shader);
+        mesh.Render();
     }
+}
+
+bool ModelComponent::HasTextures()
+{
+    return _hasTextures;
 }
 
 void ModelComponent::ProcessNode(aiNode *node, const aiScene *scene)

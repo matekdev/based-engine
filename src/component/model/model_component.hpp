@@ -11,6 +11,11 @@
 class ModelComponent
 {
 public:
+    glm::vec3 Ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 Diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 Specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    float Shininess = 32.0f;
+
     ModelComponent(const entt::entity &entity);
     ~ModelComponent();
     ModelComponent(const ModelComponent &) = delete;
@@ -19,7 +24,8 @@ public:
 
     void LoadModel(const std::string &modelPath);
     void DeleteModel();
-    void Render(Shader &shader);
+    void RenderMesh();
+    bool HasTextures();
 
 private:
     static inline std::vector<Texture> _texturesLoaded;

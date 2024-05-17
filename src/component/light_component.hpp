@@ -7,11 +7,11 @@
 class LightComponent
 {
 public:
-    glm::vec3 Color = glm::vec3(1.0f);
+    glm::vec3 Ambient = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 Specular = glm::vec3(0.5f, 0.5f, 0.5f);
 
     LightComponent(const entt::entity &entity);
-
-    void Render(Shader &shader);
 
 private:
     entt::entity _entity;
