@@ -55,16 +55,18 @@ void Scene::Render(GLFWwindow *window)
     }
 
     auto lightGroup = Scene::ActiveScene->Registry.view<LightComponent, TransformComponent>();
-    for (auto entity : lightGroup)
+    for (auto it = lightGroup.begin(); it != lightGroup.end(); ++it)
     {
-        auto &light = lightGroup.get<LightComponent>(entity);
+        int index = std::distance(lightGroup.begin(), it);
+        auto &light = lightGroup.get<LightComponent>(*it);
+        auto &transform = lightGroup.get<TransformComponent>(*it);
 
-        auto &transform = lightGroup.get<TransformComponent>(entity);
         _modelShader.Bind();
-        _modelShader.SetVec3(Shader::LIGHT_POSITION, transform.Position);
-        _modelShader.SetVec3(Shader::LIGHT_AMBIENT, light.Ambient);
-        _modelShader.SetVec3(Shader::LIGHT_DIFFUSE, light.Diffuse);
-        _modelShader.SetVec3(Shader::LIGHT_SPECULAR, light.Specular);
+        _modelShader.SetInt(Shader::LIGHT_COUNT, lightGroup.size_hint());
+        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::POSITION, index), transform.Position);
+        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::SPECULAR, index), light.Specular);
         _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
     }
 

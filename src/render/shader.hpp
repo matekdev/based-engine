@@ -22,11 +22,18 @@ public:
     static inline const std::string MATERIAL_SPECULAR = "MaterialData.Specular";
     static inline const std::string MATERIAL_SHININESS = "MaterialData.Shininess";
 
-    static inline const std::string LIGHT_POSITION = "LightData.Position";
-    static inline const std::string LIGHT_AMBIENT = "LightData.Ambient";
-    static inline const std::string LIGHT_DIFFUSE = "LightData.Diffuse";
-    static inline const std::string LIGHT_SPECULAR = "LightData.Specular";
-    static inline const std::string LIGHT_SHININESS = "LightData.Shininess";
+    static inline const std::string LIGHTS = "Lights";
+    static inline const std::string LIGHT_COUNT = "LightCount";
+    static inline const std::string POSITION = "Position";
+    static inline const std::string AMBIENT = "Ambient";
+    static inline const std::string DIFFUSE = "Diffuse";
+    static inline const std::string SPECULAR = "Specular";
+    static inline const std::string SHININESS = "Shininess";
+
+    static inline std::string Format(const std::string &name, const std::string &member, const int &index)
+    {
+        return name + "[" + std::to_string(index) + "]." + member;
+    }
 
     Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
 
