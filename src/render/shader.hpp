@@ -34,6 +34,7 @@ public:
     static inline const std::string DIRECTION = "Direction";
     static inline const std::string POSITION = "Position";
     static inline const std::string RADIUS = "Radius";
+    static inline const std::string OUTER_RADIUS = "OuterRadius";
     static inline const std::string AMBIENT = "Ambient";
     static inline const std::string DIFFUSE = "Diffuse";
     static inline const std::string SPECULAR = "Specular";

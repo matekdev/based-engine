@@ -104,6 +104,7 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::POSITION, index), transform.Position);
         _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
         _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius)));
+        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius + 5)));
         _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
         _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
         _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::SPECULAR, index), light.Specular);

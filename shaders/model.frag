@@ -43,6 +43,7 @@ struct SpotLight {
     vec3 Position;
     vec3 Direction;
     float Radius;
+    float OuterRadius;
 
     vec3 Ambient;
     vec3 Diffuse;
@@ -111,12 +112,6 @@ vec4 CalculatePointLight(PointLight light) {
 
 vec4 CalcualteSpotLight(SpotLight light) {
     vec3 lightDirection = normalize(light.Position - FragPosition);
-    float theta = dot(lightDirection, normalize(-light.Direction));
-
-    bool isInRange = theta > light.Radius;
-    if(!isInRange) {
-        return vec4(0.0);
-    }
 
     // ambient
     vec3 ambient = light.Ambient * MaterialData.Ambient;
@@ -132,10 +127,20 @@ vec4 CalcualteSpotLight(SpotLight light) {
     float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
+    // soft edges
+    float theta = dot(lightDirection, normalize(-light.Direction));
+    float epsilon = (light.Radius - light.OuterRadius);
+    float intensity = clamp((theta - light.OuterRadius) / epsilon, 0.0, 1.0);
+
+    ambient *= intensity;
+    diffuse *= intensity;
+    specular *= intensity;
+
     // attenuation
     float distance = length(light.Position - FragPosition);
     float attenuation = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * (distance * distance));
 
+    ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
 
