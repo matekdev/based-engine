@@ -25,11 +25,18 @@ public:
     static inline const std::string DIRECTIONAL_LIGHTS = "DirectionalLights";
     static inline const std::string DIRECTIONAL_LIGHT_COUNT = "DirectionalLightCount";
 
+    static inline const std::string POINT_LIGHTS = "PointLights";
+    static inline const std::string POINT_LIGHT_COUNT = "PointLightCount";
+
     static inline const std::string DIRECTION = "Direction";
+    static inline const std::string POSITION = "Position";
     static inline const std::string AMBIENT = "Ambient";
     static inline const std::string DIFFUSE = "Diffuse";
     static inline const std::string SPECULAR = "Specular";
     static inline const std::string SHININESS = "Shininess";
+    static inline const std::string CONSTANT = "Constant";
+    static inline const std::string LINEAR = "Linear";
+    static inline const std::string QUADRATIC = "Quadratic";
 
     static inline std::string Format(const std::string &name, const std::string &member, const int &index)
     {

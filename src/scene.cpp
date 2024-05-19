@@ -3,6 +3,7 @@
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
 #include "component/directional_light_component.hpp"
+#include "component/point_light_component.hpp"
 #include "component/model/model_component.hpp"
 
 Scene::Scene() : _camera(Camera()),
@@ -55,18 +56,39 @@ void Scene::Render(GLFWwindow *window)
     }
 
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
+    _modelShader.Bind();
+    _modelShader.SetInt(Shader::DIRECTIONAL_LIGHT_COUNT, directionalLightGroup.size_hint());
+
     for (auto it = directionalLightGroup.begin(); it != directionalLightGroup.end(); ++it)
     {
         int index = std::distance(directionalLightGroup.begin(), it);
         auto &light = directionalLightGroup.get<DirectionalLightComponent>(*it);
         auto &transform = directionalLightGroup.get<TransformComponent>(*it);
 
-        _modelShader.Bind();
-        _modelShader.SetInt(Shader::DIRECTIONAL_LIGHT_COUNT, directionalLightGroup.size_hint());
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::AMBIENT, index), light.Ambient);
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::SPECULAR, index), light.Specular);
+        _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
+    }
+
+    auto pointLightGroup = Scene::ActiveScene->Registry.view<PointLightComponent, TransformComponent>();
+    _modelShader.Bind();
+    _modelShader.SetInt(Shader::POINT_LIGHT_COUNT, pointLightGroup.size_hint());
+
+    for (auto it = pointLightGroup.begin(); it != pointLightGroup.end(); ++it)
+    {
+        int index = std::distance(pointLightGroup.begin(), it);
+        auto &light = pointLightGroup.get<PointLightComponent>(*it);
+        auto &transform = pointLightGroup.get<TransformComponent>(*it);
+
+        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::POSITION, index), transform.Position);
+        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::SPECULAR, index), light.Specular);
+        _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::CONSTANT, index), light.Linear);
+        _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
+        _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
         _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
     }
 
