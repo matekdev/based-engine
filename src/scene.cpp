@@ -4,6 +4,7 @@
 #include "component/transform_component.hpp"
 #include "component/directional_light_component.hpp"
 #include "component/point_light_component.hpp"
+#include "component/spot_light_component.hpp"
 #include "component/model/model_component.hpp"
 
 Scene::Scene() : _camera(Camera()),
@@ -69,7 +70,6 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::AMBIENT, index), light.Ambient);
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
         _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::SPECULAR, index), light.Specular);
-        _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
     }
 
     auto pointLightGroup = Scene::ActiveScene->Registry.view<PointLightComponent, TransformComponent>();
@@ -89,7 +89,27 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::CONSTANT, index), light.Linear);
         _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
         _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
-        _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
+    }
+
+    auto spotLightGroup = Scene::ActiveScene->Registry.view<SpotLightComponent, TransformComponent>();
+    _modelShader.Bind();
+    _modelShader.SetInt(Shader::SPOT_LIGHT_COUNT, spotLightGroup.size_hint());
+
+    for (auto it = spotLightGroup.begin(); it != spotLightGroup.end(); ++it)
+    {
+        int index = std::distance(spotLightGroup.begin(), it);
+        auto &light = spotLightGroup.get<SpotLightComponent>(*it);
+        auto &transform = spotLightGroup.get<TransformComponent>(*it);
+
+        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::POSITION, index), transform.Position);
+        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
+        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius)));
+        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::SPECULAR, index), light.Specular);
+        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::CONSTANT, index), light.Linear);
+        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
+        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
     }
 
     _frameBuffer.Unbind();

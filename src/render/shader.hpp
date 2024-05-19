@@ -28,8 +28,12 @@ public:
     static inline const std::string POINT_LIGHTS = "PointLights";
     static inline const std::string POINT_LIGHT_COUNT = "PointLightCount";
 
+    static inline const std::string SPOT_LIGHTS = "SpotLights";
+    static inline const std::string SPOT_LIGHT_COUNT = "SpotLightCount";
+
     static inline const std::string DIRECTION = "Direction";
     static inline const std::string POSITION = "Position";
+    static inline const std::string RADIUS = "Radius";
     static inline const std::string AMBIENT = "Ambient";
     static inline const std::string DIFFUSE = "Diffuse";
     static inline const std::string SPECULAR = "Specular";

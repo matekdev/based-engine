@@ -6,6 +6,7 @@
 #include "component/transform_component.hpp"
 #include "component/directional_light_component.hpp"
 #include "component/point_light_component.hpp"
+#include "component/spot_light_component.hpp"
 #include "component/model/model_component.hpp"
 #include "ui/icon.hpp"
 #include "ui/icon_brands.hpp"
@@ -102,6 +103,16 @@ void InspectorPanel::Render()
                 ImGui::DragFloat3(ICON_FA_LIGHTBULB " Specular", glm::value_ptr(light->Specular), 0.05f, 0.0, 1.0f);
             });
 
+        ComponentHeader<SpotLightComponent>(
+            ICON_FA_WIFI " Spot Light",
+            [this](SpotLightComponent *light)
+            {
+                ImGui::DragFloat3(ICON_FA_WIFI " Ambient", glm::value_ptr(light->Ambient), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_WIFI " Diffuse", glm::value_ptr(light->Diffuse), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_WIFI " Specular", glm::value_ptr(light->Specular), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat(ICON_FA_WIFI " Radius", &light->Radius, 0.05f, 0.0f, 100.0f);
+            });
+
         ImGui::Spacing();
         ImGui::Spacing();
         ImGui::Spacing();
@@ -114,6 +125,7 @@ void InspectorPanel::Render()
             AddComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
             AddComponentEntry<DirectionalLightComponent>(ICON_FA_SUN_PLANT_WILT " Directional Light");
             AddComponentEntry<PointLightComponent>(ICON_FA_LIGHTBULB " Point Light");
+            AddComponentEntry<SpotLightComponent>(ICON_FA_WIFI " Spot Light");
             ImGui::EndPopup();
         }
     }

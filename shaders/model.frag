@@ -39,6 +39,23 @@ struct PointLight {
 uniform PointLight PointLights[MAX_LIGHTS];
 uniform int PointLightCount;
 
+struct SpotLight {
+    vec3 Position;
+    vec3 Direction;
+    float Radius;
+
+    vec3 Ambient;
+    vec3 Diffuse;
+    vec3 Specular;
+
+    float Constant;
+    float Linear;
+    float Quadratic;
+};
+
+uniform SpotLight SpotLights[MAX_LIGHTS];
+uniform int SpotLightCount;
+
 uniform Material MaterialData;
 uniform vec3 CameraPosition;
 uniform bool HasTextures;
@@ -92,11 +109,45 @@ vec4 CalculatePointLight(PointLight light) {
     return vec4(result, 1.0);
 }
 
+vec4 CalcualteSpotLight(SpotLight light) {
+    vec3 lightDirection = normalize(light.Position - FragPosition);
+    float theta = dot(lightDirection, normalize(-light.Direction));
+
+    bool isInRange = theta > light.Radius;
+    if(!isInRange) {
+        return vec4(0.0);
+    }
+
+    // ambient
+    vec3 ambient = light.Ambient * MaterialData.Ambient;
+
+    // diffuse
+    vec3 normal = normalize(Normal);
+    float diff = max(dot(normal, lightDirection), 0.0);
+    vec3 diffuse = light.Diffuse * (diff * MaterialData.Diffuse);
+
+    // specular
+    vec3 viewDirection = normalize(CameraPosition - FragPosition);
+    vec3 reflectionDirection = reflect(-lightDirection, normal);
+    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), MaterialData.Shininess);
+    vec3 specular = light.Specular * (spec * MaterialData.Specular);
+
+    // attenuation
+    float distance = length(light.Position - FragPosition);
+    float attenuation = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * (distance * distance));
+
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    vec3 result = ambient + diffuse + specular;
+    return vec4(result, 1.0);
+}
+
 void main() {
     vec4 outputColor = vec4(0.0);
     outputColor = HasTextures ? texture(TextureDiffuse, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
 
-    bool hasLights = DirectionalLightCount > 0 || PointLightCount > 0;
+    bool hasLights = DirectionalLightCount > 0 || PointLightCount > 0 || SpotLightCount > 0;
     vec4 lighting = vec4(hasLights ? 0.0 : 1.0);
     for(int i = 0; i < DirectionalLightCount; ++i) {
         lighting += CalculateDirectionalLight(DirectionalLights[i]);
@@ -104,6 +155,10 @@ void main() {
 
     for(int i = 0; i < PointLightCount; ++i) {
         lighting += CalculatePointLight(PointLights[i]);
+    }
+
+    for(int i = 0; i < SpotLightCount; ++i) {
+        lighting += CalcualteSpotLight(SpotLights[i]);
     }
 
     FragColor = outputColor * lighting;
