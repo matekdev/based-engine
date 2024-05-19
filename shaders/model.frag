@@ -93,18 +93,18 @@ vec4 CalculatePointLight(PointLight light) {
 }
 
 void main() {
-    vec4 outputColor = vec4(1.0);
-    if(HasTextures) {
-        outputColor = texture(TextureDiffuse, TexCoord);
-    }
+    vec4 outputColor = vec4(0.0);
+    outputColor = HasTextures ? texture(TextureDiffuse, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
 
+    bool hasLights = DirectionalLightCount > 0 || PointLightCount > 0;
+    vec4 lighting = vec4(hasLights ? 0.0 : 1.0);
     for(int i = 0; i < DirectionalLightCount; ++i) {
-        outputColor *= CalculateDirectionalLight(DirectionalLights[i]);
+        lighting += CalculateDirectionalLight(DirectionalLights[i]);
     }
 
     for(int i = 0; i < PointLightCount; ++i) {
-        outputColor *= CalculatePointLight(PointLights[i]);
+        lighting += CalculatePointLight(PointLights[i]);
     }
 
-    FragColor = outputColor;
+    FragColor = outputColor * lighting;
 }
