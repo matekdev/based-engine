@@ -4,7 +4,7 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
-#include "component/light_component.hpp"
+#include "component/directional_light_component.hpp"
 #include "component/model/model_component.hpp"
 #include "ui/icon.hpp"
 #include "ui/icon_brands.hpp"
@@ -83,13 +83,13 @@ void InspectorPanel::Render()
                 ImGui::DragFloat(ICON_FA_PERSON " Shininess", &model->Shininess, 0.05f, 10.0f, 100.0f);
             });
 
-        ComponentHeader<LightComponent>(
-            ICON_FA_LIGHTBULB " Light",
-            [this](LightComponent *light)
+        ComponentHeader<DirectionalLightComponent>(
+            ICON_FA_SUN_PLANT_WILT " Directional Light",
+            [this](DirectionalLightComponent *light)
             {
-                ImGui::DragFloat3(ICON_FA_LIGHTBULB " Ambient", glm::value_ptr(light->Ambient), 0.05f, 0.0, 1.0f);
-                ImGui::DragFloat3(ICON_FA_LIGHTBULB " Diffuse", glm::value_ptr(light->Diffuse), 0.05f, 0.0, 1.0f);
-                ImGui::DragFloat3(ICON_FA_LIGHTBULB " Specular", glm::value_ptr(light->Specular), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SUN_PLANT_WILT " Ambient", glm::value_ptr(light->Ambient), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SUN_PLANT_WILT " Diffuse", glm::value_ptr(light->Diffuse), 0.05f, 0.0, 1.0f);
+                ImGui::DragFloat3(ICON_FA_SUN_PLANT_WILT " Specular", glm::value_ptr(light->Specular), 0.05f, 0.0, 1.0f);
             });
 
         ImGui::Spacing();
@@ -102,7 +102,7 @@ void InspectorPanel::Render()
         if (ImGui::BeginPopup("AddComponent"))
         {
             AddComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
-            AddComponentEntry<LightComponent>(ICON_FA_LIGHTBULB " Light");
+            AddComponentEntry<DirectionalLightComponent>(ICON_FA_SUN_PLANT_WILT " Directional Light");
             ImGui::EndPopup();
         }
     }

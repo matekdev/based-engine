@@ -10,4 +10,5 @@ public:
     glm::vec3 Scale = glm::vec3(1.0f);
 
     glm::mat4 GetTransform();
+    glm::vec3 GetDirection();
 };

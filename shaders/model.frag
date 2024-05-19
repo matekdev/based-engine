@@ -15,28 +15,28 @@ struct Material {
     float Shininess;
 };
 
-struct Light {
-    vec3 Position;
+struct DirectionalLight {
+    vec3 Direction;
     vec3 Ambient;
     vec3 Diffuse;
     vec3 Specular;
 };
 
-uniform Light Lights[MAX_LIGHTS];
-uniform int LightCount;
+uniform DirectionalLight DirectionalLights[MAX_LIGHTS];
+uniform int DirectionalLightCount;
 
 uniform Material MaterialData;
 uniform vec3 CameraPosition;
 uniform bool HasTextures;
 uniform sampler2D TextureDiffuse;
 
-vec4 CalculateLight(Light light) {
+vec4 CalculateDirectionalLight(DirectionalLight light) {
     // ambient
     vec3 ambient = light.Ambient * MaterialData.Ambient;
 
     // diffuse
     vec3 normal = normalize(Normal);
-    vec3 lightDirection = normalize(light.Position - FragPosition);
+    vec3 lightDirection = normalize(-light.Direction);
     float diff = max(dot(normal, lightDirection), 0.0);
     vec3 diffuse = light.Diffuse * (diff * MaterialData.Diffuse);
 
@@ -56,8 +56,8 @@ void main() {
         outputColor = texture(TextureDiffuse, TexCoord);
     }
 
-    for(int i = 0; i < LightCount; ++i) {
-        outputColor *= CalculateLight(Lights[i]);
+    for(int i = 0; i < DirectionalLightCount; ++i) {
+        outputColor *= CalculateDirectionalLight(DirectionalLights[i]);
     }
 
     FragColor = outputColor;

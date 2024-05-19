@@ -2,7 +2,7 @@
 
 #include "component/info_component.hpp"
 #include "component/transform_component.hpp"
-#include "component/light_component.hpp"
+#include "component/directional_light_component.hpp"
 #include "component/model/model_component.hpp"
 
 Scene::Scene() : _camera(Camera()),
@@ -54,19 +54,19 @@ void Scene::Render(GLFWwindow *window)
         model.RenderMesh();
     }
 
-    auto lightGroup = Scene::ActiveScene->Registry.view<LightComponent, TransformComponent>();
-    for (auto it = lightGroup.begin(); it != lightGroup.end(); ++it)
+    auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
+    for (auto it = directionalLightGroup.begin(); it != directionalLightGroup.end(); ++it)
     {
-        int index = std::distance(lightGroup.begin(), it);
-        auto &light = lightGroup.get<LightComponent>(*it);
-        auto &transform = lightGroup.get<TransformComponent>(*it);
+        int index = std::distance(directionalLightGroup.begin(), it);
+        auto &light = directionalLightGroup.get<DirectionalLightComponent>(*it);
+        auto &transform = directionalLightGroup.get<TransformComponent>(*it);
 
         _modelShader.Bind();
-        _modelShader.SetInt(Shader::LIGHT_COUNT, lightGroup.size_hint());
-        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::POSITION, index), transform.Position);
-        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::AMBIENT, index), light.Ambient);
-        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
-        _modelShader.SetVec3(Shader::Format(Shader::LIGHTS, Shader::SPECULAR, index), light.Specular);
+        _modelShader.SetInt(Shader::DIRECTIONAL_LIGHT_COUNT, directionalLightGroup.size_hint());
+        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
+        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::SPECULAR, index), light.Specular);
         _modelShader.SetVec3(Shader::CAMERA_POSITION, Scene::ActiveScene->GetCamera().GetPosition());
     }
 

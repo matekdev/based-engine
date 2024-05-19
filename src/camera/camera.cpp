@@ -42,7 +42,7 @@ void Camera::Update(float width, float height)
     _position += _velocity * Scene::ActiveScene->GetDeltaTime();
 
     _viewMatrix = glm::lookAt(_position, _position + _orientation, UP);
-    _projectionMatrix = glm::perspective(glm::radians(90.0f), width / height, 0.1f, 100.0f);
+    _projectionMatrix = glm::perspective(glm::radians(90.0f), width / height, 0.01f, 1000.0f);
 }
 
 void Camera::Input(float width, float height, GLFWwindow *window, bool isWindowHovered)

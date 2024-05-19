@@ -22,9 +22,10 @@ public:
     static inline const std::string MATERIAL_SPECULAR = "MaterialData.Specular";
     static inline const std::string MATERIAL_SHININESS = "MaterialData.Shininess";
 
-    static inline const std::string LIGHTS = "Lights";
-    static inline const std::string LIGHT_COUNT = "LightCount";
-    static inline const std::string POSITION = "Position";
+    static inline const std::string DIRECTIONAL_LIGHTS = "DirectionalLights";
+    static inline const std::string DIRECTIONAL_LIGHT_COUNT = "DirectionalLightCount";
+
+    static inline const std::string DIRECTION = "Direction";
     static inline const std::string AMBIENT = "Ambient";
     static inline const std::string DIFFUSE = "Diffuse";
     static inline const std::string SPECULAR = "Specular";
