@@ -10,7 +10,7 @@
 Scene::Scene() : _camera(Camera()),
                  _frameBuffer(FrameBuffer()),
                  _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
-                 _lightShader(Shader("shaders/model.vert", "shaders/light.frag"))
+                 _lightShader(Shader("shaders/model.vert", "shaders/model.frag"))
 {
     ActiveScene = this;
 }
