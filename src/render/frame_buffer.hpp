@@ -20,7 +20,7 @@ public:
 private:
     GLuint _fbo;
     GLuint _textureId;
-    GLuint _depthId;
+    GLuint _depthStencilId;
     int _width;
     int _height;
 };

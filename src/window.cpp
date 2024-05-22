@@ -20,6 +20,7 @@ Window::Window(int width, int height, const std::string &windowTitle) : _width(w
     glfwMakeContextCurrent(_glfwWindow);
     gladLoadGL();
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
 
     _glContext = std::make_unique<OpenGLContext>(this);
     _uiContext = std::make_unique<UIContext>(this);
