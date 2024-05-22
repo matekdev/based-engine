@@ -53,7 +53,7 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(entity).GetTransform());
         _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
-        model.RenderMesh();
+        model.Render();
     }
 
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();

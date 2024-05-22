@@ -24,7 +24,7 @@ public:
 
     void LoadModel(const std::string &modelPath);
     void DeleteModel();
-    void RenderMesh();
+    void Render();
     bool HasTextures();
 
 private:

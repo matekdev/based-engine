@@ -56,7 +56,7 @@ void ModelComponent::DeleteModel()
     _loadedModel = "";
 }
 
-void ModelComponent::RenderMesh()
+void ModelComponent::Render()
 {
     for (auto &mesh : _meshes)
     {

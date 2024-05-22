@@ -156,7 +156,7 @@ void ScenePanel::PickingPass()
         _pickingShader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(entity).GetTransform());
 
         auto &model = group.get<ModelComponent>(entity);
-        model.RenderMesh();
+        model.Render();
     }
 
     auto [mouseX, mouseY] = ImGui::GetMousePos();
