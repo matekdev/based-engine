@@ -54,8 +54,6 @@ void Mesh::Render()
         glBindTexture(GL_TEXTURE_2D, _textures[i].Id);
     }
 
-    glActiveTexture(GL_TEXTURE0);
-
     glBindVertexArray(_vao);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
