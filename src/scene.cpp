@@ -10,7 +10,8 @@
 Scene::Scene() : _camera(Camera()),
                  _frameBuffer(FrameBuffer()),
                  _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
-                 _lightShader(Shader("shaders/model.vert", "shaders/model.frag"))
+                 _lightShader(Shader("shaders/model.vert", "shaders/model.frag")),
+                 _outlineShader(Shader("shaders/model.vert", "shaders/outline.frag"))
 {
     ActiveScene = this;
 }
@@ -37,10 +38,11 @@ void Scene::Render(GLFWwindow *window)
     glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent>();
+    auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
     for (auto entity : modelGroup)
     {
         auto &model = modelGroup.get<ModelComponent>(entity);
+        auto &transform = modelGroup.get<TransformComponent>(entity);
 
         _modelShader.Bind();
         _modelShader.SetVec3(Shader::MATERIAL_AMBIENT, model.Ambient);
@@ -50,10 +52,13 @@ void Scene::Render(GLFWwindow *window)
 
         _modelShader.SetVec3(Shader::CAMERA_POSITION, Camera::Instance->GetPosition());
         _modelShader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
-        _modelShader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(entity).GetTransform());
+        _modelShader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
         _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
-        model.Render();
+        if (entity == Scene::ActiveScene->SelectedEntity)
+            RenderWithOutline(model, transform);
+        else
+            model.Render();
     }
 
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
@@ -114,6 +119,31 @@ void Scene::Render(GLFWwindow *window)
     }
 
     _frameBuffer.Unbind();
+}
+
+void Scene::RenderWithOutline(ModelComponent &model, TransformComponent &transform)
+{
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+
+    model.Render();
+
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);
+    glDisable(GL_DEPTH_TEST);
+
+    auto scaledTransform = transform;
+    scaledTransform.Scale *= 1.02;
+
+    _outlineShader.Bind();
+    _outlineShader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
+    _outlineShader.SetMat4(Shader::MODEL_MATRIX, scaledTransform.GetTransform());
+
+    model.Render();
+
+    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glEnable(GL_DEPTH_TEST);
 }
 
 Camera &Scene::GetCamera()

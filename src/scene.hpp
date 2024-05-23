@@ -4,6 +4,9 @@
 #include "render/shader.hpp"
 #include "camera/camera.hpp"
 
+#include "component/model/model_component.hpp"
+#include "component/transform_component.hpp"
+
 #include <entt/entt.hpp>
 #include <GLFW/glfw3.h>
 
@@ -38,9 +41,11 @@ private:
 
     Shader _modelShader;
     Shader _lightShader;
+    Shader _outlineShader;
 
     Camera _camera;
     glm::mat4 _viewProjectionMatrix;
 
     void CalculateDeltaTime();
+    void RenderWithOutline(ModelComponent &model, TransformComponent &transform);
 };
