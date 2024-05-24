@@ -55,13 +55,7 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
         _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0xFF);
-
         model.Render();
-
-        if (entity == Scene::ActiveScene->SelectedEntity)
-            RenderWithOutline(model, transform);
     }
 
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
@@ -124,8 +118,14 @@ void Scene::Render(GLFWwindow *window)
     _frameBuffer.Unbind();
 }
 
+// unused for now
 void Scene::RenderWithOutline(ModelComponent &model, TransformComponent &transform)
 {
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+
+    model.Render();
+
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
