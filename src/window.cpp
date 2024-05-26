@@ -19,7 +19,13 @@ Window::Window(int width, int height, const std::string &windowTitle) : _width(w
     glfwSetMouseButtonCallback(_glfwWindow, GLFWInput::OnMouseClick);
     glfwMakeContextCurrent(_glfwWindow);
     gladLoadGL();
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
+
     glEnable(GL_DEPTH_TEST);
+
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
