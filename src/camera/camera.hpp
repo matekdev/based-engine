@@ -12,8 +12,6 @@
 class Camera
 {
 public:
-    inline static Camera *Instance;
-
     Camera();
 
     glm::vec3 GetPosition();

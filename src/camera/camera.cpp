@@ -8,7 +8,6 @@
 
 Camera::Camera()
 {
-    Instance = this;
 }
 
 glm::vec3 Camera::GetPosition()

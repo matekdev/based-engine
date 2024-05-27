@@ -152,7 +152,7 @@ void ScenePanel::PickingPass()
 
         _pickingShader.Bind();
         _pickingShader.SetVec3(Shader::PICKING_COLOR, _pickingBuffer.EncodeId(info.Id));
-        _pickingShader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
+        _pickingShader.SetMat4(Shader::CAMERA_MATRIX, Scene::ActiveScene->GetCamera().GetViewProjectionMatrix());
         _pickingShader.SetMat4(Shader::MODEL_MATRIX, Scene::ActiveScene->Registry.get<TransformComponent>(entity).GetTransform());
 
         auto &model = group.get<ModelComponent>(entity);

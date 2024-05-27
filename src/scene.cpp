@@ -50,8 +50,8 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetVec3(Shader::MATERIAL_SPECULAR, model.Specular);
         _modelShader.SetFloat(Shader::MATERIAL_SHININESS, model.Shininess);
 
-        _modelShader.SetVec3(Shader::CAMERA_POSITION, Camera::Instance->GetPosition());
-        _modelShader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
+        _modelShader.SetVec3(Shader::CAMERA_POSITION, _camera.GetPosition());
+        _modelShader.SetMat4(Shader::CAMERA_MATRIX, _camera.GetViewProjectionMatrix());
         _modelShader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
         _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
@@ -134,7 +134,7 @@ void Scene::RenderWithOutline(ModelComponent &model, TransformComponent &transfo
     scaledTransform.Scale *= 1.02;
 
     _outlineShader.Bind();
-    _outlineShader.SetMat4(Shader::CAMERA_MATRIX, Camera::Instance->GetViewProjectionMatrix());
+    _outlineShader.SetMat4(Shader::CAMERA_MATRIX, _camera.GetViewProjectionMatrix());
     _outlineShader.SetMat4(Shader::MODEL_MATRIX, scaledTransform.GetTransform());
 
     model.Render();
