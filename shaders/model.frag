@@ -149,14 +149,10 @@ vec4 CalcualteSpotLight(SpotLight light) {
     return vec4(result, 1.0);
 }
 
-void main() {
-    vec4 outputColor = vec4(0.0);
-    outputColor = HasTextures ? texture(Texture0, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
-    if(outputColor.a < 0.01)
-        discard;
-
+vec4 CalculateLighting() {
     bool hasLights = DirectionalLightCount > 0 || PointLightCount > 0 || SpotLightCount > 0;
     vec4 lighting = vec4(hasLights ? 0.0 : 1.0);
+
     for(int i = 0; i < DirectionalLightCount; ++i) {
         lighting += CalculateDirectionalLight(DirectionalLights[i]);
     }
@@ -169,5 +165,15 @@ void main() {
         lighting += CalcualteSpotLight(SpotLights[i]);
     }
 
-    FragColor = outputColor * lighting;
+    return lighting;
+}
+
+void main() {
+    vec4 outputColor = vec4(0.0);
+    outputColor = HasTextures ? texture(Texture0, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
+    if(outputColor.a < 0.01)
+        discard;
+
+    outputColor *= CalculateLighting();
+    FragColor = outputColor;
 }
