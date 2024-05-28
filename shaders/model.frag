@@ -61,7 +61,7 @@ uniform Material MaterialData;
 uniform vec3 CameraPosition;
 uniform bool HasTextures;
 uniform sampler2D Texture0;
-uniform samplerCube Texture10;
+uniform samplerCube SkyBoxTexture;
 
 vec4 CalculateDirectionalLight(DirectionalLight light) {
     // ambient
@@ -171,7 +171,7 @@ vec4 CalculateLighting() {
 vec4 CalculateCubeMapReflection() {
     vec3 I = normalize(FragPosition - CameraPosition);
     vec3 R = reflect(I, normalize(Normal));
-    return vec4(texture(Texture10, R).rgb, 1.0);
+    return vec4(texture(SkyBoxTexture, R).rgb, 1.0);
 }
 
 void main() {

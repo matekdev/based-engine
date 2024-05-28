@@ -21,6 +21,7 @@ public:
     static inline const std::string CAMERA_VIEW_MATRIX = "CameraViewMatrix";
 
     static inline const std::string TEXTURE = "Texture";
+    static inline const std::string SKYBOX_TEXTURE = "SkyBoxTexture";
 
     static inline const std::string MATERIAL_AMBIENT = "MaterialData.Ambient";
     static inline const std::string MATERIAL_DIFFUSE = "MaterialData.Diffuse";

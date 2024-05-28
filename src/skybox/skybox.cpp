@@ -37,5 +37,5 @@ void SkyBox::BindTexture(Shader &shader)
 {
     glActiveTexture(GL_TEXTURE10);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _textureId);
-    shader.SetInt(Shader::Format(Shader::TEXTURE, 10), 10);
+    shader.SetInt(Shader::SKYBOX_TEXTURE, 10);
 }
