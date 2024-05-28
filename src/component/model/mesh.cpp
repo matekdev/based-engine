@@ -46,12 +46,13 @@ void Mesh::Delete()
     glDeleteVertexArrays(1, &_vao);
 }
 
-void Mesh::Render()
+void Mesh::Render(Shader &shader)
 {
     for (int i = 0; i < _textures.size(); ++i)
     {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, _textures[i].Id);
+        shader.SetInt(Shader::Format(Shader::TEXTURE, i), i);
     }
 
     glBindVertexArray(_vao);

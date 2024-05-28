@@ -56,11 +56,11 @@ void ModelComponent::DeleteModel()
     _loadedModel = "";
 }
 
-void ModelComponent::Render()
+void ModelComponent::Render(Shader &shader)
 {
     for (auto &mesh : _meshes)
     {
-        mesh.Render();
+        mesh.Render(shader);
     }
 }
 

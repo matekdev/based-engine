@@ -60,7 +60,8 @@ uniform int SpotLightCount;
 uniform Material MaterialData;
 uniform vec3 CameraPosition;
 uniform bool HasTextures;
-uniform sampler2D TextureDiffuse;
+uniform sampler2D Texture0;
+uniform samplerCube Texture10;
 
 vec4 CalculateDirectionalLight(DirectionalLight light) {
     // ambient
@@ -150,7 +151,7 @@ vec4 CalcualteSpotLight(SpotLight light) {
 
 void main() {
     vec4 outputColor = vec4(0.0);
-    outputColor = HasTextures ? texture(TextureDiffuse, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
+    outputColor = HasTextures ? texture(Texture0, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
     if(outputColor.a < 0.01)
         discard;
 

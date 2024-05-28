@@ -20,6 +20,8 @@ public:
     static inline const std::string CAMERA_PROJECTION = "CameraProjectionMatrix";
     static inline const std::string CAMERA_VIEW_MATRIX = "CameraViewMatrix";
 
+    static inline const std::string TEXTURE = "Texture";
+
     static inline const std::string MATERIAL_AMBIENT = "MaterialData.Ambient";
     static inline const std::string MATERIAL_DIFFUSE = "MaterialData.Diffuse";
     static inline const std::string MATERIAL_SPECULAR = "MaterialData.Specular";
@@ -45,6 +47,11 @@ public:
     static inline const std::string CONSTANT = "Constant";
     static inline const std::string LINEAR = "Linear";
     static inline const std::string QUADRATIC = "Quadratic";
+
+    static inline std::string Format(const std::string &name, const int &index)
+    {
+        return name + std::to_string(index);
+    }
 
     static inline std::string Format(const std::string &name, const std::string &member, const int &index)
     {

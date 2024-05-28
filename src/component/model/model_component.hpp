@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mesh.hpp"
+#include "render/shader.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -24,7 +25,7 @@ public:
 
     void LoadModel(const std::string &modelPath);
     void DeleteModel();
-    void Render();
+    void Render(Shader &shader);
     bool HasTextures();
 
 private:

@@ -57,7 +57,7 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
         _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
-        model.Render();
+        model.Render(_modelShader);
     }
 
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
@@ -123,7 +123,7 @@ void Scene::Render(GLFWwindow *window)
     _skyboxShader.Bind();
     _skyboxShader.SetMat4(Shader::CAMERA_VIEW_MATRIX, glm::mat4(glm::mat3(_camera.GetViewMatrix())));
     _skyboxShader.SetMat4(Shader::CAMERA_PROJECTION, _camera.GetProjectionMatrix());
-    _skybox.Render();
+    _skybox.Render(_skyboxShader);
 
     glDepthFunc(GL_LESS);
 
@@ -136,7 +136,7 @@ void Scene::RenderWithOutline(ModelComponent &model, TransformComponent &transfo
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
 
-    model.Render();
+    model.Render(_modelShader);
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
@@ -149,7 +149,7 @@ void Scene::RenderWithOutline(ModelComponent &model, TransformComponent &transfo
     _outlineShader.SetMat4(Shader::CAMERA_MATRIX, _camera.GetViewProjectionMatrix());
     _outlineShader.SetMat4(Shader::MODEL_MATRIX, scaledTransform.GetTransform());
 
-    model.Render();
+    model.Render(_outlineShader);
 
     glStencilMask(0xFF);
     glStencilFunc(GL_ALWAYS, 0, 0xFF);
