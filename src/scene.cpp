@@ -57,6 +57,8 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
         _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
+        _skybox.BindTexture(_modelShader);
+
         model.Render(_modelShader);
     }
 

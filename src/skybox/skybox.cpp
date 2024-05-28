@@ -28,12 +28,14 @@ SkyBox::SkyBox()
 void SkyBox::Render(Shader &shader)
 {
     glBindVertexArray(_vao);
+    BindTexture(shader);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
 
+void SkyBox::BindTexture(Shader &shader)
+{
     glActiveTexture(GL_TEXTURE10);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _textureId);
     shader.SetInt(Shader::Format(Shader::TEXTURE, 10), 10);
-
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-    glBindVertexArray(0);
 }

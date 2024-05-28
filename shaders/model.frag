@@ -168,6 +168,12 @@ vec4 CalculateLighting() {
     return lighting;
 }
 
+vec4 CalculateCubeMapReflection() {
+    vec3 I = normalize(FragPosition - CameraPosition);
+    vec3 R = reflect(I, normalize(Normal));
+    return vec4(texture(Texture10, R).rgb, 1.0);
+}
+
 void main() {
     vec4 outputColor = vec4(0.0);
     outputColor = HasTextures ? texture(Texture0, TexCoord) : vec4(MaterialData.Diffuse, 1.0);
@@ -175,5 +181,7 @@ void main() {
         discard;
 
     outputColor *= CalculateLighting();
+    outputColor = mix(outputColor, CalculateCubeMapReflection(), 0.3);
+
     FragColor = outputColor;
 }

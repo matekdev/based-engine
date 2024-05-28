@@ -15,6 +15,7 @@ public:
     SkyBox();
 
     void Render(Shader &shader);
+    void BindTexture(Shader &shader);
 
 private:
     GLuint _vao;
