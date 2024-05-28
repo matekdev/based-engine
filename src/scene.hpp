@@ -3,6 +3,7 @@
 #include "render/frame_buffer.hpp"
 #include "render/shader.hpp"
 #include "camera/camera.hpp"
+#include "skybox/skybox.hpp"
 
 #include "component/model/model_component.hpp"
 #include "component/transform_component.hpp"
@@ -42,9 +43,12 @@ private:
     Shader _modelShader;
     Shader _lightShader;
     Shader _outlineShader;
+    Shader _skyboxShader;
 
     Camera _camera;
     glm::mat4 _viewProjectionMatrix;
+
+    SkyBox _skybox;
 
     void CalculateDeltaTime();
     void RenderWithOutline(ModelComponent &model, TransformComponent &transform);

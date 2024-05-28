@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <vector>
 
 struct Texture
 {
@@ -11,3 +12,4 @@ struct Texture
 };
 
 unsigned int TextureFromFile(const char *path, const std::string &directory);
+unsigned int LoadCubeMap(const std::vector<std::string> &paths);

@@ -9,9 +9,11 @@
 
 Scene::Scene() : _camera(Camera()),
                  _frameBuffer(FrameBuffer()),
+                 _skybox(SkyBox()),
                  _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
                  _lightShader(Shader("shaders/model.vert", "shaders/model.frag")),
-                 _outlineShader(Shader("shaders/model.vert", "shaders/outline.frag"))
+                 _outlineShader(Shader("shaders/model.vert", "shaders/outline.frag")),
+                 _skyboxShader(Shader("shaders/skybox.vert", "shaders/skybox.frag"))
 {
     ActiveScene = this;
 }
@@ -35,7 +37,7 @@ void Scene::Render(GLFWwindow *window)
 
     _frameBuffer.Bind();
 
-    glClearColor(0.31f, 0.41f, 0.46f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
@@ -114,6 +116,16 @@ void Scene::Render(GLFWwindow *window)
         _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
         _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
     }
+
+    // skybox
+    glDepthFunc(GL_LEQUAL);
+
+    _skyboxShader.Bind();
+    _skyboxShader.SetMat4(Shader::CAMERA_VIEW_MATRIX, glm::mat4(glm::mat3(_camera.GetViewMatrix())));
+    _skyboxShader.SetMat4(Shader::CAMERA_PROJECTION, _camera.GetProjectionMatrix());
+    _skybox.Render();
+
+    glDepthFunc(GL_LESS);
 
     _frameBuffer.Unbind();
 }

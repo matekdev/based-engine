@@ -17,6 +17,9 @@ public:
     static inline const std::string MODEL_MATRIX = "ModelMatrix";
     static inline const std::string CAMERA_MATRIX = "CameraMatrix";
 
+    static inline const std::string CAMERA_PROJECTION = "CameraProjectionMatrix";
+    static inline const std::string CAMERA_VIEW_MATRIX = "CameraViewMatrix";
+
     static inline const std::string MATERIAL_AMBIENT = "MaterialData.Ambient";
     static inline const std::string MATERIAL_DIFFUSE = "MaterialData.Diffuse";
     static inline const std::string MATERIAL_SPECULAR = "MaterialData.Specular";
