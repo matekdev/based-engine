@@ -75,8 +75,8 @@ vec4 CalculateDirectionalLight(DirectionalLight light) {
 
     // specular
     vec3 viewDirection = normalize(CameraPosition - FragPosition);
-    vec3 reflectionDirection = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), MaterialData.Shininess);
+    vec3 halfWayDirection = normalize(lightDirection + viewDirection);
+    float spec = pow(max(dot(normal, halfWayDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
     vec3 result = ambient + diffuse + specular;
@@ -95,8 +95,8 @@ vec4 CalculatePointLight(PointLight light) {
 
     // specular
     vec3 viewDirection = normalize(CameraPosition - FragPosition);
-    vec3 reflectionDirection = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), MaterialData.Shininess);
+    vec3 halfWayDirection = normalize(lightDirection + viewDirection);
+    float spec = pow(max(dot(normal, halfWayDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
     // attenuation
@@ -124,8 +124,8 @@ vec4 CalcualteSpotLight(SpotLight light) {
 
     // specular
     vec3 viewDirection = normalize(CameraPosition - FragPosition);
-    vec3 reflectionDirection = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), MaterialData.Shininess);
+    vec3 halfWayDirection = normalize(lightDirection + viewDirection);
+    float spec = pow(max(dot(normal, halfWayDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
     // soft edges
