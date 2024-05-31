@@ -9,11 +9,13 @@
 
 Scene::Scene() : _camera(Camera()),
                  _frameBuffer(FrameBuffer()),
+                 _shadowMap(ShadowMap()),
                  _skybox(SkyBox()),
                  _modelShader(Shader("shaders/model.vert", "shaders/model.frag")),
                  _lightShader(Shader("shaders/model.vert", "shaders/model.frag")),
                  _outlineShader(Shader("shaders/model.vert", "shaders/outline.frag")),
-                 _skyboxShader(Shader("shaders/skybox.vert", "shaders/skybox.frag"))
+                 _skyboxShader(Shader("shaders/skybox.vert", "shaders/skybox.frag")),
+                 _shadowMapShader(Shader("shaders/shadow_map.vert", "shaders/shadow_map.frag"))
 {
     ActiveScene = this;
 }
@@ -29,42 +31,87 @@ void Scene::CreateNewEntity()
 void Scene::Resize(float width, float height)
 {
     _frameBuffer.CreateBuffer(width, height);
+    _shadowMap.CreateBuffer(width, height);
 }
 
-void Scene::Render(GLFWwindow *window)
+void Scene::Render()
 {
     CalculateDeltaTime();
 
+    ShadowRenderPass();
+    NormalRenderPass();
+}
+
+void Scene::ShadowRenderPass()
+{
+    _shadowMap.Bind();
+
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
+    for (auto it = directionalLightGroup.begin(); it != directionalLightGroup.end(); ++it)
+    {
+        int index = std::distance(directionalLightGroup.begin(), it);
+        auto &light = directionalLightGroup.get<DirectionalLightComponent>(*it);
+        auto &transform = directionalLightGroup.get<TransformComponent>(*it);
+
+        _shadowMapShader.Bind();
+
+        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+        glm::mat4 lightView = glm::lookAt(transform.Position, transform.GetDirection(), glm::vec3(0.0, 1.0, 0.0));
+        glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+        _shadowMapShader.SetMat4(Shader::LIGHT_SPACE_MATRIX, lightSpaceMatrix);
+        RenderModels(_shadowMapShader);
+    }
+
+    _shadowMap.Unbind();
+}
+
+void Scene::NormalRenderPass()
+{
     _frameBuffer.Bind();
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    RenderModels(_modelShader);
+    RenderLights(_modelShader);
+    RenderSkyBox(_modelShader);
+
+    _frameBuffer.Unbind();
+}
+
+void Scene::RenderModels(Shader &shader)
+{
     auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
     for (auto entity : modelGroup)
     {
         auto &model = modelGroup.get<ModelComponent>(entity);
         auto &transform = modelGroup.get<TransformComponent>(entity);
 
-        _modelShader.Bind();
-        _modelShader.SetVec3(Shader::MATERIAL_AMBIENT, model.Ambient);
-        _modelShader.SetVec3(Shader::MATERIAL_DIFFUSE, model.Diffuse);
-        _modelShader.SetVec3(Shader::MATERIAL_SPECULAR, model.Specular);
-        _modelShader.SetFloat(Shader::MATERIAL_SHININESS, model.Shininess);
+        shader.Bind();
+        shader.SetVec3(Shader::MATERIAL_AMBIENT, model.Ambient);
+        shader.SetVec3(Shader::MATERIAL_DIFFUSE, model.Diffuse);
+        shader.SetVec3(Shader::MATERIAL_SPECULAR, model.Specular);
+        shader.SetFloat(Shader::MATERIAL_SHININESS, model.Shininess);
 
-        _modelShader.SetVec3(Shader::CAMERA_POSITION, _camera.GetPosition());
-        _modelShader.SetMat4(Shader::CAMERA_MATRIX, _camera.GetViewProjectionMatrix());
-        _modelShader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
-        _modelShader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
+        shader.SetVec3(Shader::CAMERA_POSITION, _camera.GetPosition());
+        shader.SetMat4(Shader::CAMERA_MATRIX, _camera.GetViewProjectionMatrix());
+        shader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
+        shader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
-        _skybox.BindTexture(_modelShader);
+        _skybox.BindTexture(shader);
 
-        model.Render(_modelShader);
+        model.Render(shader);
     }
+}
 
+void Scene::RenderLights(Shader &shader)
+{
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
-    _modelShader.Bind();
-    _modelShader.SetInt(Shader::DIRECTIONAL_LIGHT_COUNT, directionalLightGroup.size_hint());
+    shader.Bind();
+    shader.SetInt(Shader::DIRECTIONAL_LIGHT_COUNT, directionalLightGroup.size_hint());
 
     for (auto it = directionalLightGroup.begin(); it != directionalLightGroup.end(); ++it)
     {
@@ -72,15 +119,15 @@ void Scene::Render(GLFWwindow *window)
         auto &light = directionalLightGroup.get<DirectionalLightComponent>(*it);
         auto &transform = directionalLightGroup.get<TransformComponent>(*it);
 
-        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
-        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::AMBIENT, index), light.Ambient);
-        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
-        _modelShader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::SPECULAR, index), light.Specular);
+        shader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
+        shader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        shader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        shader.SetVec3(Shader::Format(Shader::DIRECTIONAL_LIGHTS, Shader::SPECULAR, index), light.Specular);
     }
 
     auto pointLightGroup = Scene::ActiveScene->Registry.view<PointLightComponent, TransformComponent>();
-    _modelShader.Bind();
-    _modelShader.SetInt(Shader::POINT_LIGHT_COUNT, pointLightGroup.size_hint());
+    shader.Bind();
+    shader.SetInt(Shader::POINT_LIGHT_COUNT, pointLightGroup.size_hint());
 
     for (auto it = pointLightGroup.begin(); it != pointLightGroup.end(); ++it)
     {
@@ -88,18 +135,18 @@ void Scene::Render(GLFWwindow *window)
         auto &light = pointLightGroup.get<PointLightComponent>(*it);
         auto &transform = pointLightGroup.get<TransformComponent>(*it);
 
-        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::POSITION, index), transform.Position);
-        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
-        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
-        _modelShader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::SPECULAR, index), light.Specular);
-        _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::CONSTANT, index), light.Linear);
-        _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
-        _modelShader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
+        shader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::POSITION, index), transform.Position);
+        shader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        shader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        shader.SetVec3(Shader::Format(Shader::POINT_LIGHTS, Shader::SPECULAR, index), light.Specular);
+        shader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::CONSTANT, index), light.Linear);
+        shader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
+        shader.SetFloat(Shader::Format(Shader::POINT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
     }
 
     auto spotLightGroup = Scene::ActiveScene->Registry.view<SpotLightComponent, TransformComponent>();
-    _modelShader.Bind();
-    _modelShader.SetInt(Shader::SPOT_LIGHT_COUNT, spotLightGroup.size_hint());
+    shader.Bind();
+    shader.SetInt(Shader::SPOT_LIGHT_COUNT, spotLightGroup.size_hint());
 
     for (auto it = spotLightGroup.begin(); it != spotLightGroup.end(); ++it)
     {
@@ -107,19 +154,21 @@ void Scene::Render(GLFWwindow *window)
         auto &light = spotLightGroup.get<SpotLightComponent>(*it);
         auto &transform = spotLightGroup.get<TransformComponent>(*it);
 
-        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::POSITION, index), transform.Position);
-        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
-        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius)));
-        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius + 5)));
-        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
-        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
-        _modelShader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::SPECULAR, index), light.Specular);
-        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::CONSTANT, index), light.Linear);
-        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
-        _modelShader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
+        shader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::POSITION, index), transform.Position);
+        shader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIRECTION, index), transform.GetDirection());
+        shader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius)));
+        shader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::RADIUS, index), glm::cos(glm::radians(light.Radius + 5)));
+        shader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::AMBIENT, index), light.Ambient);
+        shader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::DIFFUSE, index), light.Diffuse);
+        shader.SetVec3(Shader::Format(Shader::SPOT_LIGHTS, Shader::SPECULAR, index), light.Specular);
+        shader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::CONSTANT, index), light.Linear);
+        shader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::LINEAR, index), light.Quadratic);
+        shader.SetFloat(Shader::Format(Shader::SPOT_LIGHTS, Shader::QUADRATIC, index), light.Quadratic);
     }
+}
 
-    // skybox
+void Scene::RenderSkyBox(Shader &shader)
+{
     glDepthFunc(GL_LEQUAL);
 
     _skyboxShader.Bind();
@@ -128,8 +177,6 @@ void Scene::Render(GLFWwindow *window)
     _skybox.Render(_skyboxShader);
 
     glDepthFunc(GL_LESS);
-
-    _frameBuffer.Unbind();
 }
 
 // unused for now

@@ -51,7 +51,7 @@ void Window::Run()
         _glContext->PreRender();
         _uiContext->PreRender();
 
-        _scene->Render(GetNativeWindow());
+        _scene->Render();
 
         _scenePanel->Render(_glfwWindow);
         _scenePanel->Input(_glfwWindow);

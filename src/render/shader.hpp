@@ -16,6 +16,7 @@ public:
 
     static inline const std::string MODEL_MATRIX = "ModelMatrix";
     static inline const std::string CAMERA_MATRIX = "CameraMatrix";
+    static inline const std::string LIGHT_SPACE_MATRIX = "LightSpaceMatrix";
 
     static inline const std::string CAMERA_PROJECTION = "CameraProjectionMatrix";
     static inline const std::string CAMERA_VIEW_MATRIX = "CameraViewMatrix";

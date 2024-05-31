@@ -1,6 +1,7 @@
 #pragma once
 
 #include "render/frame_buffer.hpp"
+#include "render/shadow_map.hpp"
 #include "render/shader.hpp"
 #include "camera/camera.hpp"
 #include "skybox/skybox.hpp"
@@ -27,7 +28,15 @@ public:
 
     void CreateNewEntity();
     void Resize(float width, float height);
-    void Render(GLFWwindow *window);
+    void Render();
+
+    void ShadowRenderPass();
+    void NormalRenderPass();
+
+    void RenderLights(Shader &shader);
+    void RenderModels(Shader &shader);
+    void RenderSkyBox(Shader &shader);
+
     float GetDeltaTime();
 
     Camera &GetCamera();
@@ -39,11 +48,13 @@ private:
 
     FrameBuffer _frameBuffer;
     FrameBuffer _pickingBuffer;
+    ShadowMap _shadowMap;
 
     Shader _modelShader;
     Shader _lightShader;
     Shader _outlineShader;
     Shader _skyboxShader;
+    Shader _shadowMapShader;
 
     Camera _camera;
     glm::mat4 _viewProjectionMatrix;
