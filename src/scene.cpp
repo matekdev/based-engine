@@ -60,8 +60,8 @@ void Scene::ShadowRenderPass()
 
         glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 75.0f);
         glm::mat4 lightView = glm::lookAt(transform.Position, transform.Position + transform.GetDirection(), glm::vec3(1.0, 0.0, 0.0));
-        glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-        _shadowMapShader.SetMat4(Shader::LIGHT_SPACE_MATRIX, lightSpaceMatrix);
+        _lightSpaceMatrix = lightProjection * lightView;
+        _shadowMapShader.SetMat4(Shader::LIGHT_SPACE_MATRIX, _lightSpaceMatrix);
         RenderModels(_shadowMapShader);
     }
 
@@ -99,8 +99,10 @@ void Scene::RenderModels(Shader &shader)
         shader.SetVec3(Shader::CAMERA_POSITION, _camera.GetPosition());
         shader.SetMat4(Shader::CAMERA_MATRIX, _camera.GetViewProjectionMatrix());
         shader.SetMat4(Shader::MODEL_MATRIX, transform.GetTransform());
+        shader.SetMat4(Shader::LIGHT_SPACE_MATRIX, _lightSpaceMatrix);
         shader.SetBool(Shader::HAS_TEXTURES, model.HasTextures());
 
+        _shadowMap.BindTexture(shader);
         _skybox.BindTexture(shader);
 
         model.Render(shader);

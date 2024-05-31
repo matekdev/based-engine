@@ -1,5 +1,7 @@
 #pragma once
 
+#include "shader.hpp"
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -14,7 +16,7 @@ public:
     void DeleteBuffer();
     void Bind();
     void Unbind();
-    GLuint GetDepthTexture();
+    void BindTexture(Shader &shader);
 
 private:
     GLuint _fbo;

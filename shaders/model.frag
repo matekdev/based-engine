@@ -5,6 +5,7 @@
 in vec3 Normal;
 in vec2 TexCoord;
 in vec3 FragPosition;
+in vec4 FragmentPositionLightSpace;
 
 out vec4 FragColor;
 
@@ -61,7 +62,23 @@ uniform Material MaterialData;
 uniform vec3 CameraPosition;
 uniform bool HasTextures;
 uniform sampler2D Texture0;
+uniform sampler2D ShadowMapTexture;
 uniform samplerCube SkyBoxTexture;
+
+float CalculateShadows() {
+    // TODO: Review and understand.
+    // perform perspective divide
+    vec3 projCoords = FragmentPositionLightSpace.xyz / FragmentPositionLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(ShadowMapTexture, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+    return shadow;
+}
 
 vec4 CalculateDirectionalLight(DirectionalLight light) {
     // ambient
@@ -79,7 +96,9 @@ vec4 CalculateDirectionalLight(DirectionalLight light) {
     float spec = pow(max(dot(normal, halfWayDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
-    vec3 result = ambient + diffuse + specular;
+    float shadow = CalculateShadows();
+
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
     return vec4(result, 1.0);
 }
 

@@ -23,6 +23,7 @@ public:
 
     static inline const std::string TEXTURE = "Texture";
     static inline const std::string SKYBOX_TEXTURE = "SkyBoxTexture";
+    static inline const std::string SHADOW_MAP_TEXTURE = "ShadowMapTexture";
 
     static inline const std::string MATERIAL_AMBIENT = "MaterialData.Ambient";
     static inline const std::string MATERIAL_DIFFUSE = "MaterialData.Diffuse";

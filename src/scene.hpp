@@ -57,7 +57,7 @@ private:
     Shader _shadowMapShader;
 
     Camera _camera;
-    glm::mat4 _viewProjectionMatrix;
+    glm::mat4 _lightSpaceMatrix;
 
     SkyBox _skybox;
 
