@@ -58,8 +58,8 @@ void Scene::ShadowRenderPass()
 
         _shadowMapShader.Bind();
 
-        glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 75.0f);
-        glm::mat4 lightView = glm::lookAt(transform.Position, transform.Position + transform.GetDirection(), glm::vec3(1.0, 0.0, 0.0));
+        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
+        glm::mat4 lightView = glm::lookAt(transform.Position, transform.Position + transform.GetDirection(), glm::vec3(0.0, 1.0, 0.0));
         _lightSpaceMatrix = lightProjection * lightView;
         _shadowMapShader.SetMat4(Shader::LIGHT_SPACE_MATRIX, _lightSpaceMatrix);
         RenderModels(_shadowMapShader);
