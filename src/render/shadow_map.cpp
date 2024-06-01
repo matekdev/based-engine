@@ -58,6 +58,6 @@ void ShadowMap::Unbind()
 void ShadowMap::BindTexture(Shader &shader)
 {
     glActiveTexture(GL_TEXTURE11);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _depthMapTexture);
+    glBindTexture(GL_TEXTURE_2D, _depthMapTexture);
     shader.SetInt(Shader::SHADOW_MAP_TEXTURE, 11);
 }
