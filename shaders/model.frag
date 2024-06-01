@@ -65,18 +65,28 @@ uniform sampler2D Texture0;
 uniform sampler2D ShadowMapTexture;
 uniform samplerCube SkyBoxTexture;
 
-float CalculateShadows() {
-    // TODO: Review and understand.
-    // perform perspective divide
+float CalculateShadows(vec3 lightDirection) {
     vec3 projCoords = FragmentPositionLightSpace.xyz / FragmentPositionLightSpace.w;
-    // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(ShadowMapTexture, projCoords.xy).r; 
-    // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+    vec3 normal = normalize(Normal);
+    vec3 lightDir = normalize(lightDirection - FragPosition);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+    // PCF
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(ShadowMapTexture, 0);
+    for(int x = -1; x <= 1; ++x) {
+        for(int y = -1; y <= 1; ++y) {
+            float pcfDepth = texture(ShadowMapTexture, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
     return shadow;
 }
 
@@ -96,7 +106,7 @@ vec4 CalculateDirectionalLight(DirectionalLight light) {
     float spec = pow(max(dot(normal, halfWayDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
-    float shadow = CalculateShadows();
+    float shadow = CalculateShadows(lightDirection);
 
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
     return vec4(result, 1.0);

@@ -48,6 +48,7 @@ void Scene::ShadowRenderPass()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glCullFace(GL_FRONT);
 
     auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent, TransformComponent>();
     for (auto it = directionalLightGroup.begin(); it != directionalLightGroup.end(); ++it)
@@ -62,8 +63,11 @@ void Scene::ShadowRenderPass()
         glm::mat4 lightView = glm::lookAt(transform.Position, transform.Position + transform.GetDirection(), glm::vec3(0.0, 1.0, 0.0));
         _lightSpaceMatrix = lightProjection * lightView;
         _shadowMapShader.SetMat4(Shader::LIGHT_SPACE_MATRIX, _lightSpaceMatrix);
+
         RenderModels(_shadowMapShader);
     }
+
+    glCullFace(GL_BACK);
 
     _shadowMap.Unbind();
 }
