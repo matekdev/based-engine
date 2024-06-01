@@ -5,6 +5,7 @@
 in vec3 Normal;
 in vec2 TexCoord;
 in vec3 FragPosition;
+in vec4 FragmentPositionLightSpace;
 
 out vec4 FragColor;
 
@@ -61,7 +62,33 @@ uniform Material MaterialData;
 uniform vec3 CameraPosition;
 uniform bool HasTextures;
 uniform sampler2D Texture0;
+uniform sampler2D ShadowMapTexture;
 uniform samplerCube SkyBoxTexture;
+
+float CalculateShadows(vec3 lightDirection) {
+    vec3 projCoords = FragmentPositionLightSpace.xyz / FragmentPositionLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float currentDepth = projCoords.z;
+    vec3 normal = normalize(Normal);
+    vec3 lightDir = normalize(lightDirection - FragPosition);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+    // PCF
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(ShadowMapTexture, 0);
+    for(int x = -1; x <= 1; ++x) {
+        for(int y = -1; y <= 1; ++y) {
+            float pcfDepth = texture(ShadowMapTexture, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}
 
 vec4 CalculateDirectionalLight(DirectionalLight light) {
     // ambient
@@ -79,7 +106,9 @@ vec4 CalculateDirectionalLight(DirectionalLight light) {
     float spec = pow(max(dot(normal, halfWayDirection), 0.0), MaterialData.Shininess);
     vec3 specular = light.Specular * (spec * MaterialData.Specular);
 
-    vec3 result = ambient + diffuse + specular;
+    float shadow = CalculateShadows(lightDirection);
+
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
     return vec4(result, 1.0);
 }
 
