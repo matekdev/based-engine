@@ -10,20 +10,6 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "${SRC_DIR}/*.cpp")
 # use CPM
 include(cmake/CPM.cmake)
 
-# GLAD
-CPMAddPackage(
-  NAME glad
-  GITHUB_REPOSITORY Dav1dde/glad
-  VERSION 0.1.36
-)
-
-# GLM
-CPMAddPackage(
-  NAME glm
-  GITHUB_REPOSITORY g-truc/glm
-  GIT_TAG 0.9.9.8
-)
-
 # GLFW & IMGUI
 CPMAddPackage(
   NAME imgui_cmake_wrapper
@@ -63,7 +49,7 @@ option(ASSIMP_BUILD_TESTS "ASSIMP_BUILD_TESTS" OFF)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
-target_link_libraries(${PROJECT_NAME} PRIVATE glad glm imgui_cmake_wrapper EnTT glog assimp)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui_cmake_wrapper EnTT glog assimp)
 
 # Copy shader files
 add_custom_target(copy_shaders ALL
