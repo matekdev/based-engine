@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 
-void ScenePanel::Render()
+void ScenePanel::Render() const
 {
     ImGui::ShowDemoWindow();
 }

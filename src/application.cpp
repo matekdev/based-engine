@@ -20,7 +20,6 @@ Application::Application(const int &width, const int &height, const std::string 
 
     _dx11Context = std::make_unique<DX11Context>(_glfwWindow, height, width);
     _uiContext = std::make_unique<UIContext>(_glfwWindow, _dx11Context->GetDevice().Get(), _dx11Context->GetDeviceContext().Get());
-
     _scenePanel = std::make_unique<ScenePanel>();
 }
 
@@ -48,12 +47,12 @@ void Application::Run() const
 
 void Application::ResizeCallback(GLFWwindow *window, const int32_t width, const int32_t height)
 {
-    Application *application = static_cast<Application *>(glfwGetWindowUserPointer(window));
+    const auto *application = static_cast<Application *>(glfwGetWindowUserPointer(window));
     if (application)
         application->OnResize(width, height);
 }
 
-void Application::OnResize(const int32_t width, const int32_t height)
+void Application::OnResize(const int32_t width, const int32_t height) const
 {
     _dx11Context->OnResize(width, height);
 }

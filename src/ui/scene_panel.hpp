@@ -3,5 +3,5 @@
 class ScenePanel
 {
 public:
-    void Render();
+    void Render() const;
 };

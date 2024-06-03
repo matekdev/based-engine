@@ -62,12 +62,12 @@ DX11Context::~DX11Context()
     _device.Reset();
 }
 
-Microsoft::WRL::ComPtr<ID3D11Device> DX11Context::GetDevice()
+const Microsoft::WRL::ComPtr<ID3D11Device> &DX11Context::GetDevice() const
 {
     return _device;
 }
 
-Microsoft::WRL::ComPtr<ID3D11DeviceContext> DX11Context::GetDeviceContext()
+const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &DX11Context::GetDeviceContext() const
 {
     return _deviceContext;
 }
@@ -83,7 +83,7 @@ void DX11Context::OnResize(const int &width, const int &height)
     CreateSwapChain();
 }
 
-void DX11Context::Render()
+void DX11Context::Render() const
 {
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0;
@@ -93,7 +93,7 @@ void DX11Context::Render()
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
 
-    constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
+    const float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
 
     _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
     _deviceContext->RSSetViewports(1, &viewport);

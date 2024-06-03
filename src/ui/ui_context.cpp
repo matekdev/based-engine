@@ -4,10 +4,10 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_dx11.h>
 
-UIContext::UIContext(GLFWwindow *glfwWindow, ID3D11Device *device, ID3D11DeviceContext *deviceContext)
+UIContext::UIContext(GLFWwindow *glfwWindow,
+                     const Microsoft::WRL::ComPtr<ID3D11Device> &device,
+                     const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &deviceContext)
 {
-    const char *glsl_version = "#version 460";
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
@@ -70,7 +70,7 @@ UIContext::UIContext(GLFWwindow *glfwWindow, ID3D11Device *device, ID3D11DeviceC
     style.PopupRounding = 4.00f;
 
     ImGui_ImplGlfw_InitForOther(glfwWindow, true);
-    ImGui_ImplDX11_Init(device, deviceContext);
+    ImGui_ImplDX11_Init(device.Get(), deviceContext.Get());
 }
 
 UIContext::~UIContext()
@@ -80,7 +80,7 @@ UIContext::~UIContext()
     ImGui::DestroyContext();
 }
 
-void UIContext::PreRender()
+void UIContext::PreRender() const
 {
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -109,7 +109,7 @@ void UIContext::PreRender()
     ImGui::End();
 }
 
-void UIContext::PostRender()
+void UIContext::PostRender() const
 {
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
