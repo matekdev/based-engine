@@ -5,14 +5,9 @@
 #define GLFW_NATIVE_INCLUDE_NONE
 #include <GLFW/glfw3native.h>
 
-#include <DirectXMath.h>
-#include <d3dcompiler.h>
-
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "dxguid.lib")
 
 DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &height) : _width(width), _height(_height)
 {
@@ -65,6 +60,16 @@ DX11Context::~DX11Context()
     _dxgiFactory.Reset();
     _deviceContext.Reset();
     _device.Reset();
+}
+
+Microsoft::WRL::ComPtr<ID3D11Device> DX11Context::GetDevice()
+{
+    return _device;
+}
+
+Microsoft::WRL::ComPtr<ID3D11DeviceContext> DX11Context::GetDeviceContext()
+{
+    return _deviceContext;
 }
 
 void DX11Context::OnResize(const int &width, const int &height)

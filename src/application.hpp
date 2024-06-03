@@ -1,6 +1,8 @@
 #pragma once
 
-#include "dx11_context.hpp"
+#include "render/dx11_context.hpp"
+
+#include "ui/ui_context.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -21,6 +23,7 @@ protected:
 private:
     GLFWwindow *_glfwWindow;
     std::unique_ptr<DX11Context> _dx11Context;
+    std::unique_ptr<UIContext> _uiContext;
 
     int _width;
     int _height;
