@@ -3,6 +3,7 @@
 #include "render/dx11_context.hpp"
 
 #include "ui/ui_context.hpp"
+#include "ui/scene_panel.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -24,6 +25,8 @@ private:
     GLFWwindow *_glfwWindow;
     std::unique_ptr<DX11Context> _dx11Context;
     std::unique_ptr<UIContext> _uiContext;
+
+    std::unique_ptr<ScenePanel> _scenePanel;
 
     int _width;
     int _height;

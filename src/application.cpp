@@ -20,6 +20,8 @@ Application::Application(const int &width, const int &height, const std::string 
 
     _dx11Context = std::make_unique<DX11Context>(_glfwWindow, height, width);
     _uiContext = std::make_unique<UIContext>(_glfwWindow, _dx11Context->GetDevice().Get(), _dx11Context->GetDeviceContext().Get());
+
+    _scenePanel = std::make_unique<ScenePanel>();
 }
 
 Application::~Application()
@@ -35,6 +37,8 @@ void Application::Run() const
         _uiContext->PreRender();
 
         _dx11Context->Render();
+
+        _scenePanel->Render();
 
         _uiContext->PostRender();
 
