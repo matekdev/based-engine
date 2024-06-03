@@ -82,8 +82,8 @@ UIContext::~UIContext()
 
 void UIContext::PreRender() const
 {
-    ImGui_ImplDX11_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplDX11_NewFrame();
     ImGui::NewFrame();
 
     // Create the docking environment

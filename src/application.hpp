@@ -4,6 +4,7 @@
 
 #include "ui/ui_context.hpp"
 #include "ui/scene_panel.hpp"
+#include "ui/console_panel.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -23,6 +24,7 @@ private:
     std::unique_ptr<DX11Context> _dx11Context;
     std::unique_ptr<UIContext> _uiContext;
     std::unique_ptr<ScenePanel> _scenePanel;
+    std::unique_ptr<ConsolePanel> _consolePanel;
 
     int _width;
     int _height;
