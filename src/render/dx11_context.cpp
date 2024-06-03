@@ -103,7 +103,7 @@ void DX11Context::Render() const
 
 void DX11Context::CreateSwapChain()
 {
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     _swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
     _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _renderTargetView.GetAddressOf());
 }
