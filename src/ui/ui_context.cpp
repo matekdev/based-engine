@@ -1,8 +1,8 @@
 #include "ui_context.hpp"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_dx11.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_dx11.h>
 
 UIContext::UIContext(GLFWwindow *glfwWindow, ID3D11Device *device, ID3D11DeviceContext *deviceContext)
 {
@@ -70,19 +70,19 @@ UIContext::UIContext(GLFWwindow *glfwWindow, ID3D11Device *device, ID3D11DeviceC
     style.PopupRounding = 4.00f;
 
     ImGui_ImplGlfw_InitForOther(glfwWindow, true);
-    // ImGui_ImplDX11_Init(device, deviceContext);
+    ImGui_ImplDX11_Init(device, deviceContext);
 }
 
 UIContext::~UIContext()
 {
-    // ImGui_ImplDX11_Shutdown();
+    ImGui_ImplDX11_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
 
 void UIContext::PreRender()
 {
-    // ImGui_ImplDX11_NewFrame();
+    ImGui_ImplDX11_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
@@ -112,7 +112,7 @@ void UIContext::PreRender()
 void UIContext::PostRender()
 {
     ImGui::Render();
-    // ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     ImGuiIO &io = ImGui::GetIO();
 
