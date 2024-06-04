@@ -1,5 +1,7 @@
 #include "dx11_context.hpp"
 
+#include "log.hpp"
+
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WGL
 #define GLFW_NATIVE_INCLUDE_NONE
@@ -11,20 +13,34 @@
 
 DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &height) : _width(width), _height(_height)
 {
-    CreateDXGIFactory1(IID_PPV_ARGS(_dxgiFactory.GetAddressOf()));
+    if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory))))
+    {
+        LOG(ERROR) << "Failed to create DXGIFactory";
+        return;
+    }
+
+    if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(_dxgiFactory.GetAddressOf()))))
+    {
+        LOG(ERROR) << "Failed to create DXGIFactory";
+        return;
+    }
 
     D3D_FEATURE_LEVEL deviceFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
-    D3D11CreateDevice(
-        nullptr,
-        D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE,
-        nullptr,
-        0,
-        &deviceFeatureLevel,
-        1,
-        D3D11_SDK_VERSION,
-        _device.GetAddressOf(),
-        nullptr,
-        _deviceContext.GetAddressOf());
+    if (FAILED(D3D11CreateDevice(
+            nullptr,
+            D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE,
+            nullptr,
+            0,
+            &deviceFeatureLevel,
+            1,
+            D3D11_SDK_VERSION,
+            _device.GetAddressOf(),
+            nullptr,
+            _deviceContext.GetAddressOf())))
+    {
+        LOG(ERROR) << "Failed to create DXGIDevice";
+        return;
+    }
 
     DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
     swapChainDescriptor.Width = width;
@@ -41,13 +57,17 @@ DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &he
     DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFullscreenDescriptor = {};
     swapChainFullscreenDescriptor.Windowed = true;
 
-    _dxgiFactory->CreateSwapChainForHwnd(
-        _device.Get(),
-        glfwGetWin32Window(glfwWindow),
-        &swapChainDescriptor,
-        &swapChainFullscreenDescriptor,
-        nullptr,
-        _swapChain.GetAddressOf());
+    if (FAILED(_dxgiFactory->CreateSwapChainForHwnd(
+            _device.Get(),
+            glfwGetWin32Window(glfwWindow),
+            &swapChainDescriptor,
+            &swapChainFullscreenDescriptor,
+            nullptr,
+            _swapChain.GetAddressOf())))
+    {
+        LOG(INFO) << "Failed to create swap chain";
+        return;
+    }
 
     CreateSwapChain();
 }

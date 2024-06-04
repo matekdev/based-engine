@@ -43,8 +43,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC src)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui_cmake_wrapper glog EnTT)
 
-add_compile_options(-include ${CMAKE_SOURCE_DIR}/glog/logging.h)
-
 # Copy shader files
 add_custom_target(copy_shaders ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
