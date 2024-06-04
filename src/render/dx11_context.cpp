@@ -1,5 +1,6 @@
 #include "dx11_context.hpp"
 
+#include "vertex.hpp"
 #include "log.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -7,11 +8,15 @@
 #define GLFW_NATIVE_INCLUDE_NONE
 #include <GLFW/glfw3native.h>
 
+#include <d3dcompiler.h>
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &height) : _width(width), _height(_height)
+#include <stddef.h>
+
+DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &height) : _width(width), _height(height)
 {
     if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory))))
     {
@@ -70,6 +75,7 @@ DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &he
     }
 
     CreateSwapChain();
+    InitializeShaders();
 }
 
 DX11Context::~DX11Context()
@@ -109,15 +115,41 @@ void DX11Context::Render() const
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
     viewport.Width = static_cast<float>(_width);
-    viewport.Height = static_cast<float>(_width);
+    viewport.Height = static_cast<float>(_height);
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
 
-    const float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
+    constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
+    constexpr UINT vertexStride = sizeof(VertexPositionColor);
+    constexpr UINT vertexOffset = 0;
 
-    _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
-    _deviceContext->RSSetViewports(1, &viewport);
-    _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
+    _deviceContext->ClearRenderTargetView(
+        _renderTargetView.Get(),
+        clearColor);
+    _deviceContext->IASetInputLayout(_inputLayout.Get());
+    _deviceContext->IASetVertexBuffers(
+        0,
+        1,
+        _triangleVertices.GetAddressOf(),
+        &vertexStride,
+        &vertexOffset);
+    _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    _deviceContext->VSSetShader(
+        _vertexShader.Get(),
+        nullptr,
+        0);
+    _deviceContext->RSSetViewports(
+        1,
+        &viewport);
+    _deviceContext->PSSetShader(
+        _pixelShader.Get(),
+        nullptr,
+        0);
+    _deviceContext->OMSetRenderTargets(
+        1,
+        _renderTargetView.GetAddressOf(),
+        nullptr);
+    _deviceContext->Draw(3, 0);
     _swapChain->Present(1, 0);
 }
 
@@ -131,4 +163,123 @@ void DX11Context::CreateSwapChain()
 void DX11Context::DeleteSwapChain()
 {
     _renderTargetView.Reset();
+}
+
+// TODO: Move and refactor
+void DX11Context::InitializeShaders()
+{
+    Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob = nullptr;
+    _vertexShader = CreateVertexShader(L"shaders/model.vs.hlsl", vertexShaderBlob);
+    _pixelShader = CreatePixelShader(L"shaders/model.ps.hlsl");
+
+    const D3D11_INPUT_ELEMENT_DESC layout[] = {
+        {"POSITION",
+         0,
+         DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+         0,
+         D3D11_APPEND_ALIGNED_ELEMENT,
+         D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
+         0},
+        {"COLOR",
+         0,
+         DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+         0,
+         D3D11_APPEND_ALIGNED_ELEMENT,
+         D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
+         0},
+    };
+
+    const auto numElements = ARRAYSIZE(layout);
+    if (FAILED(_device->CreateInputLayout(layout,
+                                          numElements,
+                                          vertexShaderBlob->GetBufferPointer(),
+                                          vertexShaderBlob->GetBufferSize(),
+                                          _inputLayout.GetAddressOf())))
+        LOG(ERROR) << "Failed to create input layout";
+
+    constexpr VertexPositionColor vertices[] = {
+        {DirectX::XMFLOAT3{0.0f, 0.5f, 0.0f}, DirectX::XMFLOAT3{0.25f, 0.39f, 0.19f}},
+        {DirectX::XMFLOAT3{0.5f, -0.5f, 0.0f}, DirectX::XMFLOAT3{0.44f, 0.75f, 0.35f}},
+        {DirectX::XMFLOAT3{-0.5f, -0.5f, 0.0f}, DirectX::XMFLOAT3{0.38f, 0.55f, 0.20f}},
+    };
+    D3D11_BUFFER_DESC bufferInfo = {};
+    bufferInfo.ByteWidth = sizeof(vertices);
+    bufferInfo.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
+    bufferInfo.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA resourceData = {};
+    resourceData.pSysMem = vertices;
+
+    if (FAILED(_device->CreateBuffer(
+            &bufferInfo,
+            &resourceData,
+            &_triangleVertices)))
+        LOG(ERROR) << "Failed to create vertex buffer";
+}
+
+Microsoft::WRL::ComPtr<ID3D11VertexShader> DX11Context::CreateVertexShader(
+    const std::wstring &fileName,
+    Microsoft::WRL::ComPtr<ID3DBlob> &vertexShaderBlob) const
+{
+    if (!CompileShader(fileName, "Main", "vs_5_0", vertexShaderBlob))
+        LOG(ERROR) << "Failed to compile vertex shader";
+
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
+    if (FAILED(_device->CreateVertexShader(
+            vertexShaderBlob->GetBufferPointer(),
+            vertexShaderBlob->GetBufferSize(),
+            nullptr,
+            &vertexShader)))
+        LOG(ERROR) << "Failed to compile vertex shader";
+
+    return vertexShader;
+}
+
+Microsoft::WRL::ComPtr<ID3D11PixelShader> DX11Context::CreatePixelShader(const std::wstring &fileName) const
+{
+    Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob = nullptr;
+    if (!CompileShader(fileName, "Main", "ps_5_0", pixelShaderBlob))
+    {
+        return nullptr;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
+    if (FAILED(_device->CreatePixelShader(
+            pixelShaderBlob->GetBufferPointer(),
+            pixelShaderBlob->GetBufferSize(),
+            nullptr,
+            &pixelShader)))
+    {
+        return nullptr;
+    }
+
+    return pixelShader;
+}
+
+bool DX11Context::CompileShader(
+    const std::wstring &fileName,
+    const std::string &entryPoint,
+    const std::string &profile,
+    Microsoft::WRL::ComPtr<ID3DBlob> &shaderBlob) const
+{
+    constexpr uint32_t compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> tempShaderBlob = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
+    if (FAILED(D3DCompileFromFile(
+            fileName.data(),
+            nullptr,
+            D3D_COMPILE_STANDARD_FILE_INCLUDE,
+            entryPoint.data(),
+            profile.data(),
+            compileFlags,
+            0,
+            &tempShaderBlob,
+            &errorBlob)))
+    {
+        return false;
+    }
+
+    shaderBlob = std::move(tempShaderBlob);
+    return true;
 }

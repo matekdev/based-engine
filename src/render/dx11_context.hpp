@@ -6,6 +6,8 @@
 #include <dxgi1_3.h>
 #include <wrl.h>
 
+#include <string>
+
 class DX11Context
 {
 public:
@@ -30,4 +32,20 @@ private:
 
     void CreateSwapChain();
     void DeleteSwapChain();
+
+    // TODO: Move this stuff into seperate files probably
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> _inputLayout;
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> _vertexShader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> _pixelShader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> _triangleVertices = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> CreateVertexShader(const std::wstring &fileName, Microsoft::WRL::ComPtr<ID3DBlob> &vertexShaderBlob) const;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> CreatePixelShader(const std::wstring &fileName) const;
+    bool CompileShader(
+        const std::wstring &fileName,
+        const std::string &entryPoint,
+        const std::string &profile,
+        Microsoft::WRL::ComPtr<ID3DBlob> &shaderBlob) const;
+
+    void InitializeShaders();
 };

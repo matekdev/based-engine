@@ -38,7 +38,7 @@ void Application::Run() const
     {
         _uiContext->PreRender();
 
-        // _dx11Context->Render();
+        _dx11Context->Render();
 
         _scenePanel->Render();
         _consolePanel->Render();
