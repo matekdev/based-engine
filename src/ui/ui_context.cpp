@@ -82,8 +82,8 @@ UIContext::~UIContext()
 
 void UIContext::PreRender() const
 {
-    ImGui_ImplGlfw_NewFrame();
     ImGui_ImplDX11_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
     // Create the docking environment
@@ -92,10 +92,10 @@ void UIContext::PreRender() const
                                    ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
                                    ImGuiWindowFlags_NoBackground;
 
-    ImGuiViewport *viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
-    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGuiViewport *viewPort = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewPort->Pos);
+    ImGui::SetNextWindowSize(viewPort->Size);
+    ImGui::SetNextWindowViewport(viewPort->ID);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);

@@ -4,5 +4,4 @@
 
 void ScenePanel::Render() const
 {
-    ImGui::ShowDemoWindow();
 }
