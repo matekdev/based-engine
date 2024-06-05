@@ -11,14 +11,15 @@
 class DX11Context
 {
 public:
-    DX11Context(GLFWwindow *glfwWindow, const int &width, const int &height);
+    DX11Context(GLFWwindow *glfwWindow);
     ~DX11Context();
 
     const Microsoft::WRL::ComPtr<ID3D11Device> &GetDevice() const;
     const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &GetDeviceContext() const;
 
     void OnResize(const int &width, const int &height);
-    void Render() const;
+    void PreRender() const;
+    void PostRender() const;
 
 private:
     int _width;

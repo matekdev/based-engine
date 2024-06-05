@@ -16,7 +16,11 @@
 
 #include <stddef.h>
 
-DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &height) : _width(width), _height(height)
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_dx11.h>
+
+DX11Context::DX11Context(GLFWwindow *glfwWindow)
 {
     if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory))))
     {
@@ -48,8 +52,6 @@ DX11Context::DX11Context(GLFWwindow *glfwWindow, const int &width, const int &he
     }
 
     DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
-    swapChainDescriptor.Width = width;
-    swapChainDescriptor.Height = height;
     swapChainDescriptor.Format = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
     swapChainDescriptor.SampleDesc.Count = 1;
     swapChainDescriptor.SampleDesc.Quality = 0;
@@ -109,7 +111,7 @@ void DX11Context::OnResize(const int &width, const int &height)
     CreateSwapChain();
 }
 
-void DX11Context::Render() const
+void DX11Context::PreRender() const
 {
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0;
@@ -123,33 +125,21 @@ void DX11Context::Render() const
     constexpr UINT vertexStride = sizeof(VertexPositionColor);
     constexpr UINT vertexOffset = 0;
 
-    _deviceContext->ClearRenderTargetView(
-        _renderTargetView.Get(),
-        clearColor);
+    _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
+
     _deviceContext->IASetInputLayout(_inputLayout.Get());
-    _deviceContext->IASetVertexBuffers(
-        0,
-        1,
-        _triangleVertices.GetAddressOf(),
-        &vertexStride,
-        &vertexOffset);
+    _deviceContext->IASetVertexBuffers(0, 1, _triangleVertices.GetAddressOf(), &vertexStride, &vertexOffset);
     _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    _deviceContext->VSSetShader(
-        _vertexShader.Get(),
-        nullptr,
-        0);
-    _deviceContext->RSSetViewports(
-        1,
-        &viewport);
-    _deviceContext->PSSetShader(
-        _pixelShader.Get(),
-        nullptr,
-        0);
-    _deviceContext->OMSetRenderTargets(
-        1,
-        _renderTargetView.GetAddressOf(),
-        nullptr);
+
+    _deviceContext->VSSetShader(_vertexShader.Get(), nullptr, 0);
+    _deviceContext->RSSetViewports(1, &viewport);
+    _deviceContext->PSSetShader(_pixelShader.Get(), nullptr, 0);
+    _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
     _deviceContext->Draw(3, 0);
+}
+
+void DX11Context::PostRender() const
+{
     _swapChain->Present(1, 0);
 }
 
