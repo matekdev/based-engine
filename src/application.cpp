@@ -41,6 +41,7 @@ void Application::Run() const
         _uiContext->PreRender();
         _dx11Context->PreRender();
 
+        _scenePanel->Render();
         _consolePanel->Render();
 
         _uiContext->PostRender();
