@@ -1,5 +1,6 @@
 #include "dx11_context.hpp"
 
+#include "shader.hpp"
 #include "vertex.hpp"
 #include "log.hpp"
 
@@ -90,12 +91,12 @@ DX11Context::~DX11Context()
     _device.Reset();
 }
 
-const Microsoft::WRL::ComPtr<ID3D11Device> &DX11Context::GetDevice() const
+const Microsoft::WRL::ComPtr<ID3D11Device> &DX11Context::GetDevice()
 {
     return _device;
 }
 
-const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &DX11Context::GetDeviceContext() const
+const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &DX11Context::GetDeviceContext()
 {
     return _deviceContext;
 }
@@ -158,9 +159,11 @@ void DX11Context::DeleteSwapChain()
 // TODO: Move and refactor
 void DX11Context::InitializeShaders()
 {
-    Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob = nullptr;
-    _vertexShader = CreateVertexShader(L"shaders/model.vs.hlsl", vertexShaderBlob);
-    _pixelShader = CreatePixelShader(L"shaders/model.ps.hlsl");
+    const auto vertexShaderData = Shader::CreateVertexShader(_device, L"shaders/model.vs.hlsl");
+    const auto vertexShaderBlob = vertexShaderData.VertexShaderBlob;
+    _vertexShader = vertexShaderData.VertexShader;
+
+    _pixelShader = Shader::CreatePixelShader(_device, L"shaders/model.ps.hlsl");
 
     const D3D11_INPUT_ELEMENT_DESC layout[] = {
         {"POSITION",
@@ -205,71 +208,4 @@ void DX11Context::InitializeShaders()
             &resourceData,
             &_triangleVertices)))
         LOG(ERROR) << "Failed to create vertex buffer";
-}
-
-Microsoft::WRL::ComPtr<ID3D11VertexShader> DX11Context::CreateVertexShader(
-    const std::wstring &fileName,
-    Microsoft::WRL::ComPtr<ID3DBlob> &vertexShaderBlob) const
-{
-    if (!CompileShader(fileName, "Main", "vs_5_0", vertexShaderBlob))
-        LOG(ERROR) << "Failed to compile vertex shader";
-
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
-    if (FAILED(_device->CreateVertexShader(
-            vertexShaderBlob->GetBufferPointer(),
-            vertexShaderBlob->GetBufferSize(),
-            nullptr,
-            &vertexShader)))
-        LOG(ERROR) << "Failed to compile vertex shader";
-
-    return vertexShader;
-}
-
-Microsoft::WRL::ComPtr<ID3D11PixelShader> DX11Context::CreatePixelShader(const std::wstring &fileName) const
-{
-    Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob = nullptr;
-    if (!CompileShader(fileName, "Main", "ps_5_0", pixelShaderBlob))
-    {
-        return nullptr;
-    }
-
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
-    if (FAILED(_device->CreatePixelShader(
-            pixelShaderBlob->GetBufferPointer(),
-            pixelShaderBlob->GetBufferSize(),
-            nullptr,
-            &pixelShader)))
-    {
-        return nullptr;
-    }
-
-    return pixelShader;
-}
-
-bool DX11Context::CompileShader(
-    const std::wstring &fileName,
-    const std::string &entryPoint,
-    const std::string &profile,
-    Microsoft::WRL::ComPtr<ID3DBlob> &shaderBlob) const
-{
-    constexpr uint32_t compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-    Microsoft::WRL::ComPtr<ID3DBlob> tempShaderBlob = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
-    if (FAILED(D3DCompileFromFile(
-            fileName.data(),
-            nullptr,
-            D3D_COMPILE_STANDARD_FILE_INCLUDE,
-            entryPoint.data(),
-            profile.data(),
-            compileFlags,
-            0,
-            &tempShaderBlob,
-            &errorBlob)))
-    {
-        return false;
-    }
-
-    shaderBlob = std::move(tempShaderBlob);
-    return true;
 }
