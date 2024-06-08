@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scene.hpp"
 #include "render/dx11_context.hpp"
 
 #include "ui/ui_context.hpp"
@@ -23,6 +24,8 @@ private:
     GLFWwindow *_glfwWindow;
     std::unique_ptr<DX11Context> _dx11Context;
     std::unique_ptr<UIContext> _uiContext;
+
+    std::unique_ptr<Scene> _scene;
     std::unique_ptr<ScenePanel> _scenePanel;
     std::unique_ptr<ConsolePanel> _consolePanel;
 
@@ -30,5 +33,5 @@ private:
     int _height;
 
     inline static void ResizeCallback(GLFWwindow *window, const int32_t width, const int32_t height);
-    void OnResize(const int32_t width, const int32_t height) const;
+    void OnResize(const int32_t width, const int32_t height);
 };

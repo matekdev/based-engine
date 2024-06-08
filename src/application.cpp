@@ -24,8 +24,9 @@ Application::Application(const int &width, const int &height, const std::string 
     _dx11Context = std::make_unique<DX11Context>(_glfwWindow);
     _dx11Context->OnResize(width, height);
 
-    _uiContext = std::make_unique<UIContext>(_glfwWindow, _dx11Context->GetDevice().Get(), _dx11Context->GetDeviceContext().Get());
+    _scene = std::make_unique<Scene>();
     _scenePanel = std::make_unique<ScenePanel>();
+    _uiContext = std::make_unique<UIContext>(_glfwWindow, _dx11Context->GetDevice().Get(), _dx11Context->GetDeviceContext().Get());
 }
 
 Application::~Application()
@@ -41,11 +42,15 @@ void Application::Run() const
         _uiContext->PreRender();
         _dx11Context->PreRender();
 
-        _scenePanel->Render();
+        _scene->Render();
+
         _consolePanel->Render();
 
         _uiContext->PostRender();
         _dx11Context->PostRender();
+
+        // TODO: Move to scene panel?
+        _scene->GetCamera().Update(_width, _height, _glfwWindow);
 
         glfwPollEvents();
     }
@@ -53,12 +58,15 @@ void Application::Run() const
 
 void Application::ResizeCallback(GLFWwindow *window, const int32_t width, const int32_t height)
 {
-    const auto *application = static_cast<Application *>(glfwGetWindowUserPointer(window));
+    auto *application = static_cast<Application *>(glfwGetWindowUserPointer(window));
     if (application)
         application->OnResize(width, height);
 }
 
-void Application::OnResize(const int32_t width, const int32_t height) const
+void Application::OnResize(const int32_t width, const int32_t height)
 {
+    _width = width;
+    _height = height;
+
     _dx11Context->OnResize(width, height);
 }

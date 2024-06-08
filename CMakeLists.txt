@@ -33,6 +33,13 @@ CPMAddPackage(
   DOWNLOAD_ONLY True
 )
 
+# GLM
+CPMAddPackage(
+  NAME glm
+  GITHUB_REPOSITORY g-truc/glm
+  GIT_TAG 0.9.9.8
+)
+
 if(EnTT_ADDED)
   add_library(EnTT INTERFACE)
   target_include_directories(EnTT SYSTEM INTERFACE ${EnTT_SOURCE_DIR}/src)
@@ -41,7 +48,7 @@ endif()
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
-target_link_libraries(${PROJECT_NAME} PRIVATE imgui_cmake_wrapper glog EnTT)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm imgui_cmake_wrapper glog EnTT)
 
 # Copy shader files
 add_custom_target(copy_shaders ALL
