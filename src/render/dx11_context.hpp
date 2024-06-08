@@ -1,5 +1,8 @@
 #pragma once
 
+#include "render/vertex_shader.hpp"
+#include "render/pixel_shader.hpp"
+
 #include <GLFW/glfw3.h>
 
 #include <d3d11.h>
@@ -7,6 +10,7 @@
 #include <wrl.h>
 
 #include <string>
+#include <memory>
 
 class DX11Context
 {
@@ -34,11 +38,10 @@ private:
     void CreateSwapChain();
     void DeleteSwapChain();
 
-    // TODO: Move this stuff into seperate files probably
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> _inputLayout;
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> _vertexShader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> _pixelShader = nullptr;
+    std::unique_ptr<VertexShader> _vertexShader;
+    std::unique_ptr<PixelShader> _pixelShader;
     Microsoft::WRL::ComPtr<ID3D11Buffer> _triangleVertices = nullptr;
 
     void InitializeShaders();
+    void CreateVertexBuffers();
 };

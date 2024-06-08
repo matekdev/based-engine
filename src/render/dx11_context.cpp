@@ -1,6 +1,5 @@
 #include "dx11_context.hpp"
 
-#include "shader.hpp"
 #include "vertex.hpp"
 #include "log.hpp"
 
@@ -79,6 +78,7 @@ DX11Context::DX11Context(GLFWwindow *glfwWindow)
 
     CreateSwapChain();
     InitializeShaders();
+    CreateVertexBuffers();
 }
 
 DX11Context::~DX11Context()
@@ -128,13 +128,15 @@ void DX11Context::PreRender() const
 
     _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
 
-    _deviceContext->IASetInputLayout(_inputLayout.Get());
     _deviceContext->IASetVertexBuffers(0, 1, _triangleVertices.GetAddressOf(), &vertexStride, &vertexOffset);
     _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    _deviceContext->VSSetShader(_vertexShader.Get(), nullptr, 0);
+    _vertexShader->Bind(_deviceContext);
+
     _deviceContext->RSSetViewports(1, &viewport);
-    _deviceContext->PSSetShader(_pixelShader.Get(), nullptr, 0);
+
+    _pixelShader->Bind(_deviceContext);
+
     _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
     _deviceContext->Draw(3, 0);
 }
@@ -156,40 +158,14 @@ void DX11Context::DeleteSwapChain()
     _renderTargetView.Reset();
 }
 
-// TODO: Move and refactor
 void DX11Context::InitializeShaders()
 {
-    const auto vertexShaderData = Shader::CreateVertexShader(_device, L"shaders/model.vs.hlsl");
-    const auto vertexShaderBlob = vertexShaderData.VertexShaderBlob;
-    _vertexShader = vertexShaderData.VertexShader;
+    _vertexShader = std::make_unique<VertexShader>(_device, L"shaders/model.vs.hlsl");
+    _pixelShader = std::make_unique<PixelShader>(_device, L"shaders/model.ps.hlsl");
+}
 
-    _pixelShader = Shader::CreatePixelShader(_device, L"shaders/model.ps.hlsl");
-
-    const D3D11_INPUT_ELEMENT_DESC layout[] = {
-        {"POSITION",
-         0,
-         DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
-         0,
-         D3D11_APPEND_ALIGNED_ELEMENT,
-         D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
-         0},
-        {"COLOR",
-         0,
-         DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
-         0,
-         D3D11_APPEND_ALIGNED_ELEMENT,
-         D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
-         0},
-    };
-
-    const auto numElements = ARRAYSIZE(layout);
-    if (FAILED(_device->CreateInputLayout(layout,
-                                          numElements,
-                                          vertexShaderBlob->GetBufferPointer(),
-                                          vertexShaderBlob->GetBufferSize(),
-                                          _inputLayout.GetAddressOf())))
-        LOG(ERROR) << "Failed to create input layout";
-
+void DX11Context::CreateVertexBuffers()
+{
     constexpr VertexPositionColor vertices[] = {
         {DirectX::XMFLOAT3{0.0f, 0.5f, 0.0f}, DirectX::XMFLOAT3{0.25f, 0.39f, 0.19f}},
         {DirectX::XMFLOAT3{0.5f, -0.5f, 0.0f}, DirectX::XMFLOAT3{0.44f, 0.75f, 0.35f}},
