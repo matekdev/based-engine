@@ -12,11 +12,11 @@
 #include <string>
 #include <memory>
 
-class DX11Context
+class Renderer
 {
 public:
-    DX11Context(GLFWwindow *glfwWindow);
-    ~DX11Context();
+    Renderer(GLFWwindow *glfwWindow);
+    ~Renderer();
 
     static const Microsoft::WRL::ComPtr<ID3D11Device> &GetDevice();
     static const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &GetDeviceContext();

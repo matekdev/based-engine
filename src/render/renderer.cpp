@@ -1,4 +1,4 @@
-#include "dx11_context.hpp"
+#include "renderer.hpp"
 
 #include "vertex.hpp"
 #include "log.hpp"
@@ -20,7 +20,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_dx11.h>
 
-DX11Context::DX11Context(GLFWwindow *glfwWindow)
+Renderer::Renderer(GLFWwindow *glfwWindow)
 {
     if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory))))
     {
@@ -81,7 +81,7 @@ DX11Context::DX11Context(GLFWwindow *glfwWindow)
     CreateVertexBuffers();
 }
 
-DX11Context::~DX11Context()
+Renderer::~Renderer()
 {
     _deviceContext->Flush();
     DeleteSwapChain();
@@ -91,17 +91,17 @@ DX11Context::~DX11Context()
     _device.Reset();
 }
 
-const Microsoft::WRL::ComPtr<ID3D11Device> &DX11Context::GetDevice()
+const Microsoft::WRL::ComPtr<ID3D11Device> &Renderer::GetDevice()
 {
     return _device;
 }
 
-const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &DX11Context::GetDeviceContext()
+const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &Renderer::GetDeviceContext()
 {
     return _deviceContext;
 }
 
-void DX11Context::OnResize(const int &width, const int &height)
+void Renderer::OnResize(const int &width, const int &height)
 {
     _width = width;
     _height = height;
@@ -112,7 +112,7 @@ void DX11Context::OnResize(const int &width, const int &height)
     CreateSwapChain();
 }
 
-void DX11Context::PreRender() const
+void Renderer::PreRender() const
 {
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0;
@@ -141,30 +141,30 @@ void DX11Context::PreRender() const
     _deviceContext->Draw(3, 0);
 }
 
-void DX11Context::PostRender() const
+void Renderer::PostRender() const
 {
     _swapChain->Present(1, 0);
 }
 
-void DX11Context::CreateSwapChain()
+void Renderer::CreateSwapChain()
 {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     _swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
     _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _renderTargetView.GetAddressOf());
 }
 
-void DX11Context::DeleteSwapChain()
+void Renderer::DeleteSwapChain()
 {
     _renderTargetView.Reset();
 }
 
-void DX11Context::InitializeShaders()
+void Renderer::InitializeShaders()
 {
     _vertexShader = std::make_unique<VertexShader>(_device, L"shaders/model.vs.hlsl");
     _pixelShader = std::make_unique<PixelShader>(_device, L"shaders/model.ps.hlsl");
 }
 
-void DX11Context::CreateVertexBuffers()
+void Renderer::CreateVertexBuffers()
 {
     constexpr VertexPositionColor vertices[] = {
         {DirectX::XMFLOAT3{0.0f, 0.5f, 0.0f}, DirectX::XMFLOAT3{0.25f, 0.39f, 0.19f}},

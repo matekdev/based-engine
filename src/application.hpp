@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene.hpp"
-#include "render/dx11_context.hpp"
+#include "render/renderer.hpp"
 
 #include "ui/ui_context.hpp"
 #include "ui/scene_panel.hpp"
@@ -22,7 +22,7 @@ public:
 
 private:
     GLFWwindow *_glfwWindow;
-    std::unique_ptr<DX11Context> _dx11Context;
+    std::unique_ptr<Renderer> _renderer;
     std::unique_ptr<UIContext> _uiContext;
 
     std::unique_ptr<Scene> _scene;

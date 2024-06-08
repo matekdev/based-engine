@@ -21,12 +21,12 @@ Application::Application(const int &width, const int &height, const std::string 
     // Create it early so we can access logs.
     _consolePanel = std::make_unique<ConsolePanel>();
 
-    _dx11Context = std::make_unique<DX11Context>(_glfwWindow);
-    _dx11Context->OnResize(width, height);
+    _renderer = std::make_unique<Renderer>(_glfwWindow);
+    _renderer->OnResize(width, height);
 
     _scene = std::make_unique<Scene>();
     _scenePanel = std::make_unique<ScenePanel>();
-    _uiContext = std::make_unique<UIContext>(_glfwWindow, _dx11Context->GetDevice().Get(), _dx11Context->GetDeviceContext().Get());
+    _uiContext = std::make_unique<UIContext>(_glfwWindow, _renderer->GetDevice().Get(), _renderer->GetDeviceContext().Get());
 }
 
 Application::~Application()
@@ -40,14 +40,14 @@ void Application::Run() const
     while (!glfwWindowShouldClose(_glfwWindow))
     {
         _uiContext->PreRender();
-        _dx11Context->PreRender();
+        _renderer->PreRender();
 
         _scene->Render();
 
         _consolePanel->Render();
 
         _uiContext->PostRender();
-        _dx11Context->PostRender();
+        _renderer->PostRender();
 
         // TODO: Move to scene panel?
         _scene->GetCamera().Update(_width, _height, _glfwWindow);
@@ -68,5 +68,5 @@ void Application::OnResize(const int32_t width, const int32_t height)
     _width = width;
     _height = height;
 
-    _dx11Context->OnResize(width, height);
+    _renderer->OnResize(width, height);
 }
