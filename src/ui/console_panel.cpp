@@ -7,14 +7,13 @@
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
-#include "imgui_impl_glfw.h"
 
 ConsolePanel::ConsolePanel()
 {
     google::AddLogSink(this);
 }
 
-void ConsolePanel::Render()
+void ConsolePanel::Draw()
 {
     ImGui::Begin("Console");
 

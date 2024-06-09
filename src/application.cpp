@@ -1,5 +1,11 @@
 #include "application.hpp"
 
+#include "ui/console_panel.hpp"
+#include "ui/scene_panel.hpp"
+#include "ui/docking_panel.hpp"
+
+#include <imgui.h>
+
 #include <stdexcept>
 
 Application::Application(const int &width, const int &height, const std::string &windowTitle) : _width(width), _height(height)
@@ -18,15 +24,13 @@ Application::Application(const int &width, const int &height, const std::string 
     glfwMakeContextCurrent(_glfwWindow);
     glfwSetFramebufferSizeCallback(_glfwWindow, ResizeCallback);
 
-    // Create it early so we can access logs.
-    _consolePanel = std::make_unique<ConsolePanel>();
+    // These panels need to be created early.
+    _uiPanels.push_back(std::make_unique<DockingPanel>());
+    _uiPanels.push_back(std::make_unique<ConsolePanel>());
 
-    _renderer = std::make_unique<Renderer>(_glfwWindow);
-    _renderer->OnResize(width, height);
+    _renderer = std::make_unique<Renderer>(_glfwWindow, _width, _height);
 
-    _scene = std::make_unique<Scene>();
-    _scenePanel = std::make_unique<ScenePanel>();
-    _uiContext = std::make_unique<UIContext>(_glfwWindow, _renderer->GetDevice().Get(), _renderer->GetDeviceContext().Get());
+    // _uiPanels.push_back(std::make_unique<ScenePanel>());
 }
 
 Application::~Application()
@@ -39,20 +43,21 @@ void Application::Run() const
 {
     while (!glfwWindowShouldClose(_glfwWindow))
     {
-        _uiContext->PreRender();
         _renderer->PreRender();
 
-        _scene->Render();
+        DrawPanels();
 
-        _consolePanel->Render();
-
-        _uiContext->PostRender();
         _renderer->PostRender();
 
-        // TODO: Move to scene panel?
-        _scene->GetCamera().Update(_width, _height, _glfwWindow);
-
         glfwPollEvents();
+    }
+}
+
+void Application::DrawPanels() const
+{
+    for (auto &panel : _uiPanels)
+    {
+        panel->Draw();
     }
 }
 
@@ -67,6 +72,5 @@ void Application::OnResize(const int32_t width, const int32_t height)
 {
     _width = width;
     _height = height;
-
     _renderer->OnResize(width, height);
 }

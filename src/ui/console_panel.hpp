@@ -3,14 +3,16 @@
 #include <string>
 #include <vector>
 
+#include "panel.hpp"
+
 #include <glog/logging.h>
 
-class ConsolePanel : public google::LogSink
+class ConsolePanel : public google::LogSink, public Panel
 {
 public:
     ConsolePanel();
 
-    void Render();
+    void Draw() override;
     void send(google::LogSeverity severity, const char *full_filename,
               const char *base_filename, int line,
               const struct ::tm *tm_time,

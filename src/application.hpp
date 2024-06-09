@@ -3,14 +3,13 @@
 #include "scene.hpp"
 #include "render/renderer.hpp"
 
-#include "ui/ui_context.hpp"
-#include "ui/scene_panel.hpp"
-#include "ui/console_panel.hpp"
+#include "ui/panel.hpp"
 
 #include <GLFW/glfw3.h>
 
 #include <string>
 #include <memory>
+#include <vector>
 
 class Application
 {
@@ -19,15 +18,13 @@ public:
     ~Application();
 
     void Run() const;
+    void DrawPanels() const;
 
 private:
     GLFWwindow *_glfwWindow;
     std::unique_ptr<Renderer> _renderer;
-    std::unique_ptr<UIContext> _uiContext;
 
-    std::unique_ptr<Scene> _scene;
-    std::unique_ptr<ScenePanel> _scenePanel;
-    std::unique_ptr<ConsolePanel> _consolePanel;
+    std::vector<std::unique_ptr<Panel>> _uiPanels;
 
     int _width;
     int _height;

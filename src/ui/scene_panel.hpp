@@ -1,7 +1,9 @@
 #pragma once
 
-class ScenePanel
+#include "panel.hpp"
+
+class ScenePanel : public Panel
 {
 public:
-    void Render() const;
+    void Draw() override;
 };

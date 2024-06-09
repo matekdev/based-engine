@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 
-void ScenePanel::Render() const
+void ScenePanel::Draw()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);

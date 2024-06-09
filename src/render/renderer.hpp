@@ -15,7 +15,7 @@
 class Renderer
 {
 public:
-    Renderer(GLFWwindow *glfwWindow);
+    Renderer(GLFWwindow *glfwWindow, const int &width, const int &height);
     ~Renderer();
 
     static const Microsoft::WRL::ComPtr<ID3D11Device> &GetDevice();
@@ -26,6 +26,7 @@ public:
     void PostRender() const;
 
 private:
+    GLFWwindow *_glfwWindow;
     int _width;
     int _height;
 
@@ -35,13 +36,14 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain1> _swapChain;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _renderTargetView;
 
-    void CreateSwapChain();
-    void DeleteSwapChain();
-
     std::unique_ptr<VertexShader> _vertexShader;
     std::unique_ptr<PixelShader> _pixelShader;
     Microsoft::WRL::ComPtr<ID3D11Buffer> _triangleVertices = nullptr;
 
+    void InitializeFactoryAndDevice();
+    void InitializeSwapChain();
     void InitializeShaders();
+    void InitializeImGui();
+    void CreateBackBuffer();
     void CreateVertexBuffers();
 };

@@ -1,16 +1,9 @@
-#include "ui_context.hpp"
+#include "imgui_config.hpp"
 
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_dx11.h>
 
-UIContext::UIContext(GLFWwindow *glfwWindow,
-                     const Microsoft::WRL::ComPtr<ID3D11Device> &device,
-                     const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &deviceContext)
+void ImGuiConfig::Load()
 {
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -68,59 +61,4 @@ UIContext::UIContext(GLFWwindow *glfwWindow,
     style.FrameRounding = 4.00f;
     style.GrabRounding = 12.00f;
     style.PopupRounding = 4.00f;
-
-    ImGui_ImplGlfw_InitForOther(glfwWindow, true);
-    ImGui_ImplDX11_Init(device.Get(), deviceContext.Get());
-}
-
-UIContext::~UIContext()
-{
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-}
-
-void UIContext::PreRender() const
-{
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // Create the docking environment
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
-                                   ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                   ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                                   ImGuiWindowFlags_NoBackground;
-
-    ImGuiViewport *viewPort = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewPort->Pos);
-    ImGui::SetNextWindowSize(viewPort->Size);
-    ImGui::SetNextWindowViewport(viewPort->ID);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("InvisibleWindow", nullptr, windowFlags);
-    ImGui::PopStyleVar(3);
-
-    ImGuiID dockSpaceId = ImGui::GetID("InvisibleWindowDockSpace");
-
-    ImGui::DockSpace(dockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
-    ImGui::End();
-}
-
-void UIContext::PostRender() const
-{
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-    ImGuiIO &io = ImGui::GetIO();
-
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        GLFWwindow *backup_current_context = glfwGetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
-    }
 }
