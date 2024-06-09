@@ -38,12 +38,10 @@ private:
 
     std::unique_ptr<VertexShader> _vertexShader;
     std::unique_ptr<PixelShader> _pixelShader;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> _triangleVertices = nullptr;
 
     void InitializeFactoryAndDevice();
     void InitializeSwapChain();
     void InitializeShaders();
     void InitializeImGui();
-    void CreateBackBuffer();
-    void CreateVertexBuffers();
+    void InitializeBackBuffer();
 };
