@@ -71,10 +71,7 @@ Renderer::Renderer(GLFWwindow *glfwWindow)
             &swapChainFullscreenDescriptor,
             nullptr,
             _swapChain.GetAddressOf())))
-    {
-        LOG(INFO) << "Failed to create swap chain";
-        return;
-    }
+        LOG(ERROR) << "Failed to create swap chain";
 
     CreateSwapChain();
     InitializeShaders();
