@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-Scene::Scene() : _camera(Camera()), _model(ModelComponent())
+Scene::Scene() : _camera(Camera()), _model(ModelComponent()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
 }
@@ -21,6 +21,8 @@ void Scene::Render()
 {
     CalculateDeltaTime();
 
+    _vertexShader.Bind();
+    _pixelShader.Bind();
     _model.Render();
 }
 

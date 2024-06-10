@@ -24,7 +24,6 @@ Renderer::Renderer(GLFWwindow *glfwWindow, const int &width, const int &height) 
 {
     InitializeFactoryAndDevice();
     InitializeSwapChain();
-    InitializeShaders();
     InitializeImGui();
     InitializeBackBuffer();
 }
@@ -76,9 +75,7 @@ void Renderer::PreRender() const
 
     constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
     _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
-    _vertexShader->Bind(_deviceContext);
     _deviceContext->RSSetViewports(1, &viewport);
-    _pixelShader->Bind(_deviceContext);
     _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
 }
 
@@ -145,12 +142,6 @@ void Renderer::InitializeSwapChain()
             nullptr,
             _swapChain.GetAddressOf())))
         LOG(ERROR) << "Failed to create swap chain";
-}
-
-void Renderer::InitializeShaders()
-{
-    _vertexShader = std::make_unique<VertexShader>(_device, L"shaders/model.vs.hlsl");
-    _pixelShader = std::make_unique<PixelShader>(_device, L"shaders/model.ps.hlsl");
 }
 
 void Renderer::InitializeImGui()

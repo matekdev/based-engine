@@ -1,5 +1,6 @@
 #include "vertex_shader.hpp"
 
+#include "render/renderer.hpp"
 #include "shader_util.hpp"
 #include "log.hpp"
 
@@ -11,11 +12,11 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-VertexShader::VertexShader(Microsoft::WRL::ComPtr<ID3D11Device> &device, const std::wstring &fileName)
+VertexShader::VertexShader(const std::wstring &fileName)
 {
     const auto vertexShaderBlob = ShaderUtil::CompileShader(fileName, "Main", "vs_5_0");
 
-    if (FAILED(device->CreateVertexShader(
+    if (FAILED(Renderer::GetDevice()->CreateVertexShader(
             vertexShaderBlob->GetBufferPointer(),
             vertexShaderBlob->GetBufferSize(),
             nullptr,
@@ -46,14 +47,14 @@ VertexShader::VertexShader(Microsoft::WRL::ComPtr<ID3D11Device> &device, const s
         inputElementDescs.push_back(std::move(desc));
     }
 
-    device->CreateInputLayout(inputElementDescs.data(),
-                              (UINT)inputElementDescs.size(),
-                              vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(),
-                              &_inputLayout);
+    Renderer::GetDevice()->CreateInputLayout(inputElementDescs.data(),
+                                             (UINT)inputElementDescs.size(),
+                                             vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(),
+                                             &_inputLayout);
 }
 
-void VertexShader::Bind(const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &device) const
+void VertexShader::Bind() const
 {
-    device->IASetInputLayout(_inputLayout.Get());
-    device->VSSetShader(_vertexShader.Get(), nullptr, 0);
+    Renderer::GetDeviceContext()->IASetInputLayout(_inputLayout.Get());
+    Renderer::GetDeviceContext()->VSSetShader(_vertexShader.Get(), nullptr, 0);
 }

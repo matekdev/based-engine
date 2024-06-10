@@ -1,8 +1,5 @@
 #pragma once
 
-#include "render/vertex_shader.hpp"
-#include "render/pixel_shader.hpp"
-
 #include <GLFW/glfw3.h>
 
 #include <d3d11.h>
@@ -36,12 +33,8 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain1> _swapChain;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _renderTargetView;
 
-    std::unique_ptr<VertexShader> _vertexShader;
-    std::unique_ptr<PixelShader> _pixelShader;
-
     void InitializeFactoryAndDevice();
     void InitializeSwapChain();
-    void InitializeShaders();
     void InitializeImGui();
     void InitializeBackBuffer();
 };

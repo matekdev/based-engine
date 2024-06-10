@@ -2,6 +2,8 @@
 
 #include "camera/camera.hpp"
 #include "component/model/model_component.hpp"
+#include "render/vertex_shader.hpp"
+#include "render/pixel_shader.hpp"
 
 class Scene
 {
@@ -19,6 +21,9 @@ public:
 private:
     Camera _camera;
     ModelComponent _model;
+
+    VertexShader _vertexShader;
+    PixelShader _pixelShader;
 
     float _previousFrameTime;
     float _deltaTime;
