@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-Scene::Scene() : _camera(Camera())
+Scene::Scene() : _camera(Camera()), _model(ModelComponent())
 {
     ActiveScene = this;
 }
@@ -20,6 +20,8 @@ Camera &Scene::GetCamera()
 void Scene::Render()
 {
     CalculateDeltaTime();
+
+    _model.Render();
 }
 
 void Scene::CalculateDeltaTime()

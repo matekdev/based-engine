@@ -29,6 +29,7 @@ Application::Application(const int &width, const int &height, const std::string 
     _uiPanels.push_back(std::make_unique<ConsolePanel>());
 
     _renderer = std::make_unique<Renderer>(_glfwWindow, _width, _height);
+    _scene = std::make_unique<Scene>();
 
     // _uiPanels.push_back(std::make_unique<ScenePanel>());
 }
@@ -45,6 +46,7 @@ void Application::Run() const
     {
         _renderer->PreRender();
 
+        _scene->Render();
         DrawPanels();
 
         _renderer->PostRender();

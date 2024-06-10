@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera/camera.hpp"
+#include "component/model/model_component.hpp"
 
 class Scene
 {
@@ -17,6 +18,7 @@ public:
 
 private:
     Camera _camera;
+    ModelComponent _model;
 
     float _previousFrameTime;
     float _deltaTime;

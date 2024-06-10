@@ -40,6 +40,14 @@ CPMAddPackage(
   GIT_TAG 0.9.9.8
 )
 
+# ASSIMP
+CPMAddPackage(
+  NAME assimp
+  GITHUB_REPOSITORY assimp/assimp
+  GIT_TAG v5.3.1
+)
+option(ASSIMP_BUILD_TESTS "ASSIMP_BUILD_TESTS" OFF)
+
 if(EnTT_ADDED)
   add_library(EnTT INTERFACE)
   target_include_directories(EnTT SYSTEM INTERFACE ${EnTT_SOURCE_DIR}/src)
@@ -48,7 +56,7 @@ endif()
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
-target_link_libraries(${PROJECT_NAME} PRIVATE glm imgui_cmake_wrapper glog EnTT)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm imgui_cmake_wrapper glog EnTT assimp)
 
 # Copy shader files
 add_custom_target(copy_shaders ALL
