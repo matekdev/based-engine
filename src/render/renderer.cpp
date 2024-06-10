@@ -76,19 +76,10 @@ void Renderer::PreRender() const
 
     constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
     _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
-
-    // TODO: Move over to model
-    // _deviceContext->IASetVertexBuffers(0, 1, _triangleVertices.GetAddressOf(), &vertexStride, &vertexOffset);
-    // _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
     _vertexShader->Bind(_deviceContext);
-
     _deviceContext->RSSetViewports(1, &viewport);
-
     _pixelShader->Bind(_deviceContext);
-
     _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
-    _deviceContext->Draw(3, 0);
 }
 
 void Renderer::PostRender() const
