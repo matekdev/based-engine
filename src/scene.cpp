@@ -31,7 +31,7 @@ void Scene::CreateNewEntity()
     Registry.emplace<ModelComponent>(ent);
 }
 
-void Scene::Render()
+void Scene::Render(GLFWwindow *window, int width, int height)
 {
     CalculateDeltaTime();
 
@@ -44,6 +44,8 @@ void Scene::Render()
         const auto &model = modelGroup.get<ModelComponent>(entity);
         model.Render();
     }
+
+    _camera.Update(window, width, height);
 }
 
 void Scene::CalculateDeltaTime()

@@ -9,7 +9,8 @@ glm::mat4 Camera::GetViewProjectionMatrix()
     return _projectionMatrix * _viewMatrix;
 }
 
-void Camera::Update(float width, float height, GLFWwindow *window)
+// TODO: Don't pass in these parameters, lets just define a single window where we can fetch them.
+void Camera::Update(GLFWwindow *window, float width, float height)
 {
     _velocity *= VELOCITY_DECAY;
     _position += _velocity * Scene::ActiveScene->GetDeltaTime();

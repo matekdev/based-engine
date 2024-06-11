@@ -18,7 +18,7 @@ public:
     Camera &GetCamera();
 
     void CreateNewEntity();
-    void Render();
+    void Render(GLFWwindow *window, int width, int height);
 
 private:
     Camera _camera;

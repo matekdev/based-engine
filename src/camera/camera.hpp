@@ -8,7 +8,7 @@ class Camera
 public:
     glm::mat4 GetViewProjectionMatrix();
 
-    void Update(float width, float height, GLFWwindow *window);
+    void Update(GLFWwindow *window, float width, float height);
 
 private:
     const float VELOCITY_DECAY = 0.97f;

@@ -46,7 +46,7 @@ void Application::Run() const
     {
         _renderer->PreRender();
 
-        _scene->Render();
+        _scene->Render(_glfwWindow, _width, _height);
         DrawPanels();
 
         _renderer->PostRender();
