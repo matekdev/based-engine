@@ -1,10 +1,16 @@
 #include "scene.hpp"
 
+#include "component/info_component.hpp"
+#include "component/transform_component.hpp"
+#include "component/model/model_component.hpp"
+
 #include <GLFW/glfw3.h>
 
-Scene::Scene() : _camera(Camera()), _model(ModelComponent()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
+Scene::Scene() : _camera(Camera()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
+
+    CreateNewEntity();
 }
 
 float Scene::GetDeltaTime()
@@ -17,13 +23,27 @@ Camera &Scene::GetCamera()
     return _camera;
 }
 
+void Scene::CreateNewEntity()
+{
+    auto ent = Registry.create();
+    Registry.emplace<InfoComponent>(ent);
+    Registry.emplace<TransformComponent>(ent);
+    Registry.emplace<ModelComponent>(ent);
+}
+
 void Scene::Render()
 {
     CalculateDeltaTime();
 
     _vertexShader.Bind();
     _pixelShader.Bind();
-    _model.Render();
+
+    const auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
+    for (const auto &entity : modelGroup)
+    {
+        const auto &model = modelGroup.get<ModelComponent>(entity);
+        model.Render();
+    }
 }
 
 void Scene::CalculateDeltaTime()

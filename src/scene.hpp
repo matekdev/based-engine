@@ -12,15 +12,16 @@ public:
 
     // Ideally this shouldn't be static and public... but I'm here to do graphics shit.
     static inline Scene *ActiveScene;
+    entt::registry Registry;
 
     float GetDeltaTime();
     Camera &GetCamera();
 
+    void CreateNewEntity();
     void Render();
 
 private:
     Camera _camera;
-    ModelComponent _model;
 
     VertexShader _vertexShader;
     PixelShader _pixelShader;
