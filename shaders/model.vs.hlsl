@@ -10,10 +10,20 @@ struct VSOutput
     float3 color : COLOR0;
 };
 
+cbuffer CameraMatrix : register(b0)
+{
+    matrix CameraMatrix;
+};
+
+cbuffer ModelMatrix : register(b1)
+{
+    matrix ModelMatrix;
+}
+
 VSOutput Main(VSInput input)
 {
     VSOutput output;
-    output.position = float4(input.position, 1.0);
+    output.position = mul(CameraMatrix, mul(ModelMatrix, float4(input.position, 1.0f)));
     output.color = input.color;
     return output;
 }

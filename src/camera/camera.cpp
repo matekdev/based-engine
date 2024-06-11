@@ -4,9 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-glm::mat4 Camera::GetViewProjectionMatrix()
+Camera::Camera() : _cameraMatrixBuffer(ConstantBuffer(ConstantType::CAMERA_MATRIX, ShaderStage::VERTEX_SHADER, CameraMatrixBuffer{}))
 {
-    return _projectionMatrix * _viewMatrix;
 }
 
 // TODO: Don't pass in these parameters, lets just define a single window where we can fetch them.
@@ -19,6 +18,9 @@ void Camera::Update(GLFWwindow *window, float width, float height)
     _projectionMatrix = glm::perspective(glm::radians(90.0f), width / height, 0.01f, 100.0f);
 
     KeyboardMovement(window);
+
+    _cameraMatrixBuffer.Update(CameraMatrixBuffer{_projectionMatrix * _viewMatrix});
+    _cameraMatrixBuffer.Bind();
 }
 
 void Camera::KeyboardMovement(GLFWwindow *window)

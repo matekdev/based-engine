@@ -41,7 +41,10 @@ void Scene::Render(GLFWwindow *window, int width, int height)
     const auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
     for (const auto &entity : modelGroup)
     {
+        auto &transform = modelGroup.get<TransformComponent>(entity);
         const auto &model = modelGroup.get<ModelComponent>(entity);
+
+        transform.Bind();
         model.Render();
     }
 
