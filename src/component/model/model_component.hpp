@@ -21,7 +21,4 @@ private:
 
     void ProcessNode(aiNode *node, const aiScene *scene);
     Mesh ProcessMesh(aiMesh *mesh, const aiScene *scene);
-
-    // TODO: Remove.
-    Microsoft::WRL::ComPtr<ID3D11Buffer> _triangleVertices = nullptr;
 };

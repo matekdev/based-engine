@@ -14,25 +14,6 @@ struct VertexPositionColor
 ModelComponent::ModelComponent()
 {
     LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
-
-    constexpr VertexPositionColor vertices[] = {
-        {glm::vec3{0.0f, 0.5f, 0.0f}, glm::vec3{0.25f, 0.39f, 0.19f}},
-        {glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3{0.44f, 0.75f, 0.35f}},
-        {glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec3{0.38f, 0.55f, 0.20f}},
-    };
-    D3D11_BUFFER_DESC bufferInfo = {};
-    bufferInfo.ByteWidth = sizeof(vertices);
-    bufferInfo.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
-    bufferInfo.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA resourceData = {};
-    resourceData.pSysMem = vertices;
-
-    if (FAILED(Renderer::GetDevice()->CreateBuffer(
-            &bufferInfo,
-            &resourceData,
-            &_triangleVertices)))
-        LOG(ERROR) << "Failed to create vertex buffer";
 }
 
 void ModelComponent::LoadModel(const std::string &modelPath)
