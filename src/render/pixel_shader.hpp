@@ -8,9 +8,9 @@
 class PixelShader
 {
 public:
-    PixelShader(const Microsoft::WRL::ComPtr<ID3D11Device> &device, const std::wstring &fileName);
+    PixelShader(const std::wstring &fileName);
 
-    void Bind(const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &device) const;
+    void Bind() const;
 
 private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader> _pixelShader;

@@ -23,6 +23,7 @@ public:
 private:
     GLFWwindow *_glfwWindow;
     std::unique_ptr<Renderer> _renderer;
+    std::unique_ptr<Scene> _scene;
 
     std::vector<std::unique_ptr<Panel>> _uiPanels;
 

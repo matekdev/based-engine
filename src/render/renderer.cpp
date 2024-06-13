@@ -1,6 +1,5 @@
 #include "renderer.hpp"
 
-#include "vertex.hpp"
 #include "log.hpp"
 #include "ui/imgui_config.hpp"
 
@@ -25,11 +24,8 @@ Renderer::Renderer(GLFWwindow *glfwWindow, const int &width, const int &height) 
 {
     InitializeFactoryAndDevice();
     InitializeSwapChain();
-    InitializeShaders();
     InitializeImGui();
-
-    CreateBackBuffer();
-    CreateVertexBuffers();
+    InitializeBackBuffer();
 }
 
 Renderer::~Renderer()
@@ -60,7 +56,7 @@ void Renderer::OnResize(const int &width, const int &height)
     _deviceContext->Flush();
     _renderTargetView.Reset();
     _swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-    CreateBackBuffer();
+    InitializeBackBuffer();
 }
 
 void Renderer::PreRender() const
@@ -78,22 +74,9 @@ void Renderer::PreRender() const
     viewport.MaxDepth = 1.0f;
 
     constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    constexpr UINT vertexStride = sizeof(VertexPositionColor);
-    constexpr UINT vertexOffset = 0;
-
     _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
-
-    _deviceContext->IASetVertexBuffers(0, 1, _triangleVertices.GetAddressOf(), &vertexStride, &vertexOffset);
-    _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    _vertexShader->Bind(_deviceContext);
-
     _deviceContext->RSSetViewports(1, &viewport);
-
-    _pixelShader->Bind(_deviceContext);
-
     _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
-    _deviceContext->Draw(3, 0);
 }
 
 void Renderer::PostRender() const
@@ -161,12 +144,6 @@ void Renderer::InitializeSwapChain()
         LOG(ERROR) << "Failed to create swap chain";
 }
 
-void Renderer::InitializeShaders()
-{
-    _vertexShader = std::make_unique<VertexShader>(_device, L"shaders/model.vs.hlsl");
-    _pixelShader = std::make_unique<PixelShader>(_device, L"shaders/model.ps.hlsl");
-}
-
 void Renderer::InitializeImGui()
 {
     IMGUI_CHECKVERSION();
@@ -178,31 +155,9 @@ void Renderer::InitializeImGui()
     ImGui_ImplDX11_Init(_device.Get(), _deviceContext.Get());
 }
 
-void Renderer::CreateBackBuffer()
+void Renderer::InitializeBackBuffer()
 {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     _swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
     _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _renderTargetView.GetAddressOf());
-}
-
-void Renderer::CreateVertexBuffers()
-{
-    constexpr VertexPositionColor vertices[] = {
-        {DirectX::XMFLOAT3{0.0f, 0.5f, 0.0f}, DirectX::XMFLOAT3{0.25f, 0.39f, 0.19f}},
-        {DirectX::XMFLOAT3{0.5f, -0.5f, 0.0f}, DirectX::XMFLOAT3{0.44f, 0.75f, 0.35f}},
-        {DirectX::XMFLOAT3{-0.5f, -0.5f, 0.0f}, DirectX::XMFLOAT3{0.38f, 0.55f, 0.20f}},
-    };
-    D3D11_BUFFER_DESC bufferInfo = {};
-    bufferInfo.ByteWidth = sizeof(vertices);
-    bufferInfo.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
-    bufferInfo.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA resourceData = {};
-    resourceData.pSysMem = vertices;
-
-    if (FAILED(_device->CreateBuffer(
-            &bufferInfo,
-            &resourceData,
-            &_triangleVertices)))
-        LOG(ERROR) << "Failed to create vertex buffer";
 }

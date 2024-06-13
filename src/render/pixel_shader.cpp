@@ -1,5 +1,6 @@
 #include "pixel_shader.hpp"
 
+#include "render/renderer.hpp"
 #include "shader_util.hpp"
 #include "log.hpp"
 
@@ -9,11 +10,11 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-PixelShader::PixelShader(const Microsoft::WRL::ComPtr<ID3D11Device> &device, const std::wstring &fileName)
+PixelShader::PixelShader(const std::wstring &fileName)
 {
     const auto pixelShaderBlob = ShaderUtil::CompileShader(fileName, "Main", "ps_5_0");
 
-    if (FAILED(device->CreatePixelShader(
+    if (FAILED(Renderer::GetDevice()->CreatePixelShader(
             pixelShaderBlob->GetBufferPointer(),
             pixelShaderBlob->GetBufferSize(),
             nullptr,
@@ -21,7 +22,7 @@ PixelShader::PixelShader(const Microsoft::WRL::ComPtr<ID3D11Device> &device, con
         LOG(ERROR) << "Failed to compile pixel shader";
 }
 
-void PixelShader::Bind(const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &device) const
+void PixelShader::Bind() const
 {
-    device->PSSetShader(_pixelShader.Get(), nullptr, 0);
+    Renderer::GetDeviceContext()->PSSetShader(_pixelShader.Get(), nullptr, 0);
 }
