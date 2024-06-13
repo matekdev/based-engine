@@ -13,7 +13,7 @@ struct VertexPositionColor
 
 ModelComponent::ModelComponent()
 {
-    // LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
+    LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
 
     constexpr VertexPositionColor vertices[] = {
         {glm::vec3{0.0f, 0.5f, 0.0f}, glm::vec3{0.25f, 0.39f, 0.19f}},
@@ -51,16 +51,10 @@ void ModelComponent::LoadModel(const std::string &modelPath)
 
 void ModelComponent::Render() const
 {
-    // for (const auto &mesh : _meshes)
-    // {
-    //     mesh.Render();
-    // }
-
-    constexpr UINT vertexStride = sizeof(VertexPositionColor);
-    constexpr UINT vertexOffset = 0;
-    Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, _triangleVertices.GetAddressOf(), &vertexStride, &vertexOffset);
-    Renderer::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    Renderer::GetDeviceContext()->Draw(3, 0);
+    for (const auto &mesh : _meshes)
+    {
+        mesh.Render();
+    }
 }
 
 void ModelComponent::ProcessNode(aiNode *node, const aiScene *scene)
