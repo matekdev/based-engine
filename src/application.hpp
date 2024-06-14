@@ -14,7 +14,7 @@
 class Application
 {
 public:
-    Application(const int &width, const int &height, const std::string &title);
+    Application(const float &width, const float &height, const std::string &title);
     ~Application();
 
     void Run() const;
@@ -26,9 +26,6 @@ private:
     std::unique_ptr<Scene> _scene;
 
     std::vector<std::unique_ptr<Panel>> _uiPanels;
-
-    int _width;
-    int _height;
 
     inline static void ResizeCallback(GLFWwindow *window, const int32_t width, const int32_t height);
     void OnResize(const int32_t width, const int32_t height);

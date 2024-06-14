@@ -4,6 +4,7 @@
 #include "component/model/model_component.hpp"
 #include "render/vertex_shader.hpp"
 #include "render/pixel_shader.hpp"
+#include "render/render_target.hpp"
 
 class Scene
 {
@@ -14,17 +15,20 @@ public:
     static inline Scene *ActiveScene;
     entt::registry Registry;
 
+    ID3D11ShaderResourceView *GetShaderResourceView();
     float GetDeltaTime();
-    Camera &GetCamera();
 
     void CreateNewEntity();
-    void Render(GLFWwindow *window, int width, int height);
+    void OnResize();
+    void Render();
 
 private:
     Camera _camera;
 
     VertexShader _vertexShader;
     PixelShader _pixelShader;
+
+    RenderTarget _renderTarget;
 
     float _previousFrameTime;
     float _deltaTime;

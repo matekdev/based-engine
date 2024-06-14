@@ -20,18 +20,21 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_dx11.h>
 
-Renderer::Renderer(GLFWwindow *glfwWindow, const int &width, const int &height) : _glfwWindow(glfwWindow), _width(width), _height(height)
+Renderer::Renderer(GLFWwindow *glfwWindow, const float &width, const float &height) : _glfwWindow(glfwWindow), _width(width), _height(height)
 {
+    _instance = this;
+
     InitializeFactoryAndDevice();
     InitializeSwapChain();
     InitializeImGui();
     InitializeBackBuffer();
+    SetViewPort();
 }
 
 Renderer::~Renderer()
 {
     _deviceContext->Flush();
-    _renderTargetView.Reset();
+    _backBuffer.Reset();
     _swapChain.Reset();
     _dxgiFactory.Reset();
     _deviceContext.Reset();
@@ -40,23 +43,34 @@ Renderer::~Renderer()
 
 const Microsoft::WRL::ComPtr<ID3D11Device> &Renderer::GetDevice()
 {
-    return _device;
+    return _instance->_device;
 }
 
 const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &Renderer::GetDeviceContext()
 {
-    return _deviceContext;
+    return _instance->_deviceContext;
 }
 
-void Renderer::OnResize(const int &width, const int &height)
+GLFWwindow *Renderer::GetNativeWindow()
 {
-    _width = width;
-    _height = height;
+    return _instance->_glfwWindow;
+}
 
-    _deviceContext->Flush();
-    _renderTargetView.Reset();
-    _swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-    InitializeBackBuffer();
+void Renderer::OnResize(const float &width, const float &height)
+{
+    _instance->_width = width;
+    _instance->_height = height;
+    _instance->_deviceContext->Flush();
+    _instance->_backBuffer.Reset();
+    _instance->_swapChain->ResizeBuffers(0, _instance->_width, _instance->_height, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+    _instance->InitializeBackBuffer();
+    _instance->SetViewPort();
+}
+
+void Renderer::BindBackBuffer() const
+{
+    _deviceContext->OMSetRenderTargets(1, _backBuffer.GetAddressOf(), nullptr);
+    _deviceContext->ClearRenderTargetView(_backBuffer.Get(), _clearColor);
 }
 
 void Renderer::PreRender() const
@@ -64,19 +78,6 @@ void Renderer::PreRender() const
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    D3D11_VIEWPORT viewport = {};
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = static_cast<float>(_width);
-    viewport.Height = static_cast<float>(_height);
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-
-    constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
-    _deviceContext->RSSetViewports(1, &viewport);
-    _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
 }
 
 void Renderer::PostRender() const
@@ -159,5 +160,17 @@ void Renderer::InitializeBackBuffer()
 {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     _swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
-    _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _renderTargetView.GetAddressOf());
+    _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _backBuffer.GetAddressOf());
+}
+
+void Renderer::SetViewPort()
+{
+    D3D11_VIEWPORT viewport = {};
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = _width;
+    viewport.Height = _height;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+    _deviceContext->RSSetViewports(1, &viewport);
 }

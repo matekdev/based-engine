@@ -1,6 +1,8 @@
 #include "camera.hpp"
 
 #include "scene.hpp"
+#include "render/renderer.hpp"
+#include "ui/scene_panel.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -8,23 +10,23 @@ Camera::Camera() : _cameraMatrixBuffer(ConstantBuffer(ConstantType::CAMERA_MATRI
 {
 }
 
-// TODO: Don't pass in these parameters, lets just define a single window where we can fetch them.
-void Camera::Update(GLFWwindow *window, float width, float height)
+void Camera::Update()
 {
     _velocity *= VELOCITY_DECAY;
     _position += _velocity * Scene::ActiveScene->GetDeltaTime();
 
     _viewMatrix = glm::lookAt(_position, _position + _orientation, UP);
-    _projectionMatrix = glm::perspective(glm::radians(90.0f), width / height, 0.01f, 100.0f);
+    _projectionMatrix = glm::perspective(glm::radians(90.0f), ScenePanel::GetWidth() / ScenePanel::GetWidth(), 0.01f, 100.0f);
 
-    KeyboardMovement(window);
+    KeyboardMovement();
 
     _cameraMatrixBuffer.Update(CameraMatrixBuffer{_projectionMatrix * _viewMatrix});
     _cameraMatrixBuffer.Bind();
 }
 
-void Camera::KeyboardMovement(GLFWwindow *window)
+void Camera::KeyboardMovement()
 {
+    auto window = Renderer::GetNativeWindow();
     auto movementSpeed = 0.2f;
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
