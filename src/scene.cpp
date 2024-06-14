@@ -1,21 +1,24 @@
 #include "scene.hpp"
 
-#include "component/info_component.hpp"
-#include "component/transform_component.hpp"
-#include "component/model/model_component.hpp"
+#include "components/info_component.hpp"
+#include "components/transform_component.hpp"
+#include "components/model/model_component.hpp"
 
 #include <GLFW/glfw3.h>
 
 Scene::Scene() : _renderTarget(RenderTarget()), _camera(Camera()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
-
-    CreateNewEntity();
 }
 
 ID3D11ShaderResourceView *Scene::GetShaderResourceView()
 {
     return _renderTarget.GetShaderResourceView();
+}
+
+Camera &Scene::GetActiveCamera()
+{
+    return _camera;
 }
 
 float Scene::GetDeltaTime()

@@ -1,7 +1,7 @@
 #include "entities_panel.hpp"
 
 #include "scene.hpp"
-#include "component/info_component.hpp"
+#include "components/info_component.hpp"
 
 #include "imgui.h"
 #include "icons/regular.hpp"

@@ -11,6 +11,21 @@ Camera::Camera() : _cameraMatrixBuffer(ConstantBuffer(ConstantType::CAMERA_MATRI
 {
 }
 
+glm::vec3 Camera::GetPosition()
+{
+    return _position;
+}
+
+glm::mat4 Camera::GetViewMatrix()
+{
+    return _viewMatrix;
+}
+
+glm::mat4 Camera::GetProjectionMatrix()
+{
+    return _projectionMatrix;
+}
+
 void Camera::Update()
 {
     _velocity *= VELOCITY_DECAY;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "camera/camera.hpp"
-#include "component/model/model_component.hpp"
+#include "components/model/model_component.hpp"
 #include "render/vertex_shader.hpp"
 #include "render/pixel_shader.hpp"
 #include "render/render_target.hpp"
@@ -19,6 +19,7 @@ public:
     entt::registry Registry;
 
     ID3D11ShaderResourceView *GetShaderResourceView();
+    Camera &GetActiveCamera();
     float GetDeltaTime();
 
     void CreateNewEntity();

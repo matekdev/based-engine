@@ -1,9 +1,13 @@
 #include "scene_panel.hpp"
 
 #include "scene.hpp"
-
-#include "imgui.h"
+#include "components/transform_component.hpp"
+#include "common/glfw_util.hpp"
+#include "common/math.hpp"
 #include "log.hpp"
+
+#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 
 bool ScenePanel::IsHovered()
 {
@@ -41,5 +45,57 @@ void ScenePanel::Draw()
 
     ImGui::Image(Scene::ActiveScene->GetShaderResourceView(), panelSize);
 
+    UpdateGizmo();
+
     ImGui::End();
+}
+
+void ScenePanel::UpdateGizmo()
+{
+    auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+    auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+    auto viewportOffset = ImGui::GetWindowPos();
+    _viewPortBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
+    _viewPortBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
+
+    auto scene = Scene::ActiveScene;
+    if (!scene->SelectedEntity.has_value())
+        return;
+
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetRect(_viewPortBounds[0].x, _viewPortBounds[0].y, _viewPortBounds[1].x - _viewPortBounds[0].x, _viewPortBounds[1].y - _viewPortBounds[0].y);
+
+    auto shouldSnap = glfwGetKey(GLFWUtil::GetNativeWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
+    float snapValue = 0.5f; // Snap to 0.5m for translation/scale
+    if (_activeGizmo == ImGuizmo::OPERATION::ROTATE)
+        snapValue = 45.0f;
+
+    float snapValues[3] = {snapValue, snapValue, snapValue};
+
+    auto transformComponent = scene->Registry.try_get<TransformComponent>(scene->SelectedEntity.value());
+    if (!transformComponent)
+        return;
+
+    auto &camera = scene->GetActiveCamera();
+    auto transform = transformComponent->GetTransform();
+    ImGuizmo::Manipulate(glm::value_ptr(camera.GetViewMatrix()),
+                         glm::value_ptr(camera.GetProjectionMatrix()),
+                         _activeGizmo, ImGuizmo::WORLD,
+                         glm::value_ptr(transform),
+                         nullptr,
+                         shouldSnap ? snapValues : nullptr,
+                         nullptr,
+                         nullptr);
+
+    if (ImGuizmo::IsUsing())
+    {
+        glm::vec3 position, rotation, scale;
+        DecomposeTransform(transform, position, rotation, scale);
+
+        glm::vec3 deltaRotation = rotation - transformComponent->Rotation;
+        transformComponent->Position = position;
+        transformComponent->Rotation += deltaRotation;
+        transformComponent->Scale = scale;
+    }
 }

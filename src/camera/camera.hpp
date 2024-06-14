@@ -16,6 +16,10 @@ public:
 
     Camera();
 
+    glm::vec3 GetPosition();
+    glm::mat4 GetViewMatrix();
+    glm::mat4 GetProjectionMatrix();
+
     void Update();
 
 private:
