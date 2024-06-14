@@ -5,12 +5,14 @@
 class ScenePanel : public Panel
 {
 public:
-    static const float &GetWidth();
-    static const float &GetHeight();
+    static bool IsHovered();
+    static float GetWidth();
+    static float GetHeight();
 
     void Draw() override;
 
 private:
+    static inline bool _isHovered;
     static inline float _width = 1.0f;
     static inline float _height = 1.0f;
 };

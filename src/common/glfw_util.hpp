@@ -8,4 +8,5 @@ class GLFWUtil
 public:
     static GLFWwindow *GetNativeWindow();
     static glm::vec2 GetWindowSize();
+    static glm::vec2 GetMousePosition();
 };

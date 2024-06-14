@@ -32,5 +32,8 @@ private:
     glm::vec3 _position = glm::vec3(0.0f, 0.0f, 2.0f);
     glm::vec3 _velocity = glm::vec3(0.0f);
 
+    bool _isMouseLocked;
+
     void KeyboardMovement();
+    void MouseMovement();
 };
