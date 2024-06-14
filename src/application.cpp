@@ -8,7 +8,7 @@
 
 #include <stdexcept>
 
-Application::Application(const float &width, const float &height, const std::string &windowTitle)
+Application::Application(const float &applicationWidth, const float &applicationHeight, const std::string &windowTitle)
 {
     if (!glfwInit())
         throw std::runtime_error("Failed to create GLFW Window.");
@@ -16,7 +16,7 @@ Application::Application(const float &width, const float &height, const std::str
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    _glfwWindow = glfwCreateWindow(width, height, windowTitle.c_str(), nullptr, nullptr);
+    _glfwWindow = glfwCreateWindow(applicationWidth, applicationHeight, windowTitle.c_str(), nullptr, nullptr);
     if (!_glfwWindow)
         throw std::runtime_error("Failed to create GLFW Window.");
 
@@ -24,20 +24,23 @@ Application::Application(const float &width, const float &height, const std::str
     glfwMakeContextCurrent(_glfwWindow);
     glfwSetFramebufferSizeCallback(_glfwWindow, ResizeCallback);
 
-    // These panels need to be created early.
     _uiPanels.push_back(std::make_unique<DockingPanel>());
     _uiPanels.push_back(std::make_unique<ConsolePanel>());
-
-    _renderer = std::make_unique<Renderer>(_glfwWindow, width, height);
-    _scene = std::make_unique<Scene>();
-
     _uiPanels.push_back(std::make_unique<ScenePanel>());
+
+    _renderer = std::make_unique<Renderer>();
+    _scene = std::make_unique<Scene>();
 }
 
 Application::~Application()
 {
     glfwDestroyWindow(_glfwWindow);
     glfwTerminate();
+}
+
+GLFWwindow *Application::GetNativeWindow()
+{
+    return _glfwWindow;
 }
 
 void Application::Run() const
@@ -74,5 +77,5 @@ void Application::ResizeCallback(GLFWwindow *window, const int32_t width, const 
 
 void Application::OnResize(const int32_t width, const int32_t height)
 {
-    _renderer->OnResize(width, height);
+    _renderer->OnResize();
 }

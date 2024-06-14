@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 
+#include "common/glfw_util.hpp"
 #include "log.hpp"
 #include "ui/imgui_config.hpp"
 
@@ -20,7 +21,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_dx11.h>
 
-Renderer::Renderer(GLFWwindow *glfwWindow, const float &width, const float &height) : _glfwWindow(glfwWindow), _width(width), _height(height)
+Renderer::Renderer()
 {
     _instance = this;
 
@@ -51,18 +52,12 @@ const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &Renderer::GetDeviceContext()
     return _instance->_deviceContext;
 }
 
-GLFWwindow *Renderer::GetNativeWindow()
+void Renderer::OnResize()
 {
-    return _instance->_glfwWindow;
-}
-
-void Renderer::OnResize(const float &width, const float &height)
-{
-    _instance->_width = width;
-    _instance->_height = height;
+    auto windowSize = GLFWUtil::GetWindowSize();
     _instance->_deviceContext->Flush();
     _instance->_backBuffer.Reset();
-    _instance->_swapChain->ResizeBuffers(0, _instance->_width, _instance->_height, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+    _instance->_swapChain->ResizeBuffers(0, windowSize.x, windowSize.y, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
     _instance->InitializeBackBuffer();
     _instance->SetViewPort();
 }
@@ -120,10 +115,11 @@ void Renderer::InitializeFactoryAndDevice()
 
 void Renderer::InitializeSwapChain()
 {
+    auto windowSize = GLFWUtil::GetWindowSize();
     DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
     swapChainDescriptor.Format = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
-    swapChainDescriptor.Width = _width;
-    swapChainDescriptor.Height = _height;
+    swapChainDescriptor.Width = windowSize.x;
+    swapChainDescriptor.Height = windowSize.y;
     swapChainDescriptor.SampleDesc.Count = 1;
     swapChainDescriptor.SampleDesc.Quality = 0;
     swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -137,7 +133,7 @@ void Renderer::InitializeSwapChain()
 
     if (FAILED(_dxgiFactory->CreateSwapChainForHwnd(
             _device.Get(),
-            glfwGetWin32Window(_glfwWindow),
+            glfwGetWin32Window(GLFWUtil::GetNativeWindow()),
             &swapChainDescriptor,
             &swapChainFullscreenDescriptor,
             nullptr,
@@ -152,7 +148,7 @@ void Renderer::InitializeImGui()
 
     ImGuiConfig::Load();
 
-    ImGui_ImplGlfw_InitForOther(_glfwWindow, true);
+    ImGui_ImplGlfw_InitForOther(GLFWUtil::GetNativeWindow(), true);
     ImGui_ImplDX11_Init(_device.Get(), _deviceContext.Get());
 }
 
@@ -165,11 +161,12 @@ void Renderer::InitializeBackBuffer()
 
 void Renderer::SetViewPort()
 {
+    auto windowSize = GLFWUtil::GetWindowSize();
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    viewport.Width = _width;
-    viewport.Height = _height;
+    viewport.Width = windowSize.x;
+    viewport.Height = windowSize.y;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     _deviceContext->RSSetViewports(1, &viewport);

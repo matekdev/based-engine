@@ -20,4 +20,5 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _shaderResourceView;
 
     void Initialize();
+    void SetViewPort();
 };

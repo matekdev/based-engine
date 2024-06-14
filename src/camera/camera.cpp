@@ -1,8 +1,8 @@
 #include "camera.hpp"
 
 #include "scene.hpp"
-#include "render/renderer.hpp"
 #include "ui/scene_panel.hpp"
+#include "common/glfw_util.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -26,7 +26,7 @@ void Camera::Update()
 
 void Camera::KeyboardMovement()
 {
-    auto window = Renderer::GetNativeWindow();
+    auto window = GLFWUtil::GetNativeWindow();
     auto movementSpeed = 0.2f;
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)

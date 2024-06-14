@@ -28,6 +28,7 @@ void ScenePanel::Draw()
     {
         _width = panelSize.x;
         _height = panelSize.y;
+
         Scene::ActiveScene->OnResize();
     }
 

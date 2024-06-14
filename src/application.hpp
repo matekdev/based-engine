@@ -17,11 +17,12 @@ public:
     Application(const float &width, const float &height, const std::string &title);
     ~Application();
 
+    static GLFWwindow *GetNativeWindow();
     void Run() const;
     void DrawPanels() const;
 
 private:
-    GLFWwindow *_glfwWindow;
+    static inline GLFWwindow *_glfwWindow;
     std::unique_ptr<Renderer> _renderer;
     std::unique_ptr<Scene> _scene;
 

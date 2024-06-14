@@ -17,7 +17,6 @@ void Mesh::Render() const
     Renderer::GetDeviceContext()->DrawIndexed(_indexCount, 0, 0);
 }
 
-// TODO: We probably dont need to store _verticies, _indicies, textures, etc.
 void Mesh::InitializeVertexBuffer()
 {
     D3D11_BUFFER_DESC bufferDesc = {};
