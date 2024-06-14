@@ -1,5 +1,8 @@
 #include "imgui_config.hpp"
 
+#include "icons/regular.hpp"
+#include "icons/brands.hpp"
+
 #include <imgui.h>
 
 void ImGuiConfig::Load()
@@ -11,6 +14,18 @@ void ImGuiConfig::Load()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     ImGui::StyleColorsDark();
+
+    float fontSize = 18.0f;
+    io.Fonts->AddFontFromFileTTF("font/JetBrainsMono-Bold.ttf", fontSize);
+    io.FontDefault = io.Fonts->AddFontFromFileTTF("font/JetBrainsMono-Regular.ttf", fontSize);
+
+    ImFontConfig config;
+    config.MergeMode = true;
+    config.GlyphMinAdvanceX = 13.0f;
+    static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+    io.Fonts->AddFontFromFileTTF("font/fa-regular-400.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("font/fa-brands-400.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("font/fa-solid-900.ttf", 13.0f, &config, icon_ranges);
 
     auto &colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
@@ -56,9 +71,5 @@ void ImGuiConfig::Load()
     style.WindowPadding = ImVec2(12.00f, 8.00f);
     style.ItemSpacing = ImVec2(7.00f, 3.00f);
     style.GrabMinSize = 20.00f;
-    style.WindowRounding = 8.00f;
     style.FrameBorderSize = 0.00f;
-    style.FrameRounding = 4.00f;
-    style.GrabRounding = 12.00f;
-    style.PopupRounding = 4.00f;
 }

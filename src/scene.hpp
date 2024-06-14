@@ -6,6 +6,8 @@
 #include "render/pixel_shader.hpp"
 #include "render/render_target.hpp"
 
+#include <optional>
+
 class Scene
 {
 public:
@@ -13,6 +15,7 @@ public:
 
     // Ideally this shouldn't be static and public... but I'm here to do graphics shit.
     static inline Scene *ActiveScene;
+    std::optional<entt::entity> SelectedEntity;
     entt::registry Registry;
 
     ID3D11ShaderResourceView *GetShaderResourceView();
