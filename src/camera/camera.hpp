@@ -15,7 +15,7 @@ public:
 
     Camera();
 
-    void Update(GLFWwindow *window, float width, float height);
+    void Update();
 
 private:
     const float VELOCITY_DECAY = 0.97f;
@@ -30,5 +30,5 @@ private:
     glm::vec3 _position = glm::vec3(0.0f, 0.0f, 2.0f);
     glm::vec3 _velocity = glm::vec3(0.0f);
 
-    void KeyboardMovement(GLFWwindow *window);
+    void KeyboardMovement();
 };

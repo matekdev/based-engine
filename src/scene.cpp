@@ -6,21 +6,21 @@
 
 #include <GLFW/glfw3.h>
 
-Scene::Scene() : _camera(Camera()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
+Scene::Scene() : _renderTarget(RenderTarget()), _camera(Camera()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
 
     CreateNewEntity();
 }
 
+ID3D11ShaderResourceView *Scene::GetShaderResourceView()
+{
+    return _renderTarget.GetShaderResourceView();
+}
+
 float Scene::GetDeltaTime()
 {
     return _deltaTime;
-}
-
-Camera &Scene::GetCamera()
-{
-    return _camera;
 }
 
 void Scene::CreateNewEntity()
@@ -31,10 +31,16 @@ void Scene::CreateNewEntity()
     Registry.emplace<ModelComponent>(ent);
 }
 
-void Scene::Render(GLFWwindow *window, int width, int height)
+void Scene::OnResize()
+{
+    _renderTarget.Resize();
+}
+
+void Scene::Render()
 {
     CalculateDeltaTime();
 
+    _renderTarget.Bind();
     _vertexShader.Bind();
     _pixelShader.Bind();
 
@@ -48,7 +54,7 @@ void Scene::Render(GLFWwindow *window, int width, int height)
         model.Render();
     }
 
-    _camera.Update(window, width, height);
+    _camera.Update();
 }
 
 void Scene::CalculateDeltaTime()

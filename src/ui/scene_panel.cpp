@@ -1,6 +1,19 @@
 #include "scene_panel.hpp"
 
+#include "scene.hpp"
+
 #include "imgui.h"
+#include "log.hpp"
+
+const float &ScenePanel::GetWidth()
+{
+    return _width;
+}
+
+const float &ScenePanel::GetHeight()
+{
+    return _height;
+}
 
 void ScenePanel::Draw()
 {
@@ -10,9 +23,16 @@ void ScenePanel::Draw()
     ImGui::Begin("Scene");
     ImGui::PopStyleVar(3);
 
-    // TODO: Hook up with texture
-    // uint64_t textureId = scene->GetRenderTextureId();
-    // ImGui::Image(reinterpret_cast<void *>(textureId), ImVec2{_width, _height}, ImVec2{0, 1}, ImVec2{1, 0});
+    auto panelSize = ImGui::GetContentRegionAvail();
+    if (panelSize.x != _width || panelSize.y != _height)
+    {
+        _width = panelSize.x;
+        _height = panelSize.y;
+
+        Scene::ActiveScene->OnResize();
+    }
+
+    ImGui::Image(Scene::ActiveScene->GetShaderResourceView(), panelSize);
 
     ImGui::End();
 }

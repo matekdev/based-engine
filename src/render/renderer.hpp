@@ -12,29 +12,30 @@
 class Renderer
 {
 public:
-    Renderer(GLFWwindow *glfwWindow, const int &width, const int &height);
+    Renderer();
     ~Renderer();
 
     static const Microsoft::WRL::ComPtr<ID3D11Device> &GetDevice();
     static const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &GetDeviceContext();
 
-    void OnResize(const int &width, const int &height);
+    static void OnResize();
+    void BindBackBuffer() const;
     void PreRender() const;
     void PostRender() const;
 
 private:
-    GLFWwindow *_glfwWindow;
-    int _width;
-    int _height;
+    static inline Renderer *_instance;
+    static inline constexpr float _clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
 
     Microsoft::WRL::ComPtr<IDXGIFactory2> _dxgiFactory;
-    static inline Microsoft::WRL::ComPtr<ID3D11Device> _device;
-    static inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> _deviceContext;
+    Microsoft::WRL::ComPtr<ID3D11Device> _device;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> _deviceContext;
     Microsoft::WRL::ComPtr<IDXGISwapChain1> _swapChain;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _renderTargetView;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _backBuffer;
 
     void InitializeFactoryAndDevice();
     void InitializeSwapChain();
     void InitializeImGui();
     void InitializeBackBuffer();
+    void SetViewPort();
 };

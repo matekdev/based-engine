@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 
+#include "common/glfw_util.hpp"
 #include "log.hpp"
 #include "ui/imgui_config.hpp"
 
@@ -20,18 +21,21 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_dx11.h>
 
-Renderer::Renderer(GLFWwindow *glfwWindow, const int &width, const int &height) : _glfwWindow(glfwWindow), _width(width), _height(height)
+Renderer::Renderer()
 {
+    _instance = this;
+
     InitializeFactoryAndDevice();
     InitializeSwapChain();
     InitializeImGui();
     InitializeBackBuffer();
+    SetViewPort();
 }
 
 Renderer::~Renderer()
 {
     _deviceContext->Flush();
-    _renderTargetView.Reset();
+    _backBuffer.Reset();
     _swapChain.Reset();
     _dxgiFactory.Reset();
     _deviceContext.Reset();
@@ -40,23 +44,28 @@ Renderer::~Renderer()
 
 const Microsoft::WRL::ComPtr<ID3D11Device> &Renderer::GetDevice()
 {
-    return _device;
+    return _instance->_device;
 }
 
 const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &Renderer::GetDeviceContext()
 {
-    return _deviceContext;
+    return _instance->_deviceContext;
 }
 
-void Renderer::OnResize(const int &width, const int &height)
+void Renderer::OnResize()
 {
-    _width = width;
-    _height = height;
+    auto windowSize = GLFWUtil::GetWindowSize();
+    _instance->_deviceContext->Flush();
+    _instance->_backBuffer.Reset();
+    _instance->_swapChain->ResizeBuffers(0, windowSize.x, windowSize.y, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+    _instance->InitializeBackBuffer();
+    _instance->SetViewPort();
+}
 
-    _deviceContext->Flush();
-    _renderTargetView.Reset();
-    _swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-    InitializeBackBuffer();
+void Renderer::BindBackBuffer() const
+{
+    _deviceContext->OMSetRenderTargets(1, _backBuffer.GetAddressOf(), nullptr);
+    _deviceContext->ClearRenderTargetView(_backBuffer.Get(), _clearColor);
 }
 
 void Renderer::PreRender() const
@@ -64,19 +73,6 @@ void Renderer::PreRender() const
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    D3D11_VIEWPORT viewport = {};
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = static_cast<float>(_width);
-    viewport.Height = static_cast<float>(_height);
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-
-    constexpr float clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), clearColor);
-    _deviceContext->RSSetViewports(1, &viewport);
-    _deviceContext->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
 }
 
 void Renderer::PostRender() const
@@ -119,10 +115,11 @@ void Renderer::InitializeFactoryAndDevice()
 
 void Renderer::InitializeSwapChain()
 {
+    auto windowSize = GLFWUtil::GetWindowSize();
     DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
     swapChainDescriptor.Format = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
-    swapChainDescriptor.Width = _width;
-    swapChainDescriptor.Height = _height;
+    swapChainDescriptor.Width = windowSize.x;
+    swapChainDescriptor.Height = windowSize.y;
     swapChainDescriptor.SampleDesc.Count = 1;
     swapChainDescriptor.SampleDesc.Quality = 0;
     swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -136,7 +133,7 @@ void Renderer::InitializeSwapChain()
 
     if (FAILED(_dxgiFactory->CreateSwapChainForHwnd(
             _device.Get(),
-            glfwGetWin32Window(_glfwWindow),
+            glfwGetWin32Window(GLFWUtil::GetNativeWindow()),
             &swapChainDescriptor,
             &swapChainFullscreenDescriptor,
             nullptr,
@@ -151,7 +148,7 @@ void Renderer::InitializeImGui()
 
     ImGuiConfig::Load();
 
-    ImGui_ImplGlfw_InitForOther(_glfwWindow, true);
+    ImGui_ImplGlfw_InitForOther(GLFWUtil::GetNativeWindow(), true);
     ImGui_ImplDX11_Init(_device.Get(), _deviceContext.Get());
 }
 
@@ -159,5 +156,18 @@ void Renderer::InitializeBackBuffer()
 {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     _swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
-    _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _renderTargetView.GetAddressOf());
+    _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _backBuffer.GetAddressOf());
+}
+
+void Renderer::SetViewPort()
+{
+    auto windowSize = GLFWUtil::GetWindowSize();
+    D3D11_VIEWPORT viewport = {};
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = windowSize.x;
+    viewport.Height = windowSize.y;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+    _deviceContext->RSSetViewports(1, &viewport);
 }

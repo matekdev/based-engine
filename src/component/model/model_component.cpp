@@ -2,9 +2,6 @@
 
 #include "log.hpp"
 
-// TODO: Remove hello triangle
-#include "render/renderer.hpp"
-
 struct VertexPositionColor
 {
     glm::vec3 Position;
