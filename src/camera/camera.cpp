@@ -16,7 +16,7 @@ void Camera::Update()
     _position += _velocity * Scene::ActiveScene->GetDeltaTime();
 
     _viewMatrix = glm::lookAt(_position, _position + _orientation, UP);
-    _projectionMatrix = glm::perspective(glm::radians(90.0f), ScenePanel::GetWidth() / ScenePanel::GetWidth(), 0.01f, 100.0f);
+    _projectionMatrix = glm::perspective(glm::radians(90.0f), ScenePanel::GetWidth() / ScenePanel::GetHeight(), 0.01f, 100.0f);
 
     KeyboardMovement();
 
