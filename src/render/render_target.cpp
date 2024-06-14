@@ -21,8 +21,17 @@ void RenderTarget::Resize()
 
 void RenderTarget::Bind()
 {
+    D3D11_VIEWPORT viewport = {};
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = ScenePanel::GetWidth();
+    viewport.Height = ScenePanel::GetHeight();
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
     Renderer::GetDeviceContext()->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
     Renderer::GetDeviceContext()->ClearRenderTargetView(_renderTargetView.Get(), _clearColor);
+    Renderer::GetDeviceContext()->RSSetViewports(1, &viewport);
 }
 
 void RenderTarget::Initialize()

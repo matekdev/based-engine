@@ -3,6 +3,7 @@
 #include "scene.hpp"
 
 #include "imgui.h"
+#include "log.hpp"
 
 const float &ScenePanel::GetWidth()
 {
