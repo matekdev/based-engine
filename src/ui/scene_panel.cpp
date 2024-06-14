@@ -45,9 +45,34 @@ void ScenePanel::Draw()
 
     ImGui::Image(Scene::ActiveScene->GetShaderResourceView(), panelSize);
 
+    UpdateInput();
     UpdateGizmo();
 
     ImGui::End();
+}
+
+void ScenePanel::UpdateInput()
+{
+    auto window = GLFWUtil::GetNativeWindow();
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_ESCAPE))
+        Scene::ActiveScene->SelectedEntity.reset();
+
+    auto isUsingMouse = ImGuizmo::IsUsing() || GLFWUtil::IsMouseLocked();
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_W) && !isUsingMouse)
+        _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_E) && !isUsingMouse)
+        _activeGizmo = ImGuizmo::OPERATION::ROTATE;
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_R) && !isUsingMouse)
+        _activeGizmo = ImGuizmo::OPERATION::SCALE;
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_DELETE) && Scene::ActiveScene->SelectedEntity)
+    {
+        Scene::ActiveScene->Registry.destroy(Scene::ActiveScene->SelectedEntity.value());
+        Scene::ActiveScene->SelectedEntity.reset();
+    }
 }
 
 void ScenePanel::UpdateGizmo()

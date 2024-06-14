@@ -23,5 +23,6 @@ private:
     ImGuizmo::OPERATION _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
     glm::vec2 _viewPortBounds[2];
 
+    void UpdateInput();
     void UpdateGizmo();
 };

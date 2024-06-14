@@ -20,3 +20,19 @@ glm::vec2 GLFWUtil::GetMousePosition()
     glfwGetCursorPos(Application::GetNativeWindow(), &xpos, &ypos);
     return {xpos, ypos};
 }
+
+bool GLFWUtil::IsButtonPressed(int key)
+{
+    return glfwGetKey(Application::GetNativeWindow(), key) == GLFW_PRESS;
+}
+
+bool GLFWUtil::IsMouseLocked()
+{
+    auto inputMode = glfwGetInputMode(Application::GetNativeWindow(), GLFW_CURSOR);
+    return inputMode == GLFW_CURSOR_DISABLED;
+}
+
+void GLFWUtil::SetMouseLock(bool isLocked)
+{
+    glfwSetInputMode(Application::GetNativeWindow(), GLFW_CURSOR, isLocked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}

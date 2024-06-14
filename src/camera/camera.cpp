@@ -28,41 +28,19 @@ glm::mat4 Camera::GetProjectionMatrix()
 
 void Camera::Update()
 {
+    Input();
+
     _velocity *= VELOCITY_DECAY;
     _position += _velocity * Scene::ActiveScene->GetDeltaTime();
 
     _viewMatrix = glm::lookAt(_position, _position + _orientation, UP);
     _projectionMatrix = glm::perspective(glm::radians(FOV), ScenePanel::GetWidth() / ScenePanel::GetHeight(), 0.01f, 100.0f);
 
-    KeyboardMovement();
-    MouseMovement();
-
     _cameraMatrixBuffer.Update(CameraMatrixBuffer{_viewMatrix, _projectionMatrix});
     _cameraMatrixBuffer.Bind();
 }
 
-void Camera::KeyboardMovement()
-{
-    auto window = GLFWUtil::GetNativeWindow();
-    auto movementSpeed = 0.2f;
-
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        movementSpeed *= 4;
-
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        movementSpeed /= 4;
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        _velocity += movementSpeed * _orientation;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        _velocity += movementSpeed * -glm::normalize(glm::cross(_orientation, UP));
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        _velocity += movementSpeed * -_orientation;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        _velocity += movementSpeed * glm::normalize(glm::cross(_orientation, UP));
-}
-
-void Camera::MouseMovement()
+void Camera::Input()
 {
     auto window = GLFWUtil::GetNativeWindow();
 
@@ -74,11 +52,39 @@ void Camera::MouseMovement()
     if (isRightClickReleased)
         _isMouseLocked = false;
 
-    glfwSetInputMode(window, GLFW_CURSOR, _isMouseLocked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    GLFWUtil::SetMouseLock(_isMouseLocked);
 
     if (!_isMouseLocked)
         return;
 
+    KeyboardMovement();
+    MouseMovement();
+}
+
+void Camera::KeyboardMovement()
+{
+    auto window = GLFWUtil::GetNativeWindow();
+    auto movementSpeed = 0.2f;
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_LEFT_SHIFT))
+        movementSpeed *= 4;
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_LEFT_CONTROL))
+        movementSpeed /= 4;
+
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_W))
+        _velocity += movementSpeed * _orientation;
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_A))
+        _velocity += movementSpeed * -glm::normalize(glm::cross(_orientation, UP));
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_S))
+        _velocity += movementSpeed * -_orientation;
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_D))
+        _velocity += movementSpeed * glm::normalize(glm::cross(_orientation, UP));
+}
+
+void Camera::MouseMovement()
+{
+    auto window = GLFWUtil::GetNativeWindow();
     auto windowSize = GLFWUtil::GetWindowSize();
     auto mouse = GLFWUtil::GetMousePosition();
     glfwSetCursorPos(window, (windowSize.x / 2), (windowSize.y / 2));

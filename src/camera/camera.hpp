@@ -12,6 +12,7 @@ public:
     {
         glm::mat4 ViewMatrix;
         glm::mat4 ProjectionMatrix;
+        float Test;
     };
 
     Camera();
@@ -38,6 +39,7 @@ private:
 
     bool _isMouseLocked;
 
+    void Input();
     void KeyboardMovement();
     void MouseMovement();
 };
