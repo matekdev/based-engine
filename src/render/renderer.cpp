@@ -23,8 +23,6 @@
 
 Renderer::Renderer()
 {
-    _instance = this;
-
     InitializeFactoryAndDevice();
     InitializeSwapChain();
     InitializeImGui();
@@ -44,22 +42,22 @@ Renderer::~Renderer()
 
 const Microsoft::WRL::ComPtr<ID3D11Device> &Renderer::GetDevice()
 {
-    return _instance->_device;
+    return _device;
 }
 
 const Microsoft::WRL::ComPtr<ID3D11DeviceContext> &Renderer::GetDeviceContext()
 {
-    return _instance->_deviceContext;
+    return _deviceContext;
 }
 
 void Renderer::OnResize()
 {
     auto windowSize = GLFWUtil::GetWindowSize();
-    _instance->_deviceContext->Flush();
-    _instance->_backBuffer.Reset();
-    _instance->_swapChain->ResizeBuffers(0, windowSize.x, windowSize.y, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-    _instance->InitializeBackBuffer();
-    _instance->SetViewPort();
+    _deviceContext->Flush();
+    _backBuffer.Reset();
+    _swapChain->ResizeBuffers(0, windowSize.x, windowSize.y, DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+    InitializeBackBuffer();
+    SetViewPort();
 }
 
 void Renderer::BindBackBuffer() const
