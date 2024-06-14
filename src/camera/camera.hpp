@@ -12,7 +12,6 @@ public:
     {
         glm::mat4 ViewMatrix;
         glm::mat4 ProjectionMatrix;
-        float Test;
     };
 
     Camera();
