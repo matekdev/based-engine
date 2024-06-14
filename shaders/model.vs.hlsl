@@ -11,7 +11,8 @@ struct VSOutput
 
 cbuffer CameraMatrix : register(b0)
 {
-    matrix CameraMatrix;
+    matrix CameraViewMatrix;
+    matrix CameraProjectionMatrix;
 };
 
 cbuffer ModelMatrix : register(b1)
@@ -21,8 +22,9 @@ cbuffer ModelMatrix : register(b1)
 
 VSOutput Main(VSInput input)
 {
+    matrix cameraMatrix = mul(CameraProjectionMatrix, CameraViewMatrix);
     VSOutput output;
-    output.position = mul(CameraMatrix, mul(ModelMatrix, float4(input.position, 1.0f)));
+    output.position = mul(cameraMatrix, mul(ModelMatrix, float4(input.position, 1.0f)));
     output.color = float4(0.7f, 0.5f, 1.0f, 1.0f);
     return output;
 }

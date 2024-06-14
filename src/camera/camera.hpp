@@ -10,7 +10,8 @@ class Camera
 public:
     struct CameraMatrixBuffer
     {
-        glm::mat4 Matrix;
+        glm::mat4 ViewMatrix;
+        glm::mat4 ProjectionMatrix;
     };
 
     Camera();
@@ -18,6 +19,7 @@ public:
     void Update();
 
 private:
+    const float FOV = 90.0f;
     const float VELOCITY_DECAY = 0.97f;
     const float SENSITIVITY = 75.0f;
     const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0);
