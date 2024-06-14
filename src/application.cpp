@@ -4,6 +4,7 @@
 #include "ui/scene_panel.hpp"
 #include "ui/docking_panel.hpp"
 #include "ui/entities_panel.hpp"
+#include "ui/inspector_panel.hpp"
 
 #include <imgui.h>
 
@@ -29,6 +30,7 @@ Application::Application(const float &applicationWidth, const float &application
     _uiPanels.push_back(std::make_unique<ConsolePanel>());
     _uiPanels.push_back(std::make_unique<ScenePanel>());
     _uiPanels.push_back(std::make_unique<EntitiesPanel>());
+    _uiPanels.push_back(std::make_unique<InspectorPanel>());
 
     _renderer = std::make_unique<Renderer>();
     _scene = std::make_unique<Scene>();
