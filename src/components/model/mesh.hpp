@@ -1,7 +1,6 @@
 #pragma once
 
 #include "vertex.hpp"
-#include "texture.hpp"
 
 #include <vector>
 
@@ -12,7 +11,7 @@
 class Mesh
 {
 public:
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures);
+    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices);
 
     void Render() const;
 
@@ -26,7 +25,6 @@ private:
 
     std::vector<Vertex> _vertices;
     std::vector<unsigned int> _indices;
-    std::vector<Texture> _textures;
 
     void InitializeVertexBuffer();
     void InitializeIndexBuffer();

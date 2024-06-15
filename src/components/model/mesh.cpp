@@ -3,8 +3,8 @@
 #include "render/renderer.hpp"
 #include "log.hpp"
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures)
-    : _vertices(vertices), _indices(indices), _textures(textures), _indexCount((uint32_t)indices.size())
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
+    : _vertices(vertices), _indices(indices), _indexCount((uint32_t)indices.size())
 {
     InitializeVertexBuffer();
     InitializeIndexBuffer();

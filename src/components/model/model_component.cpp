@@ -53,7 +53,6 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -100,5 +99,5 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 
     // TODO: Bring back texture loading.
 
-    return Mesh(vertices, indices, textures);
+    return Mesh(vertices, indices);
 }
