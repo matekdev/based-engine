@@ -8,7 +8,7 @@
 
 enum class TextureType
 {
-    ALBEDO,
+    DIFFUSE,
     NORMAL,
     SPECULAR
 };
