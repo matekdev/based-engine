@@ -1,12 +1,13 @@
 struct PSInput
 {
-    float4 position : SV_Position;
-    float3 color : COLOR0;
+    float4 Position : SV_Position;
+    float3 Normal : NORMAL;
+    float2 TexCoords : TEXCOORD;
 };
 
 struct PSOutput
 {
-    float4 color : SV_Target0;
+    float4 Color : SV_Target0;
 };
 
 Texture2D AlbedoMap : register(t0);
@@ -16,6 +17,9 @@ SamplerState TextureSampler : register(s0);
 PSOutput Main(PSInput input)
 {
     PSOutput output;
-    output.color = float4(input.color, 1.0);
+
+    const float3 albedo = AlbedoMap.Sample(TextureSampler, input.TexCoords).rgb;
+    output.Color = float4(albedo, 1.0f);
+
     return output;
 }

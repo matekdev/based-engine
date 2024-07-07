@@ -1,12 +1,15 @@
 struct VSInput
 {
-    float3 position : POSITION;
+    float3 Position : POSITION;
+    float3 Normal : NORMAL;
+    float2 TexCoords : TEXCOORD;
 };
 
 struct VSOutput
 {
-    float4 position : SV_Position;
-    float3 color : COLOR0;
+    float4 Position : SV_Position;
+    float3 Normal : NORMAL;
+    float2 TexCoords : TEXCOORD;
 };
 
 cbuffer CameraMatrix : register(b0)
@@ -24,7 +27,10 @@ VSOutput Main(VSInput input)
 {
     matrix cameraMatrix = mul(CameraProjectionMatrix, CameraViewMatrix);
     VSOutput output;
-    output.position = mul(cameraMatrix, mul(ModelMatrix, float4(input.position, 1.0f)));
-    output.color = float4(0.7f, 0.5f, 1.0f, 1.0f);
+
+    output.Position = mul(cameraMatrix, mul(ModelMatrix, float4(input.Position, 1.0f)));
+    output.Normal = input.Normal;
+    output.TexCoords = input.TexCoords;
+
     return output;
 }
