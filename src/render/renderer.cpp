@@ -179,7 +179,7 @@ void Renderer::InitializeRasterizer()
 {
     D3D11_RASTERIZER_DESC rasterizerDesc = {};
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-    rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+    rasterizerDesc.CullMode = D3D11_CULL_NONE;
 
     if (FAILED(_device->CreateRasterizerState(&rasterizerDesc, _rasterizerState.GetAddressOf())))
         LOG(ERROR) << "Failed to create rasterizer";

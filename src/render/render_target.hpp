@@ -18,6 +18,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _renderTargetView;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _shaderResourceView;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _depthStencilView;
 
     void Initialize();
     void SetViewPort();

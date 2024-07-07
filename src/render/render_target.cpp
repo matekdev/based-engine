@@ -23,7 +23,8 @@ void RenderTarget::Resize()
 
 void RenderTarget::Bind()
 {
-    Renderer::GetDeviceContext()->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), nullptr);
+    Renderer::GetDeviceContext()->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), _depthStencilView.Get());
+    Renderer::GetDeviceContext()->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     Renderer::GetDeviceContext()->ClearRenderTargetView(_renderTargetView.Get(), _clearColor);
 }
 
@@ -63,6 +64,31 @@ void RenderTarget::Initialize()
 
     if (FAILED(Renderer::GetDevice()->CreateShaderResourceView(texture2D.Get(), &shaderResourceViewDesc, &_shaderResourceView)))
         LOG(ERROR) << "Failed to create shader resource view description";
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilTexture;
+
+    D3D11_TEXTURE2D_DESC depthStencilTextureDesc = {};
+    depthStencilTextureDesc.Width = ScenePanel::GetWidth();
+    depthStencilTextureDesc.Height = ScenePanel::GetHeight();
+    depthStencilTextureDesc.ArraySize = 1;
+    depthStencilTextureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+    depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+    depthStencilTextureDesc.MiscFlags = 0;
+    depthStencilTextureDesc.CPUAccessFlags = 0;
+    depthStencilTextureDesc.MipLevels = 1;
+    depthStencilTextureDesc.SampleDesc.Count = 1;
+    depthStencilTextureDesc.SampleDesc.Quality = 0;
+
+    if (FAILED(Renderer::GetDevice()->CreateTexture2D(&depthStencilTextureDesc, nullptr, &depthStencilTexture)))
+        LOG(ERROR) << "Failed to create depth stencil texture";
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsvDesc.Texture2D.MipSlice = 0;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+    if (FAILED(Renderer::GetDevice()->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, &_depthStencilView)))
+        LOG(ERROR) << "Failed to create depth stencil resource view";
 }
 
 void RenderTarget::SetViewPort()
