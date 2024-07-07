@@ -22,21 +22,36 @@ Texture::Texture(const TextureType &type, const std::string &path) : _slot((uint
     D3D11_TEXTURE2D_DESC textureDesc = {};
     textureDesc.Width = width;
     textureDesc.Height = height;
+    textureDesc.MipLevels = 1;
     textureDesc.ArraySize = 1;
     textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-    textureDesc.Usage = D3D11_USAGE_DEFAULT;
-    textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-    textureDesc.CPUAccessFlags = 0;
-    textureDesc.MipLevels = 0;
     textureDesc.SampleDesc.Count = 1;
-    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-    if (FAILED(Renderer::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &texture)))
+    D3D11_SUBRESOURCE_DATA subresourceData = {};
+    subresourceData.pSysMem = data;
+    subresourceData.SysMemPitch = width;
+
+    if (FAILED(Renderer::GetDevice()->CreateTexture2D(&textureDesc, &subresourceData, &texture)))
     {
         LOG(ERROR) << "Failed to create texture: " << path;
         return;
     }
+
+    stbi_image_free(data);
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc = {};
+    viewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    viewDesc.Texture2D.MipLevels = 1;
+
+    if (FAILED(Renderer::GetDevice()->CreateShaderResourceView(texture.Get(), &viewDesc, &_shaderResourceView)))
+    {
+        LOG(ERROR) << "Failed to create shader texture resource: " << path;
+        return;
+    }
+
+    texture->Release();
 }
 
 void Texture::Bind() const

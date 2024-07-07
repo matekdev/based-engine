@@ -27,6 +27,7 @@ Renderer::Renderer()
     InitializeSwapChain();
     InitializeImGui();
     InitializeBackBuffer();
+    InitializeSampler();
     SetViewPort();
 }
 
@@ -64,6 +65,7 @@ void Renderer::BindBackBuffer() const
 {
     _deviceContext->OMSetRenderTargets(1, _backBuffer.GetAddressOf(), nullptr);
     _deviceContext->ClearRenderTargetView(_backBuffer.Get(), _clearColor);
+    _deviceContext->PSSetSamplers(0, 1, _samplerState.GetAddressOf()); // TODO: This seems like the wrong place to put this.
 }
 
 void Renderer::PreRender() const
@@ -155,6 +157,18 @@ void Renderer::InitializeBackBuffer()
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     _swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
     _device->CreateRenderTargetView(backBuffer.Get(), nullptr, _backBuffer.GetAddressOf());
+}
+
+void Renderer::InitializeSampler()
+{
+    D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
+    if (FAILED(_device->CreateSamplerState(&samplerDesc, &_samplerState)))
+        LOG(ERROR) << "Failed to create sampler state";
 }
 
 void Renderer::SetViewPort()

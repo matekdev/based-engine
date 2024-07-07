@@ -31,10 +31,12 @@ private:
     static inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> _deviceContext;
     Microsoft::WRL::ComPtr<IDXGISwapChain1> _swapChain;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _backBuffer;
+    Microsoft::WRL::ComPtr<ID3D11SamplerState> _samplerState;
 
     void InitializeFactoryAndDevice();
     void InitializeSwapChain();
     void InitializeImGui();
     void InitializeBackBuffer();
+    void InitializeSampler();
     void SetViewPort();
 };
