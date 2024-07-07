@@ -9,11 +9,10 @@
 Texture::Texture(const TextureType &type, const std::string &path) : _slot((uint32_t)type)
 {
     int width, height, nrComponents;
-    auto data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
+    auto data = stbi_load(path.c_str(), &width, &height, &nrComponents, 4);
     if (!data)
     {
         LOG(ERROR) << "Failed to load texture: " << path;
-        stbi_image_free(data);
         return;
     }
 
@@ -30,7 +29,7 @@ Texture::Texture(const TextureType &type, const std::string &path) : _slot((uint
 
     D3D11_SUBRESOURCE_DATA subresourceData = {};
     subresourceData.pSysMem = data;
-    subresourceData.SysMemPitch = width;
+    subresourceData.SysMemPitch = width * sizeof(UINT);
 
     if (FAILED(Renderer::GetDevice()->CreateTexture2D(&textureDesc, &subresourceData, &texture)))
     {
@@ -50,8 +49,6 @@ Texture::Texture(const TextureType &type, const std::string &path) : _slot((uint
         LOG(ERROR) << "Failed to create shader texture resource: " << path;
         return;
     }
-
-    texture->Release();
 }
 
 void Texture::Bind() const
