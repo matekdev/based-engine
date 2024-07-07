@@ -28,6 +28,7 @@ Renderer::Renderer()
     InitializeImGui();
     InitializeBackBuffer();
     InitializeSampler();
+    InitializeRasterizer();
     SetViewPort();
 }
 
@@ -65,7 +66,10 @@ void Renderer::BindBackBuffer() const
 {
     _deviceContext->OMSetRenderTargets(1, _backBuffer.GetAddressOf(), nullptr);
     _deviceContext->ClearRenderTargetView(_backBuffer.Get(), _clearColor);
-    _deviceContext->PSSetSamplers(0, 1, _samplerState.GetAddressOf()); // TODO: This seems like the wrong place to put this.
+
+    // TODO: This seems like the wrong place to put this.
+    _deviceContext->PSSetSamplers(0, 1, _samplerState.GetAddressOf());
+    _deviceContext->RSSetState(_rasterizerState.Get());
 }
 
 void Renderer::PreRender() const
@@ -167,8 +171,18 @@ void Renderer::InitializeSampler()
     samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 
-    if (FAILED(_device->CreateSamplerState(&samplerDesc, &_samplerState)))
+    if (FAILED(_device->CreateSamplerState(&samplerDesc, _samplerState.GetAddressOf())))
         LOG(ERROR) << "Failed to create sampler state";
+}
+
+void Renderer::InitializeRasterizer()
+{
+    D3D11_RASTERIZER_DESC rasterizerDesc = {};
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+    if (FAILED(_device->CreateRasterizerState(&rasterizerDesc, _rasterizerState.GetAddressOf())))
+        LOG(ERROR) << "Failed to create rasterizer";
 }
 
 void Renderer::SetViewPort()
