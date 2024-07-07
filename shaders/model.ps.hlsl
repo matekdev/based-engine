@@ -9,6 +9,10 @@ struct PSOutput
     float4 color : SV_Target0;
 };
 
+Texture2D AlbedoMap : register(t0);
+
+SamplerState TextureSampler : register(s0);
+
 PSOutput Main(PSInput input)
 {
     PSOutput output;
