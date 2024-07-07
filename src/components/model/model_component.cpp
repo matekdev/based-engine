@@ -24,6 +24,8 @@ void ModelComponent::LoadModel(const std::string &modelPath)
         return;
     }
 
+    _directory = modelPath.substr(0, modelPath.find_last_of('\\'));
+
     ProcessNode(scene->mRootNode, scene);
 }
 
@@ -53,6 +55,7 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+    std::vector<Material> materials;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -88,7 +91,7 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
         vertices.push_back(vertex);
     }
 
-    for (int i = 0; i < mesh->mNumFaces; i++)
+    for (int i = 0; i < mesh->mNumFaces; ++i)
     {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++)
@@ -97,7 +100,11 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
         }
     }
 
-    // TODO: Bring back texture loading.
+    for (int i = 0; i < scene->mNumMaterials; ++i)
+    {
+        auto &material = *scene->mMaterials[i];
+        materials.push_back(Material(material, _directory));
+    }
 
-    return Mesh(vertices, indices);
+    return Mesh(vertices, indices, materials);
 }

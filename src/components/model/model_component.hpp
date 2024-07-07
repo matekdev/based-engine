@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mesh.hpp"
+#include "material.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -17,6 +18,7 @@ public:
     void Render() const;
 
 private:
+    std::string _directory;
     std::vector<Mesh> _meshes;
 
     void ProcessNode(aiNode *node, const aiScene *scene);

@@ -3,8 +3,8 @@
 #include "render/renderer.hpp"
 #include "log.hpp"
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
-    : _vertices(vertices), _indices(indices), _indexCount((uint32_t)indices.size())
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Material> &materials)
+    : _vertices(vertices), _indices(indices), _materials(materials), _indexCount((uint32_t)indices.size())
 {
     InitializeVertexBuffer();
     InitializeIndexBuffer();
@@ -12,6 +12,9 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
 
 void Mesh::Render() const
 {
+    for (const auto &material : _materials)
+        material.Bind();
+
     Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, _vertexBuffer.GetAddressOf(), &VERTEX_STRIDE, &VERTEX_OFFSET);
     Renderer::GetDeviceContext()->IASetIndexBuffer(_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
     Renderer::GetDeviceContext()->DrawIndexed(_indexCount, 0, 0);
