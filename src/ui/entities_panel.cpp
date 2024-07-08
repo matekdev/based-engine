@@ -20,7 +20,7 @@ void EntitiesPanel::Draw()
     for (auto entity : group)
     {
         auto info = group.get<InfoComponent>(entity);
-        ImGui::PushID(info.Id);
+        ImGui::PushID(info.GetId());
 
         auto name = std::string(ICON_FA_CUBE) + " " + info.Name;
         if (ImGui::Selectable(name.c_str(), Scene::ActiveScene->SelectedEntity.has_value() && Scene::ActiveScene->SelectedEntity.value() == entity))

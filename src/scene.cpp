@@ -29,9 +29,9 @@ float Scene::GetDeltaTime()
 void Scene::CreateNewEntity()
 {
     auto ent = Registry.create();
-    Registry.emplace<InfoComponent>(ent);
-    Registry.emplace<TransformComponent>(ent);
-    Registry.emplace<ModelComponent>(ent);
+    Registry.emplace<InfoComponent>(ent, ent);
+    Registry.emplace<TransformComponent>(ent, ent);
+    Registry.emplace<ModelComponent>(ent, ent);
 }
 
 void Scene::OnResize()

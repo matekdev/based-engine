@@ -1,10 +1,11 @@
 #pragma once
 
+#include "component.hpp"
 #include "render/constant_buffer.hpp"
 
 #include <glm/glm.hpp>
 
-class TransformComponent
+class TransformComponent : public Component
 {
 public:
     struct TransformMatrixBuffer
@@ -12,7 +13,7 @@ public:
         glm::mat4 Matrix;
     };
 
-    TransformComponent();
+    TransformComponent(const entt::entity &entity);
 
     glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 Rotation = glm::vec3(0.0f);

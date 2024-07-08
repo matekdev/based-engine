@@ -1,4 +1,8 @@
 #include "components/info_component.hpp"
 
-// I'm here to write graphics, not complicated Id systems!!
-InfoComponent::InfoComponent() : Id(_id++), Name("Entity") {}
+InfoComponent::InfoComponent(const entt::entity &entity) : Component(entity), Name("Entity") {}
+
+std::uint32_t InfoComponent::GetId() const
+{
+    return static_cast<std::uint32_t>(_entity);
+}

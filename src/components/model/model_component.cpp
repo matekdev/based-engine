@@ -8,7 +8,7 @@ struct VertexPositionColor
     glm::vec3 Color;
 };
 
-ModelComponent::ModelComponent()
+ModelComponent::ModelComponent(const entt::entity &entity) : Component(entity)
 {
     LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
 }

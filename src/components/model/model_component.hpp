@@ -2,6 +2,7 @@
 
 #include "mesh.hpp"
 #include "material.hpp"
+#include "components/component.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -9,10 +10,10 @@
 
 #include <entt/entt.hpp>
 
-class ModelComponent
+class ModelComponent : public Component
 {
 public:
-    ModelComponent();
+    ModelComponent(const entt::entity &entity);
 
     void LoadModel(const std::string &modelPath);
     void Render() const;

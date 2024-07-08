@@ -1,16 +1,16 @@
 #pragma once
 
+#include "component.hpp"
+
 #include <string>
 #include <random>
 
-class InfoComponent
+class InfoComponent : public Component
 {
 public:
     std::string Name;
-    int Id;
 
-    InfoComponent();
+    InfoComponent(const entt::entity &entity);
 
-private:
-    static inline int _id;
+    std::uint32_t GetId() const;
 };
