@@ -58,15 +58,19 @@ void ScenePanel::UpdateInput()
         Scene::ActiveScene->SelectedEntity.reset();
 
     auto isUsingMouse = ImGuizmo::IsUsing() || GLFWUtil::IsMouseLocked();
+    auto &io = ImGui::GetIO();
 
-    if (GLFWUtil::IsButtonPressed(GLFW_KEY_W) && !isUsingMouse)
-        _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
+    if (!isUsingMouse && !io.WantTextInput)
+    {
+        if (GLFWUtil::IsButtonPressed(GLFW_KEY_W))
+            _activeGizmo = ImGuizmo::OPERATION::TRANSLATE;
 
-    if (GLFWUtil::IsButtonPressed(GLFW_KEY_E) && !isUsingMouse)
-        _activeGizmo = ImGuizmo::OPERATION::ROTATE;
+        if (GLFWUtil::IsButtonPressed(GLFW_KEY_E))
+            _activeGizmo = ImGuizmo::OPERATION::ROTATE;
 
-    if (GLFWUtil::IsButtonPressed(GLFW_KEY_R) && !isUsingMouse)
-        _activeGizmo = ImGuizmo::OPERATION::SCALE;
+        if (GLFWUtil::IsButtonPressed(GLFW_KEY_R))
+            _activeGizmo = ImGuizmo::OPERATION::SCALE;
+    }
 
     if (GLFWUtil::IsButtonPressed(GLFW_KEY_DELETE) && Scene::ActiveScene->SelectedEntity)
     {
