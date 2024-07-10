@@ -15,13 +15,17 @@ class ModelComponent : public Component
 public:
     ModelComponent(const entt::entity &entity);
 
+    std::string GetLoadedModelPath() const;
+
     void LoadModel(const std::string &modelPath);
     void Render() const;
 
 private:
     std::string _directory;
     std::vector<Mesh> _meshes;
+    std::string _loadedModelPath;
 
+    void DeleteModel();
     void ProcessNode(aiNode *node, const aiScene *scene);
     Mesh ProcessMesh(aiMesh *mesh, const aiScene *scene);
 };

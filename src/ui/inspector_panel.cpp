@@ -7,9 +7,22 @@
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
 
+#include "common/file_util.hpp"
+
 #include <imgui.h>
 #include <imgui_stdlib.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
+
+InspectorPanel::InspectorPanel()
+{
+    for (const auto &entry : std::filesystem::recursive_directory_iterator("models"))
+    {
+        // objs seem to import the best, but assimp supports everything so feel free to modify this.
+        if (entry.is_regular_file() && entry.path().extension() == ".obj")
+            _modelPaths.push_back(entry.path().string());
+    }
+}
 
 void InspectorPanel::Draw()
 {
@@ -42,8 +55,20 @@ void InspectorPanel::Draw()
 
     ComponentHeader<ModelComponent>(
         ICON_FA_PERSON " Model",
-        [this](ModelComponent *model) {
+        [this](ModelComponent *model)
+        {
+            auto loadedPath = model->GetLoadedModelPath();
+            auto selectedModelName = GetFileName(loadedPath);
+            if (ImGui::BeginCombo(ICON_FA_FOLDER_OPEN " Model", selectedModelName.c_str()))
+            {
+                for (const auto &path : _modelPaths)
+                {
+                    if (ImGui::Selectable(GetFileName(path).c_str(), loadedPath == path))
+                        model->LoadModel(path);
+                }
 
+                ImGui::EndCombo();
+            }
         });
 
     ComponentEntries();

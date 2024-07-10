@@ -10,11 +10,20 @@ struct VertexPositionColor
 
 ModelComponent::ModelComponent(const entt::entity &entity) : Component(entity)
 {
-    LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
+}
+
+std::string ModelComponent::GetLoadedModelPath() const
+{
+    return _loadedModelPath;
 }
 
 void ModelComponent::LoadModel(const std::string &modelPath)
 {
+    if (_loadedModelPath == modelPath)
+        return;
+
+    DeleteModel();
+
     Assimp::Importer import;
     const aiScene *scene = import.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
@@ -25,6 +34,7 @@ void ModelComponent::LoadModel(const std::string &modelPath)
     }
 
     _directory = modelPath.substr(0, modelPath.find_last_of('\\'));
+    _loadedModelPath = modelPath;
 
     ProcessNode(scene->mRootNode, scene);
 }
@@ -35,6 +45,11 @@ void ModelComponent::Render() const
     {
         mesh.Render();
     }
+}
+
+void ModelComponent::DeleteModel()
+{
+    _meshes.clear();
 }
 
 void ModelComponent::ProcessNode(aiNode *node, const aiScene *scene)

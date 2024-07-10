@@ -8,9 +8,13 @@
 class InspectorPanel : public Panel
 {
 public:
+    InspectorPanel();
+
     void Draw() override;
 
 private:
+    std::vector<std::string> _modelPaths;
+
     void ComponentEntries();
 
     template <typename T>
