@@ -12,6 +12,13 @@ Scene::Scene() : _renderTarget(RenderTarget()),
                  _modelPixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
+
+    // TODO: Remove debug.
+    auto ent = Registry.create();
+    Registry.emplace<InfoComponent>(ent, ent);
+    Registry.emplace<TransformComponent>(ent, ent);
+    auto &model = Registry.emplace<ModelComponent>(ent, ent);
+    model.LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
 }
 
 ID3D11ShaderResourceView *Scene::GetShaderResourceView()
