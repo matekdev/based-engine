@@ -46,7 +46,25 @@ void InspectorPanel::Draw()
 
         });
 
+    ComponentEntries();
+
     ImGui::End();
+}
+
+void InspectorPanel::ComponentEntries()
+{
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::Spacing();
+
+    if (ImGui::Button(ICON_FA_CIRCLE_PLUS " Add Component", ImVec2(-1, 0)))
+        ImGui::OpenPopup("AddComponent");
+
+    if (ImGui::BeginPopup("AddComponent"))
+    {
+        ComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
+        ImGui::EndPopup();
+    }
 }
 
 template <typename T>
@@ -77,5 +95,19 @@ void InspectorPanel::ComponentHeader(const std::string &name, const std::functio
             options(component);
 
         ImGui::PopID();
+    }
+}
+
+template <typename T>
+void InspectorPanel::ComponentEntry(const std::string &name)
+{
+    auto selectedEntity = Scene::ActiveScene->SelectedEntity;
+    if (!Scene::ActiveScene->Registry.any_of<T>(selectedEntity.value()))
+    {
+        if (ImGui::MenuItem(name.c_str()))
+        {
+            Scene::ActiveScene->Registry.emplace<T>(selectedEntity.value(), selectedEntity.value());
+            ImGui::CloseCurrentPopup();
+        }
     }
 }
