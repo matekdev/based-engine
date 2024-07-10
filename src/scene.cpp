@@ -6,7 +6,10 @@
 
 #include <GLFW/glfw3.h>
 
-Scene::Scene() : _renderTarget(RenderTarget()), _camera(Camera()), _vertexShader(L"shaders/model.vs.hlsl"), _pixelShader(L"shaders/model.ps.hlsl")
+Scene::Scene() : _renderTarget(RenderTarget()),
+                 _camera(Camera()),
+                 _modelVertexShader(L"shaders/model.vs.hlsl"),
+                 _modelPixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
 }
@@ -44,8 +47,6 @@ void Scene::Render()
     CalculateDeltaTime();
 
     _renderTarget.Bind();
-    _vertexShader.Bind();
-    _pixelShader.Bind();
 
     const auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
     for (const auto &entity : modelGroup)
@@ -53,7 +54,10 @@ void Scene::Render()
         auto &transform = modelGroup.get<TransformComponent>(entity);
         const auto &model = modelGroup.get<ModelComponent>(entity);
 
+        _modelVertexShader.Bind();
+        _modelPixelShader.Bind();
         transform.Bind();
+
         model.Render();
     }
 

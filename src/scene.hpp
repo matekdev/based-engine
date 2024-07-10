@@ -29,8 +29,8 @@ public:
 private:
     Camera _camera;
 
-    VertexShader _vertexShader;
-    PixelShader _pixelShader;
+    VertexShader _modelVertexShader;
+    PixelShader _modelPixelShader;
 
     RenderTarget _renderTarget;
 
