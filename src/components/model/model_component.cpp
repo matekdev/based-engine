@@ -121,5 +121,7 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
         materials.push_back(Material(material, _directory));
     }
 
+    _hasTextures = !materials.empty();
+
     return Mesh(vertices, indices, materials);
 }

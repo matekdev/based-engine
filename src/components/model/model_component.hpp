@@ -24,6 +24,7 @@ private:
     std::string _directory;
     std::vector<Mesh> _meshes;
     std::string _loadedModelPath;
+    bool _hasTextures;
 
     void DeleteModel();
     void ProcessNode(aiNode *node, const aiScene *scene);
