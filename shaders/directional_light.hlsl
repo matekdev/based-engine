@@ -1,5 +1,3 @@
-#include "camera_matrix.hlsl"
-
 cbuffer DirectionalLight : register(b2)
 {
     float3 Direction;
@@ -8,7 +6,7 @@ cbuffer DirectionalLight : register(b2)
     float3 Specular;
 };
 
-vector CalculateDirectionalLight(float4 position, float3 normal)
+float4 CalculateDirectionalLight(float3 cameraPosition, float4 fragPosition, float3 normal)
 {
     // ambient
     float3 ambient = Ambient;
@@ -19,11 +17,11 @@ vector CalculateDirectionalLight(float4 position, float3 normal)
     float3 diffuse = Diffuse * diff;
 
     // ambient
-    float3 viewDirection = normalize(CameraPosition - position);
+    float3 viewDirection = normalize(fragPosition - cameraPosition);
     float3 halfWayDirection = normalize(lightDirection + viewDirection);
     float spec = pow(max(dot(normal, halfWayDirection), 0.0), 64);
-    float3 specular = specular * spec;
+    float3 specular = Specular * spec;
 
-    float result = ambient + diffuse + spec;
-    return result;
+    float3 result = ambient + diffuse + specular;
+    return float4(result, 1.0);
 }
