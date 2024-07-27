@@ -8,7 +8,7 @@
 class TransformComponent : public Component
 {
 public:
-    struct TransformMatrixBuffer
+    struct alignas(16) TransformMatrixBuffer
     {
         glm::mat4 Matrix;
     };

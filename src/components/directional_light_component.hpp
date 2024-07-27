@@ -9,7 +9,7 @@
 class DirectionalLightComponent : public Component
 {
 public:
-    struct DirectionalLightBuffer
+    struct alignas(16) DirectionalLightBuffer
     {
         glm::vec3 Direction;
         glm::vec3 Ambient;

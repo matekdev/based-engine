@@ -22,7 +22,7 @@ PSOutput Main(PSInput input)
 
     const float3 albedo = AlbedoMap.Sample(TextureSampler, input.TexCoords).rgb;
     output.Color = float4(albedo, 1.0f);
-    output.Color *= CalculateDirectionalLight(normalize(input.Normal));
+    output.Color *= CalculateDirectionalLight(input.Position, normalize(input.Normal));
 
     return output;
 }
