@@ -2,6 +2,7 @@
 
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
+#include "components/directional_light_component.hpp"
 #include "components/model/model_component.hpp"
 
 #include <GLFW/glfw3.h>
@@ -63,9 +64,17 @@ void Scene::Render()
 
         _modelVertexShader.Bind();
         _modelPixelShader.Bind();
+
         transform.Bind();
 
         model.Render();
+    }
+
+    const auto directionalLightGroup = Scene::ActiveScene->Registry.view<DirectionalLightComponent>();
+    for (const auto &entity : directionalLightGroup)
+    {
+        auto &light = directionalLightGroup.get<DirectionalLightComponent>(entity);
+        light.Bind();
     }
 
     _camera.Update();

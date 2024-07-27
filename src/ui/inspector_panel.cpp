@@ -6,6 +6,7 @@
 
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
+#include "components/directional_light_component.hpp"
 
 #include "common/file_util.hpp"
 
@@ -71,6 +72,15 @@ void InspectorPanel::Draw()
             }
         });
 
+    ComponentHeader<DirectionalLightComponent>(
+        ICON_FA_SUN_PLANT_WILT " Directional Light",
+        [this](DirectionalLightComponent *light)
+        {
+            ImGui::DragFloat3(ICON_FA_SUN_PLANT_WILT " Ambient", glm::value_ptr(light->Ambient), 0.05f, 0.0, 1.0f);
+            ImGui::DragFloat3(ICON_FA_SUN_PLANT_WILT " Diffuse", glm::value_ptr(light->Diffuse), 0.05f, 0.0, 1.0f);
+            ImGui::DragFloat3(ICON_FA_SUN_PLANT_WILT " Specular", glm::value_ptr(light->Specular), 0.05f, 0.0, 1.0f);
+        });
+
     ComponentEntries();
 
     ImGui::End();
@@ -88,6 +98,7 @@ void InspectorPanel::ComponentEntries()
     if (ImGui::BeginPopup("AddComponent"))
     {
         ComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
+        ComponentEntry<DirectionalLightComponent>(ICON_FA_PERSON ICON_FA_SUN_PLANT_WILT " Directional Light");
         ImGui::EndPopup();
     }
 }
