@@ -56,6 +56,7 @@ option(ASSIMP_BUILD_TESTS "ASSIMP_BUILD_TESTS" OFF)
 
 # PHYSX
 include_directories(physx/include)
+set(PHYSX_DIR ${PROJECT_SOURCE_DIR}/physx)
 set(PHYSX_LIB ${PROJECT_SOURCE_DIR}/physx/libs)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
@@ -69,11 +70,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   assimp
 
   # physx
-  ${PHYSX_LIB}/libPhysXExtensions_static_64.a
-  ${PHYSX_LIB}/libPhysX_static_64.a
-  ${PHYSX_LIB}/libPhysXPvdSDK_static_64.a
-  ${PHYSX_LIB}/libPhysXCommon_static_64.a
-  ${PHYSX_LIB}/libPhysXFoundation_static_64.a
+  ${PHYSX_LIB}/PhysXExtensions_static_64.lib
+  ${PHYSX_LIB}/PhysX_64.lib
+  ${PHYSX_LIB}/PhysXPvdSDK_static_64.lib
+  ${PHYSX_LIB}/PhysXCommon_64.lib
+  ${PHYSX_LIB}/PhysXFoundation_64.lib
 )
 
 # Copy shader files
@@ -97,4 +98,12 @@ add_custom_target(copy_font ALL
         ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/font
         COMMENT "Copying fonts into binary directory")
 
-add_dependencies(${PROJECT_NAME} copy_shaders copy_models copy_font)
+# Copy physx dll
+file(GLOB PHYSX_DLLS "${PHYSX_DIR}/dll/*")
+add_custom_target(copy_physx_dll ALL
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${PHYSX_DLLS}
+        ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+        COMMENT "Copying all physx dlls into binary directory")
+
+add_dependencies(${PROJECT_NAME} copy_shaders copy_models copy_font copy_physx_dll)
