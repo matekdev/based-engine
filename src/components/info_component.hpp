@@ -12,5 +12,5 @@ public:
 
     InfoComponent(const entt::entity &entity);
 
-    int GetId() const;
+    unsigned int GetId() const;
 };
