@@ -21,6 +21,6 @@ public:
     void Bind() const;
 
 private:
-    uint32_t _slot;
+    unsigned int _slot;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _shaderResourceView;
 };

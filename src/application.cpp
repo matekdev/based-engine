@@ -72,14 +72,14 @@ void Application::DrawPanels() const
     }
 }
 
-void Application::ResizeCallback(GLFWwindow *window, const int32_t width, const int32_t height)
+void Application::ResizeCallback(GLFWwindow *window, const int width, const int height)
 {
     auto *application = static_cast<Application *>(glfwGetWindowUserPointer(window));
     if (application)
         application->OnResize(width, height);
 }
 
-void Application::OnResize(const int32_t width, const int32_t height)
+void Application::OnResize(const int width, const int height)
 {
     _renderer->OnResize();
 }

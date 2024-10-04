@@ -12,5 +12,5 @@ public:
 
     InfoComponent(const entt::entity &entity);
 
-    std::uint32_t GetId() const;
+    int GetId() const;
 };

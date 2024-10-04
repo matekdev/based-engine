@@ -29,6 +29,6 @@ private:
 
     std::vector<std::unique_ptr<Panel>> _uiPanels;
 
-    inline static void ResizeCallback(GLFWwindow *window, const int32_t width, const int32_t height);
-    void OnResize(const int32_t width, const int32_t height);
+    inline static void ResizeCallback(GLFWwindow *window, const int width, const int height);
+    void OnResize(const int width, const int height);
 };

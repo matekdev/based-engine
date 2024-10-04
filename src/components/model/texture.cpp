@@ -6,7 +6,7 @@
 #include "render/renderer.hpp"
 #include "log.hpp"
 
-Texture::Texture(const TextureType &type, const std::string &path) : _slot((uint32_t)type)
+Texture::Texture(const TextureType &type, const std::string &path) : _slot((unsigned int)type)
 {
     int width, height, nrComponents;
     auto data = stbi_load(path.c_str(), &width, &height, &nrComponents, 4);

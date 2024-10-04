@@ -18,12 +18,12 @@ public:
     void Render() const;
 
 private:
-    static const uint32_t VERTEX_STRIDE = sizeof(Vertex);
-    static const uint32_t VERTEX_OFFSET = 0;
+    static const unsigned int VERTEX_STRIDE = sizeof(Vertex);
+    static const unsigned int VERTEX_OFFSET = 0;
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> _vertexBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> _indexBuffer;
-    uint32_t _indexCount;
+    unsigned int _indexCount;
 
     std::vector<Vertex> _vertices;
     std::vector<unsigned int> _indices;
