@@ -6,6 +6,7 @@
 #include "ui/panel.hpp"
 
 #include <GLFW/glfw3.h>
+#include <PxPhysicsAPI.h>
 
 #include <string>
 #include <memory>
