@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(based-engine LANGUAGES CXX)
+add_compile_definitions(_DEBUG)
 
 # source files
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
@@ -33,6 +34,11 @@ CPMAddPackage(
   DOWNLOAD_ONLY True
 )
 
+if(EnTT_ADDED)
+  add_library(EnTT INTERFACE)
+  target_include_directories(EnTT SYSTEM INTERFACE ${EnTT_SOURCE_DIR}/src)
+endif()
+
 # GLM
 CPMAddPackage(
   NAME glm
@@ -48,15 +54,27 @@ CPMAddPackage(
 )
 option(ASSIMP_BUILD_TESTS "ASSIMP_BUILD_TESTS" OFF)
 
-if(EnTT_ADDED)
-  add_library(EnTT INTERFACE)
-  target_include_directories(EnTT SYSTEM INTERFACE ${EnTT_SOURCE_DIR}/src)
-endif()
+# PHYSX
+include_directories(physx/include)
+set(PHYSX_LIB ${PROJECT_SOURCE_DIR}/physx/libs)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
-target_link_libraries(${PROJECT_NAME} PRIVATE glm imgui_cmake_wrapper glog EnTT assimp)
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+  glm 
+  imgui_cmake_wrapper 
+  glog 
+  EnTT 
+  assimp
+
+  # physx
+  ${PHYSX_LIB}/libPhysXExtensions_static_64.a
+  ${PHYSX_LIB}/libPhysX_static_64.a
+  ${PHYSX_LIB}/libPhysXPvdSDK_static_64.a
+  ${PHYSX_LIB}/libPhysXCommon_static_64.a
+  ${PHYSX_LIB}/libPhysXFoundation_static_64.a
+)
 
 # Copy shader files
 add_custom_target(copy_shaders ALL
