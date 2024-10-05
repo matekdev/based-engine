@@ -3,6 +3,9 @@
 #include "components/transform_component.hpp"
 #include "scene.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 RigidBodyComponent::RigidBodyComponent(const entt::entity &entity) : Component(entity)
 {
     TransformComponent transform = Scene::ActiveScene->Registry.get<TransformComponent>(entity);
@@ -18,4 +21,11 @@ RigidBodyComponent::RigidBodyComponent(const entt::entity &entity) : Component(e
 RigidBodyComponent::~RigidBodyComponent()
 {
     // TODO: Remove from scene, cleanup??
+}
+
+glm::vec3 RigidBodyComponent::GetTransform() const
+{
+    const auto transform = _pxRigidBody->getGlobalPose();
+    const auto translation = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
+    return translation;
 }

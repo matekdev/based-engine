@@ -1,8 +1,10 @@
 #include "scene.hpp"
 
+#include "log.hpp"
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
 #include "components/model/model_component.hpp"
+#include "components/rigidbody_component.hpp"
 
 #include <GLFW/glfw3.h>
 
