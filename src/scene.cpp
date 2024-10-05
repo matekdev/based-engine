@@ -43,6 +43,16 @@ ID3D11ShaderResourceView *Scene::GetShaderResourceView()
     return _renderTarget.GetShaderResourceView();
 }
 
+physx::PxScene *Scene::GetPhysicsScene()
+{
+    return _pxScene;
+}
+
+physx::PxPhysics *Scene::GetPhysics()
+{
+    return _pxPhysics;
+}
+
 Camera &Scene::GetActiveCamera()
 {
     return _camera;
@@ -58,7 +68,7 @@ void Scene::CreateNewEntity()
     auto ent = Registry.create();
     Registry.emplace<InfoComponent>(ent, ent);
     Registry.emplace<TransformComponent>(ent, ent);
-    Registry.emplace<ModelComponent>(ent, ent);
+    // Registry.emplace<ModelComponent>(ent, ent);
 }
 
 void Scene::OnResize()
@@ -86,7 +96,6 @@ void Scene::Render()
     }
 
     _camera.Update();
-
     _pxScene->simulate(1.0f / 60.0f);
     _pxScene->fetchResults(true);
 }
@@ -108,6 +117,7 @@ void Scene::createStack(const physx::PxTransform &t, physx::PxU32 size, physx::P
         {
             physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
             physx::PxRigidDynamic *body = _pxPhysics->createRigidDynamic(t.transform(localTm));
+
             body->attachShape(*shape);
             physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
             _pxScene->addActor(*body);
@@ -140,13 +150,4 @@ void Scene::InitializePhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-
-    // TODO: Remove this, we should create the ground plane somewhere else.
-    _pxMaterial = _pxPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-
-    auto *groundPlane = physx::PxCreatePlane(*_pxPhysics, physx::PxPlane(0, 1, 0, 0), *_pxMaterial);
-    _pxScene->addActor(*groundPlane);
-
-    for (physx::PxU32 i = 0; i < 5; i++)
-        createStack(physx::PxTransform(physx::PxVec3(0, 0, 0)), 10, 2.0f);
 }

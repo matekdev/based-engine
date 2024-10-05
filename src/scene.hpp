@@ -22,6 +22,9 @@ public:
     entt::registry Registry;
 
     ID3D11ShaderResourceView *GetShaderResourceView();
+    physx::PxScene *GetPhysicsScene();
+    physx::PxPhysics *GetPhysics();
+
     Camera &GetActiveCamera();
     float GetDeltaTime();
 

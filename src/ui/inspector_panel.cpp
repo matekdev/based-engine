@@ -6,6 +6,7 @@
 
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
+#include "components/rigidbody_component.hpp"
 
 #include "common/file_util.hpp"
 
@@ -71,6 +72,12 @@ void InspectorPanel::Draw()
             }
         });
 
+    ComponentHeader<RigidBodyComponent>(
+        ICON_FA_UP_DOWN " Rigid Body",
+        [this](RigidBodyComponent *rigidBody) {
+
+        });
+
     ComponentEntries();
 
     ImGui::End();
@@ -88,6 +95,7 @@ void InspectorPanel::ComponentEntries()
     if (ImGui::BeginPopup("AddComponent"))
     {
         ComponentEntry<ModelComponent>(ICON_FA_PERSON " Model");
+        ComponentEntry<RigidBodyComponent>(ICON_FA_UP_DOWN " Rigid Body");
         ImGui::EndPopup();
     }
 }
@@ -104,7 +112,8 @@ void InspectorPanel::ComponentHeader(const std::string &name, const std::functio
         auto info = Scene::ActiveScene->Registry.try_get<InfoComponent>(selectedEntity.value());
         auto isOpen = ImGui::CollapsingHeader(name.c_str(), flags);
 
-        ImGui::PushID(info->GetId());
+        auto id = name + std::to_string(info->GetId());
+        ImGui::PushID(id.c_str());
 
         if (canDelete)
         {

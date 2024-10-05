@@ -4,6 +4,7 @@
 #include "render/constant_buffer.hpp"
 
 #include <glm/glm.hpp>
+#include <PxPhysicsAPI.h>
 
 class TransformComponent : public Component
 {
@@ -20,6 +21,7 @@ public:
     glm::vec3 Scale = glm::vec3(1.0f);
 
     glm::mat4 GetTransform() const;
+    physx::PxTransform GetPhysicsTransform() const;
     glm::vec3 GetDirection() const;
 
     void Bind();
