@@ -109,6 +109,21 @@ bool TransformComponent::IsPicked(physx::PxRigidActor *shape) const
     return _pxRigidBody == shape;
 }
 
+void TransformComponent::EnablePhysics(const bool &enabled)
+{
+    auto transform = _pxRigidBody->getGlobalPose();
+    Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidBody);
+    _pxRigidBody->release();
+
+    if (enabled)
+        _pxRigidBody = Scene::ActiveScene->GetPhysics()->createRigidDynamic(transform);
+    else
+        _pxRigidBody = Scene::ActiveScene->GetPhysics()->createRigidStatic(transform);
+
+    _pxRigidBody->attachShape(*_pxShape);
+    Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidBody);
+}
+
 void TransformComponent::Bind()
 {
     _constantBuffer.Update(TransformMatrixBuffer{GetTransform()});

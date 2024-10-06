@@ -32,13 +32,14 @@ public:
     void SetBBox(const glm::vec3 &min, const glm::vec3 &max);
 
     bool IsPicked(physx::PxRigidActor *shape) const;
+    void EnablePhysics(const bool &enable);
 
     void Bind();
 
 private:
     ConstantBuffer<TransformMatrixBuffer> _constantBuffer;
 
-    physx::PxRigidStatic *_pxRigidBody = nullptr;
+    physx::PxRigidActor *_pxRigidBody = nullptr;
     physx::PxShape *_pxShape = nullptr;
     physx::PxMaterial *_pxMaterial = nullptr;
 
