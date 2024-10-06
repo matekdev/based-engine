@@ -21,6 +21,11 @@ glm::vec2 GLFWUtil::GetMousePosition()
     return {xpos, ypos};
 }
 
+bool GLFWUtil::IsMouseButtonPressed(int key)
+{
+    return glfwGetMouseButton(Application::GetNativeWindow(), key) == GLFW_PRESS;
+}
+
 bool GLFWUtil::IsButtonPressed(int key)
 {
     return glfwGetKey(Application::GetNativeWindow(), key) == GLFW_PRESS;

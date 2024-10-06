@@ -1,6 +1,9 @@
 #include "model_component.hpp"
 
+#include "scene.hpp"
+#include "components/transform_component.hpp"
 #include "log.hpp"
+#undef max
 
 struct VertexPositionColor
 {
@@ -37,6 +40,9 @@ void ModelComponent::LoadModel(const std::string &modelPath)
     _loadedModelPath = modelPath;
 
     ProcessNode(scene->mRootNode, scene);
+
+    auto &transform = Scene::ActiveScene->Registry.get<TransformComponent>(_entity);
+    transform.SetBBox(_minPoint, _maxPoint);
 }
 
 void ModelComponent::Render() const
@@ -72,6 +78,9 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
     std::vector<unsigned int> indices;
     std::vector<Material> materials;
 
+    _minPoint = glm::vec3(0.1f);
+    _maxPoint = glm::vec3(0.1f);
+
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex;
@@ -80,6 +89,9 @@ Mesh ModelComponent::ProcessMesh(aiMesh *mesh, const aiScene *scene)
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
         vertex.Position = vector;
+
+        _minPoint = glm::min(_minPoint, vector);
+        _maxPoint = glm::max(_maxPoint, vector);
 
         if (mesh->HasNormals())
         {
