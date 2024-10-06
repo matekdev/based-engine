@@ -26,6 +26,9 @@ private:
     std::string _loadedModelPath;
     bool _hasTextures;
 
+    glm::vec3 _minPoint;
+    glm::vec3 _maxPoint;
+
     void DeleteModel();
     void ProcessNode(aiNode *node, const aiScene *scene);
     Mesh ProcessMesh(aiMesh *mesh, const aiScene *scene);
