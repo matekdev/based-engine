@@ -58,4 +58,5 @@ private:
 
     void CalculateDeltaTime();
     void InitializePhysics();
+    void InitializeDefaultScene();
 };

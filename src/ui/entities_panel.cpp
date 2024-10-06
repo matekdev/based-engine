@@ -19,7 +19,7 @@ void EntitiesPanel::Draw()
     auto group = Scene::ActiveScene->Registry.view<InfoComponent>();
     for (auto entity : group)
     {
-        auto info = group.get<InfoComponent>(entity);
+        auto &info = group.get<InfoComponent>(entity);
         ImGui::PushID(info.GetId());
 
         auto name = std::string(ICON_FA_CUBE) + " " + info.Name;

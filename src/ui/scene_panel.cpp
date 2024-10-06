@@ -75,7 +75,7 @@ void ScenePanel::UpdateInput()
             _activeGizmo = ImGuizmo::OPERATION::SCALE;
     }
 
-    if (GLFWUtil::IsButtonPressed(GLFW_KEY_DELETE) && Scene::ActiveScene->SelectedEntity)
+    if (GLFWUtil::IsButtonPressed(GLFW_KEY_DELETE) && Scene::ActiveScene->SelectedEntity.has_value())
     {
         Scene::ActiveScene->Registry.destroy(Scene::ActiveScene->SelectedEntity.value());
         Scene::ActiveScene->SelectedEntity.reset();

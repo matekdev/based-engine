@@ -14,13 +14,7 @@ Scene::Scene() : _renderTarget(RenderTarget()),
     ActiveScene = this;
 
     InitializePhysics();
-
-    // TODO: Remove debug.
-    auto ent = Registry.create();
-    Registry.emplace<InfoComponent>(ent, ent);
-    Registry.emplace<TransformComponent>(ent, ent);
-    auto &model = Registry.emplace<ModelComponent>(ent, ent);
-    model.LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
+    InitializeDefaultScene();
 }
 
 Scene::~Scene()
@@ -150,4 +144,18 @@ void Scene::InitializePhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
+}
+
+void Scene::InitializeDefaultScene()
+{
+    auto ent = Registry.create();
+
+    auto &info = Registry.emplace<InfoComponent>(ent, ent);
+    info.Name = "Floor";
+
+    auto &transform = Registry.emplace<TransformComponent>(ent, ent);
+    transform.SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+
+    auto &model = Registry.emplace<ModelComponent>(ent, ent);
+    model.LoadModel("models\\plane\\plane.obj");
 }

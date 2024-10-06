@@ -17,8 +17,17 @@ TransformComponent::TransformComponent(const entt::entity &entity) : Component(e
 
 TransformComponent::~TransformComponent()
 {
-    // TODO: Leaking some memory here for sure, fix this!
-    Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidBody);
+    if (_pxRigidBody)
+    {
+        Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidBody);
+        _pxRigidBody->release();
+    }
+
+    if (_pxShape)
+        _pxShape->release();
+
+    if (_pxMaterial)
+        _pxMaterial->release();
 }
 
 glm::mat4 TransformComponent::GetTransform() const
