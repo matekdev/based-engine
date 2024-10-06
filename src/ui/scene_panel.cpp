@@ -134,7 +134,7 @@ void ScenePanel::UpdateGizmo()
     }
 }
 
-void ScenePanel::Picking()
+void ScenePanel::UpdatePicking()
 {
     if (!GLFWUtil::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || GLFWUtil::IsMouseLocked())
         return;

@@ -15,6 +15,12 @@ TransformComponent::TransformComponent(const entt::entity &entity) : Component(e
     Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidBody);
 }
 
+TransformComponent::~TransformComponent()
+{
+    // TODO: Leaking some memory here for sure, fix this!
+    Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidBody);
+}
+
 glm::mat4 TransformComponent::GetTransform() const
 {
     auto rotation = glm::toMat4(glm::quat(GetRotation()));

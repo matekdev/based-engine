@@ -15,6 +15,7 @@ public:
     };
 
     TransformComponent(const entt::entity &entity);
+    ~TransformComponent();
 
     glm::mat4 GetTransform() const;
     glm::vec3 GetDirection() const;
@@ -37,9 +38,9 @@ public:
 private:
     ConstantBuffer<TransformMatrixBuffer> _constantBuffer;
 
-    physx::PxRigidStatic *_pxRigidBody;
+    physx::PxRigidStatic *_pxRigidBody = nullptr;
     physx::PxShape *_pxShape = nullptr;
-    physx::PxMaterial *_pxMaterial;
+    physx::PxMaterial *_pxMaterial = nullptr;
 
     glm::vec3 _scale = glm::vec3(1.0f);
     physx::PxVec3 _extents;
