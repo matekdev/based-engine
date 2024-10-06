@@ -28,7 +28,7 @@ public:
     Camera &GetActiveCamera();
     float GetDeltaTime();
 
-    void CreateNewEntity();
+    entt::entity CreateNewEntity();
     void OnResize();
     void Render();
 

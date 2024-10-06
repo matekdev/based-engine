@@ -11,7 +11,7 @@ void EntitiesPanel::Draw()
     ImGui::Begin("Entities");
 
     if (ImGui::Button(ICON_FA_CIRCLE_PLUS " Add Entity", ImVec2(-1, 0)))
-        Scene::ActiveScene->CreateNewEntity();
+        Scene::ActiveScene->SelectedEntity = Scene::ActiveScene->CreateNewEntity();
 
     ImGui::Separator();
     ImGui::Spacing();

@@ -126,6 +126,9 @@ void TransformComponent::EnablePhysics(const bool &enabled)
 
 void TransformComponent::ResetVelocity()
 {
+    if (_pxRigidActor->getConcreteType() != physx::PxConcreteType::eRIGID_DYNAMIC)
+        return;
+
     auto *rigidBody = static_cast<physx::PxRigidDynamic *>(_pxRigidActor);
     if (!rigidBody)
         return;
