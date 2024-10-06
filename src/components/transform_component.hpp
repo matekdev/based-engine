@@ -30,6 +30,8 @@ public:
 
     void SetBBox(const glm::vec3 &min, const glm::vec3 &max);
 
+    bool IsPicked(physx::PxRigidActor *shape) const;
+
     void Bind();
 
 private:
@@ -38,7 +40,7 @@ private:
     physx::PxRigidStatic *_pxRigidBody;
     physx::PxShape *_pxShape = nullptr;
     physx::PxMaterial *_pxMaterial;
-    
+
     glm::vec3 _scale = glm::vec3(1.0f);
     physx::PxVec3 _extents;
 

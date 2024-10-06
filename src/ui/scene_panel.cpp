@@ -8,6 +8,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include <PxPhysicsAPI.h>
 
 bool ScenePanel::IsHovered()
 {
@@ -53,6 +54,8 @@ void ScenePanel::Draw()
 
 void ScenePanel::UpdateInput()
 {
+    UpdatePicking();
+
     auto window = GLFWUtil::GetNativeWindow();
     if (GLFWUtil::IsButtonPressed(GLFW_KEY_ESCAPE))
         Scene::ActiveScene->SelectedEntity.reset();
@@ -128,5 +131,70 @@ void ScenePanel::UpdateGizmo()
         transformComponent->SetPosition(position);
         transformComponent->SetRotation(newRotation);
         transformComponent->SetScale(scale);
+    }
+}
+
+void ScenePanel::Picking()
+{
+    if (!GLFWUtil::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || GLFWUtil::IsMouseLocked())
+        return;
+
+    if (Scene::ActiveScene->SelectedEntity && (ImGuizmo::IsUsing() || ImGuizmo::IsOver()))
+        return;
+
+    auto [mouseX, mouseY] = ImGui::GetMousePos();
+    mouseX -= _viewPortBounds[0].x;
+    mouseY -= _viewPortBounds[0].y;
+
+    auto viewportSize = _viewPortBounds[1] - _viewPortBounds[0];
+    mouseY = viewportSize.y - mouseY;
+
+    // Make sure we are within bounds of the window.
+    if (mouseX >= viewportSize.x || mouseX <= 0 || mouseY >= viewportSize.y || mouseY <= 0)
+        return;
+
+    // Thanks https://www.opengl-tutorial.org/miscellaneous/clicking-on-objects/picking-with-a-physics-library/
+    glm::vec4 startNDC(((float)mouseX / (float)_width - 0.5f) * 2.0f, ((float)mouseY / (float)_height - 0.5f) * 2.0f, -1.0, 1.0f);
+    glm::vec4 endNDC(((float)mouseX / (float)_width - 0.5f) * 2.0f, ((float)mouseY / (float)_height - 0.5f) * 2.0f, 0.0, 1.0f);
+
+    auto &camera = Scene::ActiveScene->GetActiveCamera();
+    auto inverseProjectionMatrix = glm::inverse(camera.GetProjectionMatrix());
+    auto inverseViewMatrix = glm::inverse(camera.GetViewMatrix());
+
+    auto cameraStart = inverseProjectionMatrix * startNDC;
+    cameraStart /= cameraStart.w;
+
+    auto worldStart = inverseViewMatrix * cameraStart;
+    worldStart /= worldStart.w;
+
+    auto cameraEnd = inverseProjectionMatrix * endNDC;
+    cameraEnd /= cameraEnd.w;
+
+    auto worldEnd = inverseViewMatrix * cameraEnd;
+    worldEnd /= worldEnd.w;
+
+    auto worldDirection(worldEnd - worldStart);
+    worldDirection = glm::normalize(worldDirection);
+
+    auto origin = glm::vec3(worldStart);
+    auto dir = glm::normalize(worldDirection);
+
+    physx::PxRaycastBuffer result;
+    auto hit = Scene::ActiveScene->GetPhysicsScene()->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(dir.x, dir.y, dir.z), 1000.f, result);
+    if (!hit)
+    {
+        Scene::ActiveScene->SelectedEntity.reset();
+        return;
+    }
+
+    const auto modelGroup = Scene::ActiveScene->Registry.view<TransformComponent>();
+    for (const auto &entity : modelGroup)
+    {
+        auto &transform = modelGroup.get<TransformComponent>(entity);
+        if (transform.IsPicked(result.block.actor))
+        {
+            Scene::ActiveScene->SelectedEntity = entity;
+            break;
+        }
     }
 }

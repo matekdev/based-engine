@@ -89,6 +89,11 @@ void TransformComponent::SetBBox(const glm::vec3 &min, const glm::vec3 &max)
     _pxRigidBody->attachShape(*_pxShape);
 }
 
+bool TransformComponent::IsPicked(physx::PxRigidActor *shape) const
+{
+    return _pxRigidBody == shape;
+}
+
 void TransformComponent::Bind()
 {
     _constantBuffer.Update(TransformMatrixBuffer{GetTransform()});

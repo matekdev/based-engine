@@ -25,4 +25,5 @@ private:
 
     void UpdateInput();
     void UpdateGizmo();
+    void UpdatePicking();
 };
