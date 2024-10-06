@@ -16,16 +16,23 @@ public:
 
     TransformComponent(const entt::entity &entity);
 
-    glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 Rotation = glm::vec3(0.0f);
-    glm::vec3 Scale = glm::vec3(1.0f);
-
     glm::mat4 GetTransform() const;
-    physx::PxTransform GetPhysicsTransform() const;
     glm::vec3 GetDirection() const;
+
+    void SetPosition(const glm::vec3 &pos) const;
+    glm::vec3 GetPosition() const;
+
+    void SetRotation(const glm::vec3 &rot) const;
+    glm::vec3 GetRotation() const;
+
+    void SetScale(const glm::vec3 &scale);
+    glm::vec3 GetScale() const;
 
     void Bind();
 
 private:
     ConstantBuffer<TransformMatrixBuffer> _constantBuffer;
+
+    physx::PxRigidStatic *_pxRigidBody;
+    glm::vec3 _scale = glm::vec3(1.0f);
 };

@@ -107,7 +107,7 @@ void ScenePanel::UpdateGizmo()
         return;
 
     auto &camera = scene->GetActiveCamera();
-    auto transform = transformComponent->GetTransform();
+    glm::mat4 transform = transformComponent->GetTransform();
     ImGuizmo::Manipulate(glm::value_ptr(camera.GetViewMatrix()),
                          glm::value_ptr(camera.GetProjectionMatrix()),
                          _activeGizmo, ImGuizmo::WORLD,
@@ -122,9 +122,11 @@ void ScenePanel::UpdateGizmo()
         glm::vec3 position, rotation, scale;
         DecomposeTransform(transform, position, rotation, scale);
 
-        glm::vec3 deltaRotation = rotation - transformComponent->Rotation;
-        transformComponent->Position = position;
-        transformComponent->Rotation += deltaRotation;
-        transformComponent->Scale = scale;
+        glm::vec3 currentRotation = transformComponent->GetRotation();
+        glm::vec3 newRotation = currentRotation + (rotation - currentRotation);
+
+        transformComponent->SetPosition(position);
+        transformComponent->SetRotation(newRotation);
+        transformComponent->SetScale(scale);
     }
 }

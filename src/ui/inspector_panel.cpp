@@ -48,9 +48,18 @@ void InspectorPanel::Draw()
 
             auto floatMin = std::numeric_limits<float>::min();
             auto floatMax = -std::numeric_limits<float>::max();
-            ImGui::DragFloat3(ICON_FA_ARROW_UP_RIGHT_FROM_SQUARE " Position", glm::value_ptr(transform->Position), 0.05f, floatMin, floatMax);
-            ImGui::DragFloat3(ICON_FA_ARROWS_ROTATE " Rotation", glm::value_ptr(transform->Rotation), 0.05f, floatMin, floatMax);
-            ImGui::DragFloat3(ICON_FA_MAGNIFYING_GLASS_PLUS " Scale", glm::value_ptr(transform->Scale), 0.05f, floatMin, floatMax);
+
+            auto pos = transform->GetPosition();
+            auto rot = transform->GetRotation();
+            auto scale = transform->GetScale();
+
+            ImGui::DragFloat3(ICON_FA_ARROW_UP_RIGHT_FROM_SQUARE " Position", glm::value_ptr(pos), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3(ICON_FA_ARROWS_ROTATE " Rotation", glm::value_ptr(rot), 0.05f, floatMin, floatMax);
+            ImGui::DragFloat3(ICON_FA_MAGNIFYING_GLASS_PLUS " Scale", glm::value_ptr(scale), 0.05f, floatMin, floatMax);
+
+            transform->SetPosition(pos);
+            transform->SetRotation(rot);
+            transform->SetScale(scale);
         },
         false);
 
