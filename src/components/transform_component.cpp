@@ -10,10 +10,7 @@
 TransformComponent::TransformComponent(const entt::entity &entity) : Component(entity), _constantBuffer(ConstantType::MODEL_MATRIX, ShaderStage::VERTEX_SHADER, TransformMatrixBuffer{})
 {
     _pxRigidBody = Scene::ActiveScene->GetPhysics()->createRigidStatic(physx::PxTransform(physx::PxIdentity));
-
-    auto material = Scene::ActiveScene->GetPhysics()->createMaterial(0.5f, 0.5f, 0.5f);
-    auto *shape = Scene::ActiveScene->GetPhysics()->createShape(physx::PxBoxGeometry(0.5f, 0.5f, 0.5f), *material);
-    _pxRigidBody->attachShape(*shape);
+    _pxMaterial = Scene::ActiveScene->GetPhysics()->createMaterial(0.5f, 0.5f, 0.5f);
 
     Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidBody);
 }
@@ -58,7 +55,17 @@ glm::vec3 TransformComponent::GetRotation() const
 
 void TransformComponent::SetScale(const glm::vec3 &scale)
 {
+    if (_scale == scale)
+        return;
+
     _scale = scale;
+
+    if (!_pxShape)
+        return;
+
+    _pxRigidBody->detachShape(*_pxShape);
+    _pxShape->setGeometry(calculateBBox());
+    _pxRigidBody->attachShape(*_pxShape);
 }
 
 glm::vec3 TransformComponent::GetScale() const
@@ -66,8 +73,32 @@ glm::vec3 TransformComponent::GetScale() const
     return _scale;
 }
 
+void TransformComponent::SetBBox(const glm::vec3 &min, const glm::vec3 &max)
+{
+    if (_pxShape)
+    {
+        _pxRigidBody->detachShape(*_pxShape);
+        PX_RELEASE(_pxShape);
+    }
+
+    auto minPoint = physx::PxVec3(min.x, min.y, min.z);
+    auto maxPoint = physx::PxVec3(max.x, max.y, max.z);
+
+    _extents = (maxPoint - minPoint) * 0.5f;
+    _pxShape = Scene::ActiveScene->GetPhysics()->createShape(calculateBBox(), *_pxMaterial);
+    _pxRigidBody->attachShape(*_pxShape);
+}
+
 void TransformComponent::Bind()
 {
     _constantBuffer.Update(TransformMatrixBuffer{GetTransform()});
     _constantBuffer.Bind();
+}
+
+physx::PxBoxGeometry TransformComponent::calculateBBox()
+{
+    return physx::PxBoxGeometry(
+        std::max(std::abs(_extents.x * _scale.x), 0.01f),
+        std::max(std::abs(_extents.y * _scale.y), 0.01f),
+        std::max(std::abs(_extents.z * _scale.z), 0.01f));
 }

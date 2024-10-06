@@ -28,11 +28,19 @@ public:
     void SetScale(const glm::vec3 &scale);
     glm::vec3 GetScale() const;
 
+    void SetBBox(const glm::vec3 &min, const glm::vec3 &max);
+
     void Bind();
 
 private:
     ConstantBuffer<TransformMatrixBuffer> _constantBuffer;
 
     physx::PxRigidStatic *_pxRigidBody;
+    physx::PxShape *_pxShape = nullptr;
+    physx::PxMaterial *_pxMaterial;
+    
     glm::vec3 _scale = glm::vec3(1.0f);
+    physx::PxVec3 _extents;
+
+    physx::PxBoxGeometry calculateBBox();
 };
