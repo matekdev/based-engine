@@ -131,6 +131,7 @@ void ScenePanel::UpdateGizmo()
         transformComponent->SetPosition(position);
         transformComponent->SetRotation(newRotation);
         transformComponent->SetScale(scale);
+        transformComponent->ResetVelocity();
     }
 }
 

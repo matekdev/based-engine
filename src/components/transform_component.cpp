@@ -9,18 +9,18 @@
 
 TransformComponent::TransformComponent(const entt::entity &entity) : Component(entity), _constantBuffer(ConstantType::MODEL_MATRIX, ShaderStage::VERTEX_SHADER, TransformMatrixBuffer{})
 {
-    _pxRigidBody = Scene::ActiveScene->GetPhysics()->createRigidStatic(physx::PxTransform(physx::PxIdentity));
+    _pxRigidActor = Scene::ActiveScene->GetPhysics()->createRigidStatic(physx::PxTransform(physx::PxIdentity));
     _pxMaterial = Scene::ActiveScene->GetPhysics()->createMaterial(0.5f, 0.5f, 0.5f);
 
-    Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidBody);
+    Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidActor);
 }
 
 TransformComponent::~TransformComponent()
 {
-    if (_pxRigidBody)
+    if (_pxRigidActor)
     {
-        Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidBody);
-        _pxRigidBody->release();
+        Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidActor);
+        _pxRigidActor->release();
     }
 
     if (_pxShape)
@@ -43,27 +43,27 @@ glm::vec3 TransformComponent::GetDirection() const
 
 void TransformComponent::SetPosition(const glm::vec3 &pos) const
 {
-    auto pose = _pxRigidBody->getGlobalPose();
+    auto pose = _pxRigidActor->getGlobalPose();
     pose.p = physx::PxVec3(pos.x, pos.y, pos.z);
-    _pxRigidBody->setGlobalPose(pose);
+    _pxRigidActor->setGlobalPose(pose);
 }
 
 glm::vec3 TransformComponent::GetPosition() const
 {
-    const auto pose = _pxRigidBody->getGlobalPose();
+    const auto pose = _pxRigidActor->getGlobalPose();
     return glm::vec3(pose.p.x, pose.p.y, pose.p.z);
 }
 
 void TransformComponent::SetRotation(const glm::vec3 &rot) const
 {
-    const auto pose = _pxRigidBody->getGlobalPose();
+    const auto pose = _pxRigidActor->getGlobalPose();
     const auto quat = glm::quat(rot);
-    _pxRigidBody->setGlobalPose(physx::PxTransform(pose.p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
+    _pxRigidActor->setGlobalPose(physx::PxTransform(pose.p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
 }
 
 glm::vec3 TransformComponent::GetRotation() const
 {
-    const auto pose = _pxRigidBody->getGlobalPose();
+    const auto pose = _pxRigidActor->getGlobalPose();
     const auto rotation = glm::eulerAngles(glm::quat(pose.q.w, pose.q.x, pose.q.y, pose.q.z));
     return rotation;
 }
@@ -78,9 +78,9 @@ void TransformComponent::SetScale(const glm::vec3 &scale)
     if (!_pxShape)
         return;
 
-    _pxRigidBody->detachShape(*_pxShape);
+    _pxRigidActor->detachShape(*_pxShape);
     _pxShape->setGeometry(calculateBBox());
-    _pxRigidBody->attachShape(*_pxShape);
+    _pxRigidActor->attachShape(*_pxShape);
 }
 
 glm::vec3 TransformComponent::GetScale() const
@@ -92,7 +92,7 @@ void TransformComponent::SetBBox(const glm::vec3 &min, const glm::vec3 &max)
 {
     if (_pxShape)
     {
-        _pxRigidBody->detachShape(*_pxShape);
+        _pxRigidActor->detachShape(*_pxShape);
         PX_RELEASE(_pxShape);
     }
 
@@ -101,27 +101,37 @@ void TransformComponent::SetBBox(const glm::vec3 &min, const glm::vec3 &max)
 
     _extents = (maxPoint - minPoint) * 0.5f;
     _pxShape = Scene::ActiveScene->GetPhysics()->createShape(calculateBBox(), *_pxMaterial);
-    _pxRigidBody->attachShape(*_pxShape);
+    _pxRigidActor->attachShape(*_pxShape);
 }
 
 bool TransformComponent::IsPicked(physx::PxRigidActor *shape) const
 {
-    return _pxRigidBody == shape;
+    return _pxRigidActor == shape;
 }
 
 void TransformComponent::EnablePhysics(const bool &enabled)
 {
-    auto transform = _pxRigidBody->getGlobalPose();
-    Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidBody);
-    _pxRigidBody->release();
+    auto transform = _pxRigidActor->getGlobalPose();
+    Scene::ActiveScene->GetPhysicsScene()->removeActor(*_pxRigidActor);
+    _pxRigidActor->release();
 
     if (enabled)
-        _pxRigidBody = Scene::ActiveScene->GetPhysics()->createRigidDynamic(transform);
+        _pxRigidActor = Scene::ActiveScene->GetPhysics()->createRigidDynamic(transform);
     else
-        _pxRigidBody = Scene::ActiveScene->GetPhysics()->createRigidStatic(transform);
+        _pxRigidActor = Scene::ActiveScene->GetPhysics()->createRigidStatic(transform);
 
-    _pxRigidBody->attachShape(*_pxShape);
-    Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidBody);
+    _pxRigidActor->attachShape(*_pxShape);
+    Scene::ActiveScene->GetPhysicsScene()->addActor(*_pxRigidActor);
+}
+
+void TransformComponent::ResetVelocity()
+{
+    auto *rigidBody = static_cast<physx::PxRigidDynamic *>(_pxRigidActor);
+    if (!rigidBody)
+        return;
+
+    rigidBody->setLinearVelocity(physx::PxVec3(0.0f));
+    rigidBody->setAngularVelocity(physx::PxVec3(0.0f));
 }
 
 void TransformComponent::Bind()

@@ -33,13 +33,15 @@ public:
 
     bool IsPicked(physx::PxRigidActor *shape) const;
     void EnablePhysics(const bool &enable);
+    void ResetVelocity();
 
     void Bind();
 
 private:
     ConstantBuffer<TransformMatrixBuffer> _constantBuffer;
 
-    physx::PxRigidActor *_pxRigidBody = nullptr;
+    // This component has physics... in an ideal world this should be a seperate component.
+    physx::PxRigidActor *_pxRigidActor = nullptr;
     physx::PxShape *_pxShape = nullptr;
     physx::PxMaterial *_pxMaterial = nullptr;
 
