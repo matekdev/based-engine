@@ -40,6 +40,9 @@ private:
     VertexShader _modelVertexShader;
     PixelShader _modelPixelShader;
 
+    VertexShader _skyboxVertexShader;
+    PixelShader _skyboxPixelShader;
+
     RenderTarget _renderTarget;
 
     physx::PxDefaultAllocator _pxAllocator;

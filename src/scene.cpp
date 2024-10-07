@@ -2,6 +2,8 @@
 
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
+#include "components/skybox_component.hpp"
+#include "components/ignore_component.hpp"
 #include "components/model/model_component.hpp"
 
 #include <GLFW/glfw3.h>
@@ -9,7 +11,9 @@
 Scene::Scene() : _renderTarget(RenderTarget()),
                  _camera(Camera()),
                  _modelVertexShader(L"shaders/model.vs.hlsl"),
-                 _modelPixelShader(L"shaders/model.ps.hlsl")
+                 _modelPixelShader(L"shaders/model.ps.hlsl"),
+                 _skyboxVertexShader(L"shaders/skybox.vs.hlsl"),
+                 _skyboxPixelShader(L"shaders/skybox.ps.hlsl")
 {
     ActiveScene = this;
 
@@ -76,7 +80,7 @@ void Scene::Render()
 
     _renderTarget.Bind();
 
-    const auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>();
+    const auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>(entt::exclude<IgnoreComponent>);
     for (const auto &entity : modelGroup)
     {
         auto &transform = modelGroup.get<TransformComponent>(entity);
@@ -84,6 +88,19 @@ void Scene::Render()
 
         _modelVertexShader.Bind();
         _modelPixelShader.Bind();
+        transform.Bind();
+
+        model.Render();
+    }
+
+    const auto skyboxGroup = Scene::ActiveScene->Registry.view<SkyBoxComponent>();
+    for (const auto &entity : skyboxGroup)
+    {
+        auto &transform = modelGroup.get<TransformComponent>(entity);
+        const auto &model = modelGroup.get<ModelComponent>(entity);
+
+        _skyboxVertexShader.Bind();
+        _skyboxPixelShader.Bind();
         transform.Bind();
 
         model.Render();
@@ -148,14 +165,16 @@ void Scene::InitializePhysics()
 
 void Scene::InitializeDefaultScene()
 {
-    auto ent = Registry.create();
+    // Floor
+    auto floor = CreateNewEntity();
+    Registry.get<InfoComponent>(floor).Name = "Floor";
+    Registry.get<TransformComponent>(floor).SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+    Registry.emplace<ModelComponent>(floor, floor).LoadModel("models\\plane\\plane.obj");
 
-    auto &info = Registry.emplace<InfoComponent>(ent, ent);
-    info.Name = "Floor";
-
-    auto &transform = Registry.emplace<TransformComponent>(ent, ent);
-    transform.SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
-
-    auto &model = Registry.emplace<ModelComponent>(ent, ent);
-    model.LoadModel("models\\plane\\plane.obj");
+    // Skybox
+    auto skybox = CreateNewEntity();
+    Registry.get<InfoComponent>(skybox).Name = "SkyBox";
+    Registry.emplace<IgnoreComponent>(skybox);
+    Registry.emplace<SkyBoxComponent>(skybox, skybox);
+    Registry.emplace<ModelComponent>(skybox, skybox).LoadModel("models\\cubemap\\cubemap.obj");
 }
