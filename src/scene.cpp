@@ -166,14 +166,15 @@ void Scene::InitializePhysics()
 void Scene::InitializeDefaultScene()
 {
     // Floor
-    // auto floor = CreateNewEntity();
-    // Registry.get<InfoComponent>(floor).Name = "Floor";
-    // Registry.get<TransformComponent>(floor).SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
-    // Registry.emplace<ModelComponent>(floor, floor).LoadModel("models\\plane\\plane.obj");
+    auto floor = CreateNewEntity();
+    Registry.get<InfoComponent>(floor).Name = "Floor";
+    Registry.get<TransformComponent>(floor).SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+    Registry.emplace<ModelComponent>(floor, floor).LoadModel("models\\plane\\plane.obj");
 
     // Skybox
     auto skybox = CreateNewEntity();
     Registry.get<InfoComponent>(skybox).Name = "SkyBox";
+    Registry.get<TransformComponent>(skybox).SetScale(glm::vec3(0.0f));
     Registry.emplace<IgnoreComponent>(skybox);
     Registry.emplace<SkyBoxComponent>(skybox, skybox);
     Registry.emplace<ModelComponent>(skybox, skybox).LoadModel("models\\cubemap\\cubemap.obj");
