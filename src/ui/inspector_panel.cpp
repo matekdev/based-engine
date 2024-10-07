@@ -57,9 +57,12 @@ void InspectorPanel::Draw()
             ImGui::DragFloat3(ICON_FA_ARROWS_ROTATE " Rotation", glm::value_ptr(rot), 0.05f, floatMin, floatMax);
             ImGui::DragFloat3(ICON_FA_MAGNIFYING_GLASS_PLUS " Scale", glm::value_ptr(scale), 0.05f, floatMin, floatMax);
 
-            transform->SetPosition(pos);
-            transform->SetRotation(rot);
-            transform->SetScale(scale);
+            if (pos != transform->GetPosition() || rot != transform->GetRotation() || scale != transform->GetScale())
+            {
+                transform->SetPosition(pos);
+                transform->SetRotation(rot);
+                transform->SetScale(scale);
+            }
         },
         false);
 
