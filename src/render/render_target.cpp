@@ -21,6 +21,27 @@ void RenderTarget::Resize()
     SetViewPort();
 }
 
+void RenderTarget::SetMode(const Mode &mode)
+{
+    D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC{CD3D11_DEFAULT{}};
+
+    if (mode == Mode::Default)
+    {
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    }
+    if (mode == Mode::DepthFirst)
+    {
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    }
+
+    if (FAILED(Renderer::GetDevice()->CreateDepthStencilState(&dsDesc, &_depthStencilState)))
+        LOG(ERROR) << "Failed to create depth stencil resource view";
+
+    Renderer::GetDeviceContext()->OMSetDepthStencilState(_depthStencilState.Get(), 0xFF);
+}
+
 void RenderTarget::Bind()
 {
     Renderer::GetDeviceContext()->OMSetRenderTargets(1, _renderTargetView.GetAddressOf(), _depthStencilView.Get());
@@ -89,6 +110,8 @@ void RenderTarget::Initialize()
 
     if (FAILED(Renderer::GetDevice()->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, &_depthStencilView)))
         LOG(ERROR) << "Failed to create depth stencil resource view";
+
+    SetMode(Mode::Default);
 }
 
 void RenderTarget::SetViewPort()

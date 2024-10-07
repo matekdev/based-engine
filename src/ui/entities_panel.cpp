@@ -2,6 +2,7 @@
 
 #include "scene.hpp"
 #include "components/info_component.hpp"
+#include "components/ignore_component.hpp"
 
 #include "imgui.h"
 #include "icons/regular.hpp"
@@ -16,7 +17,7 @@ void EntitiesPanel::Draw()
     ImGui::Separator();
     ImGui::Spacing();
 
-    auto group = Scene::ActiveScene->Registry.view<InfoComponent>();
+    auto group = Scene::ActiveScene->Registry.view<InfoComponent>(entt::exclude<IgnoreComponent>);
     for (auto entity : group)
     {
         auto &info = group.get<InfoComponent>(entity);
