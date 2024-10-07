@@ -169,5 +169,5 @@ void Scene::InitializeDefaultScene()
     Registry.get<TransformComponent>(skybox).SetScale(glm::vec3(0.0f));
     Registry.emplace<IgnoreComponent>(skybox);
     Registry.emplace<SkyBoxComponent>(skybox, skybox);
-    Registry.emplace<ModelComponent>(skybox, skybox).LoadModel("models\\cubemap\\cubemap.obj");
+    Registry.emplace<ModelComponent>(skybox, skybox).LoadModel("models\\ignored\\cubemap\\cubemap.obj");
 }
