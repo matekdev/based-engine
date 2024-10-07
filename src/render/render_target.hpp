@@ -7,10 +7,17 @@
 class RenderTarget
 {
 public:
+    enum class Mode
+    {
+        Default,
+        DepthFirst // skybox
+    };
+
     RenderTarget();
 
     ID3D11ShaderResourceView *GetShaderResourceView();
     void Resize();
+    void SetMode(const Mode &mode);
     void Bind();
 
 private:

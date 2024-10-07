@@ -59,6 +59,9 @@ private:
     float _previousFrameTime;
     float _deltaTime;
 
+    void RenderModels();
+    void RenderSkyBox();
+
     void CalculateDeltaTime();
     void InitializePhysics();
     void InitializeDefaultScene();

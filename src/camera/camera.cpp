@@ -7,7 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-Camera::Camera() : _cameraMatrixBuffer(ConstantBuffer(ConstantType::CAMERA_MATRIX, ShaderStage::VERTEX_SHADER, CameraMatrixBuffer{}))
+Camera::Camera() : _cameraMatrixBuffer(ConstantBuffer(ConstantType::CAMERA_MATRIX, ShaderStage::VERTEX_SHADER, CameraMatrixBuffer{})),
+                   _orientation(glm::rotate(glm::vec3(0.0f, 0.0f, -1.0f), glm::radians(-25.0f), glm::normalize(glm::cross(glm::vec3(0.0f, 0.0f, -1.0f), UP))))
 {
 }
 

@@ -80,6 +80,18 @@ void Scene::Render()
 
     _renderTarget.Bind();
 
+    RenderModels();
+    RenderSkyBox();
+
+    _camera.Update();
+    _pxScene->simulate(1.0f / 60.0f);
+    _pxScene->fetchResults(true);
+}
+
+void Scene::RenderModels()
+{
+    _renderTarget.SetMode(RenderTarget::Mode::Default);
+
     const auto modelGroup = Scene::ActiveScene->Registry.view<ModelComponent, TransformComponent>(entt::exclude<IgnoreComponent>);
     for (const auto &entity : modelGroup)
     {
@@ -92,23 +104,22 @@ void Scene::Render()
 
         model.Render();
     }
+}
 
-    const auto skyboxGroup = Scene::ActiveScene->Registry.view<SkyBoxComponent>();
+void Scene::RenderSkyBox()
+{
+    _renderTarget.SetMode(RenderTarget::Mode::DepthFirst);
+
+    const auto skyboxGroup = Scene::ActiveScene->Registry.view<SkyBoxComponent, ModelComponent>();
     for (const auto &entity : skyboxGroup)
     {
-        auto &transform = modelGroup.get<TransformComponent>(entity);
-        const auto &model = modelGroup.get<ModelComponent>(entity);
+        const auto &model = skyboxGroup.get<ModelComponent>(entity);
 
         _skyboxVertexShader.Bind();
         _skyboxPixelShader.Bind();
-        transform.Bind();
 
         model.Render();
     }
-
-    _camera.Update();
-    _pxScene->simulate(1.0f / 60.0f);
-    _pxScene->fetchResults(true);
 }
 
 void Scene::CalculateDeltaTime()
@@ -116,25 +127,6 @@ void Scene::CalculateDeltaTime()
     auto currentFrame = glfwGetTime();
     _deltaTime = currentFrame - _previousFrameTime;
     _previousFrameTime = currentFrame;
-}
-
-// TODO:: remove debug method
-void Scene::createStack(const physx::PxTransform &t, physx::PxU32 size, physx::PxReal halfExtent)
-{
-    auto *shape = _pxPhysics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *_pxMaterial);
-    for (physx::PxU32 i = 0; i < size; i++)
-    {
-        for (physx::PxU32 j = 0; j < size - i; j++)
-        {
-            physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
-            physx::PxRigidDynamic *body = _pxPhysics->createRigidDynamic(t.transform(localTm));
-
-            body->attachShape(*shape);
-            physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-            _pxScene->addActor(*body);
-        }
-    }
-    shape->release();
 }
 
 void Scene::InitializePhysics()

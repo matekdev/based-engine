@@ -32,8 +32,8 @@ private:
 
     glm::mat4 _viewMatrix = glm::mat4(0.0f);
     glm::mat4 _projectionMatrix = glm::mat4(0.0f);
-    glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, -1.0f);
-    glm::vec3 _position = glm::vec3(0.0f, 0.0f, 2.0f);
+    glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 _position = glm::vec3(0.0f, 1.0f, 3.0f);
     glm::vec3 _velocity = glm::vec3(0.0f);
 
     bool _isMouseLocked;
