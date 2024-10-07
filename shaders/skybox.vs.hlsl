@@ -20,7 +20,7 @@ VSOutput Main(VSInput input)
     matrix cameraMatrix = mul(CameraProjectionMatrix, CameraViewMatrix);
     VSOutput output;
 
-    output.Position = mul(cameraMatrix, float4(input.Position, 1.0)).xyww;
+    output.Position = mul(cameraMatrix, float4(input.Position, 0.0)).xyww;
     output.Normal = input.Normal;
     output.TexCoords = input.TexCoords;
 
