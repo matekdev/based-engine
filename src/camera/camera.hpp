@@ -8,10 +8,11 @@
 class Camera
 {
 public:
-    struct CameraMatrixBuffer
+    struct alignas(16) CameraMatrixBuffer
     {
         glm::mat4 ViewMatrix;
         glm::mat4 ProjectionMatrix;
+        glm::vec3 Position;
     };
 
     Camera();

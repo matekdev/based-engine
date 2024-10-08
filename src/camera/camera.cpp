@@ -37,7 +37,7 @@ void Camera::Update()
     _viewMatrix = glm::lookAt(_position, _position + _orientation, UP);
     _projectionMatrix = glm::perspective(glm::radians(FOV), ScenePanel::GetWidth() / ScenePanel::GetHeight(), 0.01f, 100.0f);
 
-    _cameraMatrixBuffer.Update(CameraMatrixBuffer{_viewMatrix, _projectionMatrix});
+    _cameraMatrixBuffer.Update(CameraMatrixBuffer{_viewMatrix, _projectionMatrix, _position});
     _cameraMatrixBuffer.Bind();
 }
 
