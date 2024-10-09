@@ -9,8 +9,7 @@
 enum class TextureType
 {
     DIFFUSE,
-    NORMAL,
-    SPECULAR
+    SKYBOX
 };
 
 class Texture

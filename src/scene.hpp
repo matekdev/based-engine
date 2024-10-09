@@ -5,6 +5,7 @@
 #include "render/vertex_shader.hpp"
 #include "render/pixel_shader.hpp"
 #include "render/render_target.hpp"
+#include "render/skybox.hpp"
 
 #include <PxPhysicsAPI.h>
 
@@ -40,8 +41,7 @@ private:
     VertexShader _modelVertexShader;
     PixelShader _modelPixelShader;
 
-    VertexShader _skyboxVertexShader;
-    PixelShader _skyboxPixelShader;
+    SkyBox _skybox;
 
     RenderTarget _renderTarget;
 

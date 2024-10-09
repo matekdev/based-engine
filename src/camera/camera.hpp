@@ -8,11 +8,12 @@
 class Camera
 {
 public:
-    struct alignas(16) CameraMatrixBuffer
+    struct CameraMatrixBuffer
     {
         glm::mat4 ViewMatrix;
         glm::mat4 ProjectionMatrix;
         glm::vec3 Position;
+        float padding;
     };
 
     Camera();

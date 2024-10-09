@@ -3,6 +3,7 @@
 struct PSInput
 {
     float4 Position : SV_Position;
+    float3 WorldPosition : POSITION;
     float3 Normal : NORMAL;
     float2 TexCoords : TEXCOORD;
 };
@@ -18,8 +19,8 @@ SamplerState TextureSampler : register(s0);
 
 float4 CalculateCubeMapReflection(PSInput input)
 {
-    float3 I = normalize(input.Position.xyz - CameraPosition);
-    float3 R = reflect(I, normalize(input.Normal));
+    float3 I = normalize(input.WorldPosition - CameraPosition);
+    float3 R = reflect(I, input.Normal);
     return float4(CubeMapTexture.Sample(TextureSampler, R).rgb, 1.0f);
 }
 

@@ -9,7 +9,7 @@
 class TransformComponent : public Component
 {
 public:
-    struct TransformMatrixBuffer
+    struct ModelMatrixBuffer
     {
         glm::mat4 Matrix;
     };
@@ -38,7 +38,7 @@ public:
     void Bind();
 
 private:
-    ConstantBuffer<TransformMatrixBuffer> _constantBuffer;
+    ConstantBuffer<ModelMatrixBuffer> _constantBuffer;
 
     // This component has physics... in an ideal world this should be a seperate component.
     physx::PxRigidActor *_pxRigidActor = nullptr;

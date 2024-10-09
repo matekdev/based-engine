@@ -1,7 +1,7 @@
 #include "texture.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.hpp"
+#include "render/stb_image.hpp"
 
 #include "render/renderer.hpp"
 #include "log.hpp"

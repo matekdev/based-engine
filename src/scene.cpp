@@ -2,7 +2,6 @@
 
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
-#include "components/skybox_component.hpp"
 #include "components/ignore_component.hpp"
 #include "components/model/model_component.hpp"
 
@@ -10,10 +9,9 @@
 
 Scene::Scene() : _renderTarget(RenderTarget()),
                  _camera(Camera()),
+                 _skybox(SkyBox()),
                  _modelVertexShader(L"shaders/model.vs.hlsl"),
-                 _modelPixelShader(L"shaders/model.ps.hlsl"),
-                 _skyboxVertexShader(L"shaders/skybox.vs.hlsl"),
-                 _skyboxPixelShader(L"shaders/skybox.ps.hlsl")
+                 _modelPixelShader(L"shaders/model.ps.hlsl")
 {
     ActiveScene = this;
 
@@ -80,8 +78,8 @@ void Scene::Render()
 
     _renderTarget.Bind();
 
-    RenderModels();
     RenderSkyBox();
+    RenderModels();
 
     _camera.Update();
     _pxScene->simulate(1.0f / 60.0f);
@@ -108,18 +106,8 @@ void Scene::RenderModels()
 
 void Scene::RenderSkyBox()
 {
-    _renderTarget.SetMode(RenderTarget::Mode::DepthFirst);
-
-    const auto skyboxGroup = Scene::ActiveScene->Registry.view<SkyBoxComponent, ModelComponent>();
-    for (const auto &entity : skyboxGroup)
-    {
-        const auto &model = skyboxGroup.get<ModelComponent>(entity);
-
-        _skyboxVertexShader.Bind();
-        _skyboxPixelShader.Bind();
-
-        model.Render();
-    }
+    // _renderTarget.SetMode(RenderTarget::Mode::DepthFirst);
+    _skybox.Render();
 }
 
 void Scene::CalculateDeltaTime()
@@ -162,12 +150,4 @@ void Scene::InitializeDefaultScene()
     Registry.get<InfoComponent>(floor).Name = "Floor";
     Registry.get<TransformComponent>(floor).SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
     Registry.emplace<ModelComponent>(floor, floor).LoadModel("models\\plane\\plane.obj");
-
-    // Skybox
-    auto skybox = CreateNewEntity();
-    Registry.get<InfoComponent>(skybox).Name = "SkyBox";
-    Registry.get<TransformComponent>(skybox).SetScale(glm::vec3(0.0f));
-    Registry.emplace<IgnoreComponent>(skybox);
-    Registry.emplace<SkyBoxComponent>(skybox, skybox);
-    Registry.emplace<ModelComponent>(skybox, skybox).LoadModel("models\\ignored\\cubemap\\cubemap.obj");
 }
