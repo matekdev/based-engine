@@ -1,5 +1,5 @@
 #include "camera_matrix.hlsl"
-#include "transform_matrix.hlsl"
+#include "model_matrix.hlsl"
 
 struct VSInput
 {
