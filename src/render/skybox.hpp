@@ -24,12 +24,12 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _shaderResourceView;
 
     static inline const std::vector<std::string> _imagePaths{
-        "models/skybox/test/right.jpg",
-        "models/skybox/test/left.jpg",
-        "models/skybox/test/bottom.jpg",
-        "models/skybox/test/top.jpg",
-        "models/skybox/test/front.jpg",
-        "models/skybox/test/back.jpg"};
+        "models/skybox/right.png",
+        "models/skybox/left.png",
+        "models/skybox/down.png",
+        "models/skybox/up.png",
+        "models/skybox/front.png",
+        "models/skybox/back.png"};
 
     static inline float _vertices[] =
         {

@@ -29,7 +29,7 @@ PSOutput Main(PSInput input)
     PSOutput output;
 
     output.Color = float4(Texture.Sample(TextureSampler, input.TexCoords).rgb, 1.0f);
-    output.Color = lerp(output.Color, CalculateCubeMapReflection(input), 0.3f);
+    output.Color = lerp(output.Color, CalculateCubeMapReflection(input), 1.0f);
 
     return output;
 }
