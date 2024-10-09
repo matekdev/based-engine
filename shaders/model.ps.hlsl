@@ -17,19 +17,13 @@ Texture2D Texture : register(t0);
 TextureCube CubeMapTexture : register(t1);
 SamplerState TextureSampler : register(s0);
 
-float4 CalculateCubeMapReflection(PSInput input)
-{
-    float3 I = normalize(input.WorldPosition - CameraPosition);
-    float3 R = reflect(I, input.Normal);
-    return float4(CubeMapTexture.Sample(TextureSampler, R).rgb, 1.0f);
-}
-
 PSOutput Main(PSInput input)
 {
     PSOutput output;
 
-    output.Color = float4(Texture.Sample(TextureSampler, input.TexCoords).rgb, 1.0f);
-    output.Color = lerp(output.Color, CalculateCubeMapReflection(input), 1.0f);
+    float3 I = normalize(input.WorldPosition - CameraPosition);
+    float3 R = reflect(I, input.Normal);
+    output.Color = float4(CubeMapTexture.Sample(TextureSampler, R).rgb, 1.0f);
 
     return output;
 }

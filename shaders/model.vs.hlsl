@@ -1,3 +1,4 @@
+#include "util.hlsl"
 #include "camera_matrix.hlsl"
 #include "model_matrix.hlsl"
 
@@ -18,13 +19,13 @@ struct VSOutput
 
 VSOutput Main(VSInput input)
 {
+    matrix viewProjectionMatrix = mul(CameraProjectionMatrix, CameraViewMatrix);
     float4 worldPosition = mul(ModelMatrix, float4(input.Position, 1.0f));
-    matrix cameraMatrix = mul(CameraProjectionMatrix, CameraViewMatrix);
 
     VSOutput output;
-    output.Position = mul(cameraMatrix, worldPosition);
+    output.Position = mul(viewProjectionMatrix, worldPosition);
     output.WorldPosition = worldPosition.xyz;
-    output.Normal = normalize(mul(ModelMatrix, input.Normal));
+    output.Normal = mul(transpose(inverse(ModelMatrix)), input.Normal);
     output.TexCoords = input.TexCoords;
     return output;
 }
