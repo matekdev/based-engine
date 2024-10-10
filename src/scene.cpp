@@ -74,6 +74,7 @@ void Scene::OnResize()
 
 void Scene::Render()
 {
+    _camera.Update();
     CalculateDeltaTime();
 
     _renderTarget.Bind();
@@ -81,7 +82,6 @@ void Scene::Render()
     RenderSkyBox();
     RenderModels();
 
-    _camera.Update();
     _pxScene->simulate(1.0f / 60.0f);
     _pxScene->fetchResults(true);
 }

@@ -12,17 +12,11 @@ enum class ConstantType
     MODEL_MATRIX = 1,
 };
 
-enum class ShaderStage
-{
-    VERTEX_SHADER,
-    PIXEL_SHADER
-};
-
 template <typename T>
 class ConstantBuffer
 {
 public:
-    ConstantBuffer(ConstantType type, ShaderStage shaderStage, const T &constant) : _slot(int(type)), _shaderStage(shaderStage)
+    ConstantBuffer(ConstantType type, const T &constant) : _slot(int(type))
     {
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.ByteWidth = sizeof(T);
@@ -54,14 +48,11 @@ public:
         if (!_constantBuffer)
             return;
 
-        if (_shaderStage == ShaderStage::VERTEX_SHADER)
-            Renderer::GetDeviceContext()->VSSetConstantBuffers(_slot, 1, _constantBuffer.GetAddressOf());
-        else if (_shaderStage == ShaderStage::PIXEL_SHADER)
-            Renderer::GetDeviceContext()->PSSetConstantBuffers(_slot, 1, _constantBuffer.GetAddressOf());
+        Renderer::GetDeviceContext()->VSSetConstantBuffers(_slot, 1, _constantBuffer.GetAddressOf());
+        Renderer::GetDeviceContext()->PSSetConstantBuffers(_slot, 1, _constantBuffer.GetAddressOf());
     }
 
 private:
     int _slot;
-    ShaderStage _shaderStage;
     Microsoft::WRL::ComPtr<ID3D11Buffer> _constantBuffer;
 };
