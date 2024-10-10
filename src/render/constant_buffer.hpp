@@ -10,6 +10,7 @@ enum class ConstantType
 {
     CAMERA_MATRIX = 0,
     MODEL_MATRIX = 1,
+    DIRECTIONAL_LIGHT = 2,
 };
 
 template <typename T>

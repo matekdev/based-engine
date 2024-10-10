@@ -82,6 +82,7 @@ void Scene::Render()
 
     RenderModels();
     RenderSkyBox();
+    RenderLight();
 
     _pxScene->simulate(1.0f / 60.0f);
     _pxScene->fetchResults(true);
@@ -109,6 +110,22 @@ void Scene::RenderSkyBox()
 {
     _renderTarget.SetMode(RenderTarget::Mode::DepthFirst);
     _skybox.Render();
+}
+
+void Scene::RenderLight()
+{
+    const auto lightGroup = Scene::ActiveScene->Registry.view<TransformComponent, DirectionalLightComponent>(entt::exclude<IgnoreComponent>);
+    for (const auto &entity : lightGroup)
+    {
+        auto &transform = lightGroup.get<TransformComponent>(entity);
+        auto &directionalLight = lightGroup.get<DirectionalLightComponent>(entity);
+
+        _modelVertexShader.Bind();
+        _modelPixelShader.Bind();
+
+        transform.Bind();
+        directionalLight.Bind();
+    }
 }
 
 void Scene::CalculateDeltaTime()

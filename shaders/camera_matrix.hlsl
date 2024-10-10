@@ -3,5 +3,5 @@ cbuffer CameraMatrix : register(b0)
     matrix CameraViewMatrix;
     matrix CameraProjectionMatrix;
     float3 CameraPosition;
-    float padding;
+    float CameraPadding;
 };

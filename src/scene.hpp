@@ -53,14 +53,12 @@ private:
     physx::PxScene *_pxScene;
     physx::PxPvd *_pxPvd;
 
-    physx::PxMaterial *_pxMaterial;
-    void createStack(const physx::PxTransform &t, physx::PxU32 size, physx::PxReal halfExtent);
-
     float _previousFrameTime;
     float _deltaTime;
 
     void RenderModels();
     void RenderSkyBox();
+    void RenderLight();
 
     void CalculateDeltaTime();
     void InitializePhysics();

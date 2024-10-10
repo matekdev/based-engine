@@ -1,4 +1,5 @@
 #include "camera_matrix.hlsl"
+#include "directional_light.hlsl"
 
 struct PSInput
 {
