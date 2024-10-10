@@ -1,4 +1,4 @@
-cbuffer DirectionalLight : register(b0)
+cbuffer DirectionalLight : register(b2)
 {
     float3 DirectionalLightDirection;
     float DirectionalLightPadding1;

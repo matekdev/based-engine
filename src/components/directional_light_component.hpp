@@ -24,9 +24,9 @@ public:
         float padding4;
     };
 
-    glm::vec3 Ambient = glm::vec3(0.5f, 0.5f, 0.5f);
-    glm::vec3 Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
-    glm::vec3 Specular = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 Ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 Diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 Specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
     DirectionalLightComponent(const entt::entity &entity);
     void Bind();

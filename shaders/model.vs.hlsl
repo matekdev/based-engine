@@ -12,7 +12,7 @@ struct VSInput
 struct VSOutput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION;
+    float3 FragPosition : POSITION;
     float3 Normal : NORMAL;
     float2 TexCoords : TEXCOORD;
 };
@@ -24,7 +24,7 @@ VSOutput Main(VSInput input)
 
     VSOutput output;
     output.Position = mul(viewProjectionMatrix, worldPosition);
-    output.WorldPosition = worldPosition.xyz;
+    output.FragPosition = worldPosition.xyz;
     output.Normal = mul(transpose(inverse(ModelMatrix)), input.Normal);
     output.TexCoords = input.TexCoords;
     return output;

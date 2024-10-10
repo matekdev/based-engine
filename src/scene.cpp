@@ -172,5 +172,7 @@ void Scene::InitializeDefaultScene()
     // Sun
     auto sun = CreateNewEntity();
     Registry.get<InfoComponent>(sun).Name = "Sun";
+    Registry.get<TransformComponent>(sun).SetPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
+    Registry.get<TransformComponent>(sun).SetRotation(glm::vec3(2.0f, 0.0f, 0.4f));
     Registry.emplace<DirectionalLightComponent>(sun, sun);
 }
