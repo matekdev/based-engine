@@ -31,7 +31,7 @@ float4 CalculateDirectionalLight(PSInput input)
 
     // specular
     float3 viewDirection = normalize(CameraPosition - input.FragPosition);
-    float3 halfWayDirection = normalize(DirectionalLightDirection + viewDirection);
+    float3 halfWayDirection = normalize(lightDirection + viewDirection);
     float spec = pow(max(dot(normal, halfWayDirection), 0.0f), 32.0f); // material shininess
     float3 specular = DirectionalLightSpecular * spec;
 
