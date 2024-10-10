@@ -31,29 +31,33 @@ private:
         "models/skybox/front.png",
         "models/skybox/back.png"};
 
-    static inline float _vertices[] =
-        {
-            -1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f};
+    static const unsigned int VERTEX_STRIDE = sizeof(float) * 3;
+    static const unsigned int VERTEX_OFFSET = 0;
 
-    static inline unsigned int _indices[] =
-        {
-            1, 2, 6,
-            6, 5, 1,
-            0, 4, 7,
-            7, 3, 0,
-            4, 5, 6,
-            6, 7, 4,
-            0, 3, 2,
-            2, 1, 0,
-            0, 1, 5,
-            5, 4, 0,
-            3, 7, 6,
-            6, 2, 3};
+    static inline std::vector<float> _vertices = {
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f};
+
+    static inline std::vector<unsigned int> _indices = {
+        1, 2, 6,
+        6, 5, 1,
+        0, 4, 7,
+        7, 3, 0,
+        4, 5, 6,
+        6, 7, 4,
+        0, 3, 2,
+        2, 1, 0,
+        0, 1, 5,
+        5, 4, 0,
+        3, 7, 6,
+        6, 2, 3};
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> _vertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> _indexBuffer;
 };

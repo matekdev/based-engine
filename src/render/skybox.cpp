@@ -53,9 +53,36 @@ SkyBox::SkyBox() : _skyboxVertexShader(L"shaders/skybox.vs.hlsl"),
     {
         stbi_image_free(textureData[i]);
     }
+
+    D3D11_BUFFER_DESC vertexBufferDesc = {};
+    vertexBufferDesc.ByteWidth = _vertices.size() * VERTEX_STRIDE;
+    vertexBufferDesc.StructureByteStride = VERTEX_STRIDE;
+    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA vertexSubresourceData = {};
+    vertexSubresourceData.pSysMem = _vertices.data();
+
+    Renderer::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, &_vertexBuffer);
+
+    D3D11_BUFFER_DESC indexBufferDesc = {};
+    indexBufferDesc.ByteWidth = _indices.size() * sizeof(unsigned int);
+    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA indexSubresourceData = {};
+    indexSubresourceData.pSysMem = _indices.data();
+
+    Renderer::GetDevice()->CreateBuffer(&indexBufferDesc, &indexSubresourceData, &_indexBuffer);
 }
 
 void SkyBox::Render() const
 {
+    _skyboxVertexShader.Bind();
+    _skyboxPixelShader.Bind();
+
     Renderer::GetDeviceContext()->PSSetShaderResources((unsigned int)TextureType::SKYBOX, 1, _shaderResourceView.GetAddressOf());
+    Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, _vertexBuffer.GetAddressOf(), &VERTEX_STRIDE, &VERTEX_OFFSET);
+    Renderer::GetDeviceContext()->IASetIndexBuffer(_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+    Renderer::GetDeviceContext()->DrawIndexed(_indices.size(), 0, 0);
 }

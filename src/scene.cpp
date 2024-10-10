@@ -79,8 +79,8 @@ void Scene::Render()
 
     _renderTarget.Bind();
 
-    RenderSkyBox();
     RenderModels();
+    RenderSkyBox();
 
     _pxScene->simulate(1.0f / 60.0f);
     _pxScene->fetchResults(true);
@@ -106,7 +106,7 @@ void Scene::RenderModels()
 
 void Scene::RenderSkyBox()
 {
-    // _renderTarget.SetMode(RenderTarget::Mode::DepthFirst);
+    _renderTarget.SetMode(RenderTarget::Mode::DepthFirst);
     _skybox.Render();
 }
 
