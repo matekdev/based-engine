@@ -7,6 +7,7 @@
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
 #include "components/rigidbody_component.hpp"
+#include "components/directional_light_component.hpp"
 
 #include "common/file_util.hpp"
 
@@ -87,6 +88,12 @@ void InspectorPanel::Draw()
     ComponentHeader<RigidBodyComponent>(
         ICON_FA_UP_DOWN " Rigid Body",
         [this](RigidBodyComponent *rigidBody) {
+
+        });
+
+    ComponentHeader<DirectionalLightComponent>(
+        ICON_FA_SUN " Directional Light",
+        [this](DirectionalLightComponent *directionalLight) {
 
         });
 

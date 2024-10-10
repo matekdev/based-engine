@@ -3,6 +3,7 @@
 #include "components/info_component.hpp"
 #include "components/transform_component.hpp"
 #include "components/ignore_component.hpp"
+#include "components/directional_light_component.hpp"
 #include "components/model/model_component.hpp"
 
 #include <GLFW/glfw3.h>
@@ -150,4 +151,9 @@ void Scene::InitializeDefaultScene()
     Registry.get<InfoComponent>(floor).Name = "Floor";
     Registry.get<TransformComponent>(floor).SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
     Registry.emplace<ModelComponent>(floor, floor).LoadModel("models\\plane\\plane.obj");
+
+    // Sun
+    auto sun = CreateNewEntity();
+    Registry.get<InfoComponent>(sun).Name = "Sun";
+    Registry.emplace<DirectionalLightComponent>(sun, sun);
 }
