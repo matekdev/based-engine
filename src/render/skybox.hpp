@@ -24,10 +24,10 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _shaderResourceView;
 
     static inline const std::vector<std::string> _imagePaths{
-        "models/skybox/right.png",
         "models/skybox/left.png",
-        "models/skybox/down.png",
-        "models/skybox/up.png",
+        "models/skybox/right.png",
+        "models/skybox/top.png",
+        "models/skybox/bottom.png",
         "models/skybox/front.png",
         "models/skybox/back.png"};
 
