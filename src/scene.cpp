@@ -128,7 +128,7 @@ void Scene::InitializePhysics()
     _pxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *_pxFoundation, physx::PxTolerancesScale(1.0f, 10.0f), true, _pxPvd);
 
     auto sceneDesc = physx::PxSceneDesc(_pxPhysics->getTolerancesScale());
-    sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f); // TODO: Maybe some way to change this.
+    sceneDesc.gravity = physx::PxVec3(0.0f, -5.0f, 0.0f); // TODO: Maybe some way to change this.
     _pxDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
     sceneDesc.cpuDispatcher = _pxDispatcher;
     sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
