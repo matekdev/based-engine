@@ -22,7 +22,7 @@ PSOutput Main(PSInput input)
     PSOutput output;
 
     float3 I = normalize(input.WorldPosition - CameraPosition);
-    float3 R = reflect(I, input.Normal);
+    float3 R = reflect(I, normalize(input.Normal));
     output.Color = float4(CubeMapTexture.Sample(TextureSampler, R).rgb, 1.0f);
 
     return output;
