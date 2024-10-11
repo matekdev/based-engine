@@ -5,6 +5,7 @@
 #include "render/vertex_shader.hpp"
 #include "render/pixel_shader.hpp"
 #include "render/render_target.hpp"
+#include "render/shadow_map.hpp"
 #include "render/skybox.hpp"
 
 #include <PxPhysicsAPI.h>
@@ -41,9 +42,13 @@ private:
     VertexShader _modelVertexShader;
     PixelShader _modelPixelShader;
 
+    VertexShader _shadowVertexShader;
+    PixelShader _shadowPixelShader;
+
     SkyBox _skybox;
 
     RenderTarget _renderTarget;
+    ShadowMap _shadowMap;
 
     physx::PxDefaultAllocator _pxAllocator;
     physx::PxDefaultErrorCallback _pxErrorCallback;
@@ -56,7 +61,10 @@ private:
     float _previousFrameTime;
     float _deltaTime;
 
-    void RenderModels();
+    void ShadowPass();
+    void NormalPass();
+
+    void RenderModels(const VertexShader &vs, const PixelShader &ps);
     void RenderSkyBox();
     void RenderLight();
 

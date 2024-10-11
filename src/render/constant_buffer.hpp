@@ -8,9 +8,10 @@
 
 enum class ConstantType
 {
-    CAMERA_MATRIX = 0,
-    MODEL_MATRIX = 1,
-    DIRECTIONAL_LIGHT = 2,
+    CAMERA_MATRIX,
+    MODEL_MATRIX,
+    DIRECTIONAL_LIGHT,
+    SHADOW_MAP,
 };
 
 template <typename T>

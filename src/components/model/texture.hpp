@@ -9,7 +9,8 @@
 enum class TextureType
 {
     DIFFUSE,
-    SKYBOX
+    SKYBOX,
+    SHADOW_MAP
 };
 
 class Texture

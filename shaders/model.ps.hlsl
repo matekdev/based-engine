@@ -16,6 +16,7 @@ struct PSOutput
 
 Texture2D Texture : register(t0);
 TextureCube CubeMapTexture : register(t1);
+Texture2D ShadowMap : register(t2);
 SamplerState TextureSampler : register(s0);
 
 float4 CalculateDirectionalLight(PSInput input)
@@ -52,7 +53,7 @@ PSOutput Main(PSInput input)
 {
     PSOutput output;
 
-    float4 modelTexture = float4(Texture.Sample(TextureSampler, input.TexCoords).rgb, 1.0f);
+    float4 modelTexture = float4(ShadowMap.Sample(TextureSampler, input.TexCoords).rgb, 1.0f);
     float4 cubeMapReflection = CalculateCubeMapReflection(input);
     float4 lighting = CalculateDirectionalLight(input);
 

@@ -7,12 +7,16 @@
 #include "components/model/model_component.hpp"
 
 #include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 Scene::Scene() : _renderTarget(RenderTarget()),
+                 _shadowMap(ShadowMap()),
                  _camera(Camera()),
                  _skybox(SkyBox()),
                  _modelVertexShader(L"shaders/model.vs.hlsl"),
-                 _modelPixelShader(L"shaders/model.ps.hlsl")
+                 _modelPixelShader(L"shaders/model.ps.hlsl"),
+                 _shadowVertexShader(L"shaders/shadow.vs.hlsl"),
+                 _shadowPixelShader(L"shaders/shadow.ps.hlsl")
 {
     ActiveScene = this;
 
@@ -78,17 +82,42 @@ void Scene::Render()
     _camera.Update();
     CalculateDeltaTime();
 
-    _renderTarget.Bind();
-
-    RenderModels();
-    RenderSkyBox();
-    RenderLight();
+    ShadowPass();
+    NormalPass();
 
     _pxScene->simulate(1.0f / 60.0f);
     _pxScene->fetchResults(true);
 }
 
-void Scene::RenderModels()
+void Scene::ShadowPass()
+{
+    _shadowMap.Bind();
+
+    auto matrix = glm::mat4();
+
+    const auto lightGroup = Scene::ActiveScene->Registry.view<TransformComponent, DirectionalLightComponent>(entt::exclude<IgnoreComponent>);
+    for (const auto &entity : lightGroup)
+    {
+        auto &transform = lightGroup.get<TransformComponent>(entity);
+
+        const auto lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
+        const auto lightView = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetDirection(), glm::vec3(0.0, 1.0, 0.0));
+        _shadowMap.SetLightSpaceMatrix(lightProjection * lightView);
+    }
+
+    RenderModels(_shadowVertexShader, _shadowPixelShader);
+}
+
+void Scene::NormalPass()
+{
+    _renderTarget.Bind();
+
+    RenderModels(_modelVertexShader, _modelPixelShader);
+    RenderSkyBox();
+    RenderLight();
+}
+
+void Scene::RenderModels(const VertexShader &vs, const PixelShader &ps)
 {
     _renderTarget.SetMode(RenderTarget::Mode::Default);
 
@@ -98,10 +127,12 @@ void Scene::RenderModels()
         auto &transform = modelGroup.get<TransformComponent>(entity);
         const auto &model = modelGroup.get<ModelComponent>(entity);
 
-        _modelVertexShader.Bind();
-        _modelPixelShader.Bind();
-        transform.Bind();
+        vs.Bind();
+        ps.Bind();
 
+        _shadowMap.AssignMap();
+
+        transform.Bind();
         model.Render();
     }
 }
@@ -169,10 +200,16 @@ void Scene::InitializeDefaultScene()
     Registry.get<TransformComponent>(floor).SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
     Registry.emplace<ModelComponent>(floor, floor).LoadModel("models\\plane\\plane.obj");
 
+    // Temp cube
+    auto cube = CreateNewEntity();
+    Registry.get<InfoComponent>(cube).Name = "Cube";
+    Registry.get<TransformComponent>(cube).SetPosition(glm::vec3(0.0f, -0.5f, 3.2f));
+    Registry.emplace<ModelComponent>(cube, cube).LoadModel("models\\dev_orange_cube\\dev_orange_cube.obj");
+
     // Sun
     auto sun = CreateNewEntity();
     Registry.get<InfoComponent>(sun).Name = "Sun";
-    Registry.get<TransformComponent>(sun).SetPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
-    Registry.get<TransformComponent>(sun).SetRotation(glm::vec3(2.0f, 0.0f, 0.4f));
+    Registry.get<TransformComponent>(sun).SetPosition(glm::vec3(0.0f, 0.0f, 4.0f));
+    Registry.get<TransformComponent>(sun).SetRotation(glm::vec3(1.5f, 0.0f, 0.0f));
     Registry.emplace<DirectionalLightComponent>(sun, sun);
 }
