@@ -4,7 +4,8 @@
 struct PSInput
 {
     float4 Position : SV_Position;
-    float3 FragPosition : POSITION;
+    float3 FragPosition : POSITION0;
+    float4 FragPositionLightSpace : POSITION1;
     float3 Normal : NORMAL;
     float2 TexCoords : TEXCOORD;
 };
@@ -16,7 +17,17 @@ struct PSOutput
 
 Texture2D Texture : register(t0);
 TextureCube CubeMapTexture : register(t1);
+Texture2D ShadowMap : register(t2);
 SamplerState TextureSampler : register(s0);
+
+float CalculateShadows(PSInput input)
+{
+    float3 projCoords = input.FragPositionLightSpace.xyz / input.FragPositionLightSpace.w;
+    projCoords = projCoords * 0.5f + 0.5f;
+    float closestDepth = ShadowMap.Sample(TextureSampler, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    return currentDepth > closestDepth ? 1.0 : 0.0f;
+}
 
 float4 CalculateDirectionalLight(PSInput input)
 {
@@ -35,9 +46,9 @@ float4 CalculateDirectionalLight(PSInput input)
     float spec = pow(max(dot(normal, halfWayDirection), 0.0f), 32.0f); // material shininess
     float3 specular = DirectionalLightSpecular * spec;
 
-    // TODO: calculate shadows here.
+    float shadow = CalculateShadows(input);
 
-    float3 result = ambient * (diffuse + specular);
+    float3 result = ambient + (1.0 - shadow) * (diffuse + specular);
     return float4(result, 1.0f);
 }
 
